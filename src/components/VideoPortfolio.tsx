@@ -63,8 +63,8 @@ const VideoPortfolio: React.FC<VideoPortfolioProps> = ({ videos }) => {
             onClick={() => setSelectedCategory(category)}
             className={`btn btn-sm ${
               selectedCategory === category 
-                ? 'btn-primary glass border-0' 
-                : 'btn-outline text-white border-white hover:bg-white hover:text-primary'
+                ? 'btn-primary' 
+                : 'btn-outline border-base-content text-base-content hover:bg-base-content hover:text-base-100'
             }`}
           >
             {category === 'all' ? 'すべて' : category}
@@ -77,10 +77,10 @@ const VideoPortfolio: React.FC<VideoPortfolioProps> = ({ videos }) => {
         {filteredVideos.map((video) => (
           <div
             key={video.id}
-            className="card glass border-0 cursor-pointer hover-lift"
+            className="modern-card cursor-pointer overflow-hidden hover-lift"
             onClick={() => setSelectedVideo(video)}
           >
-            <figure className="relative overflow-hidden rounded-t-2xl">
+            <figure className="relative overflow-hidden">
               <img
                 src={getThumbnail(video)}
                 alt={video.title}
@@ -95,13 +95,13 @@ const VideoPortfolio: React.FC<VideoPortfolioProps> = ({ videos }) => {
                 </div>
               </div>
             </figure>
-            <div className="card-body">
-              <h3 className="card-title text-lg text-white">{video.title}</h3>
-              <p className="text-sm text-white/70 line-clamp-2">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-base-content mb-2">{video.title}</h3>
+              <p className="text-sm text-base-content/70 line-clamp-2 mb-4">
                 {video.description}
               </p>
               {video.category && (
-                <div className="badge badge-primary badge-outline border-white text-white">
+                <div className="badge badge-primary badge-outline">
                   {video.category}
                 </div>
               )}
@@ -113,8 +113,8 @@ const VideoPortfolio: React.FC<VideoPortfolioProps> = ({ videos }) => {
       {/* 動画モーダル */}
       {selectedVideo && (
         <div className="modal modal-open">
-          <div className="modal-box w-11/12 max-w-4xl glass border-0">
-            <h3 className="font-bold text-xl mb-4 text-white">
+          <div className="modal-box w-11/12 max-w-4xl bg-base-100 border border-base-300">
+            <h3 className="font-bold text-xl mb-4 text-base-content">
               {selectedVideo.title}
             </h3>
             <div className="aspect-video w-full">
@@ -127,13 +127,13 @@ const VideoPortfolio: React.FC<VideoPortfolioProps> = ({ videos }) => {
                 allowFullScreen
               ></iframe>
             </div>
-            <p className="mt-4 text-sm text-white/70">
+            <p className="mt-4 text-sm text-base-content/70">
               {selectedVideo.description}
             </p>
             <div className="modal-action">
               <button
                 onClick={() => setSelectedVideo(null)}
-                className="btn btn-primary glass border-0"
+                className="btn-modern"
               >
                 閉じる
               </button>
