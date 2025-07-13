@@ -51,6 +51,12 @@ body {
 /* スムーズスクロール */
 html {
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 /* カスタムスクロールバー */
