@@ -171,6 +171,21 @@ export default function Hero() {
           >
             ゆくえレコーズ
           </motion.h1>
+
+          <motion.h1 
+            className="text-xl font-bold text-base-content cursor-pointer"
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            whileHover={{ 
+              scale: 1.02,
+              textShadow: "0 0 20px rgba(0,0,0,0.3)"
+            }}
+            onHoverStart={() => setIsHovered(true)}
+            onHoverEnd={() => setIsHovered(false)}
+          >
+            MONTHLY PICKUP PLAYLIST
+          </motion.h1>
           
           <motion.div 
             className="text-sm text-primary"
@@ -195,8 +210,7 @@ export default function Hero() {
               transition: { duration: 0.3 }
             }}
           >
-            マンスリーピックアップで厳選された音楽をお届け。
-            図書館や骨董屋のような雰囲気で、新しい音楽との出会いを。
+            ゆくえレコーズ主宰の駱駝法師、およびレーベルの運営メンバーのぴちが是非リスナーにおすすめしたい良質なボカロ曲を毎月更新するマイリストです！
           </motion.p>
           
           <motion.div 
