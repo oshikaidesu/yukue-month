@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { videos, VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
@@ -10,6 +10,9 @@ export default function VideoCards() {
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [touchedCard, setTouchedCard] = useState<string | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 1024, height: 768 });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const cardsRef = useRef<HTMLDivElement>(null);
 
   // ランダムな色を生成する関数
   const generateRandomColor = () => {
@@ -29,7 +32,7 @@ export default function VideoCards() {
 
   useEffect(() => {
     // 全動画を取得してランダムに並び替え
-    const shuffled = [...videos].sort(() => Math.random() - 0.5).slice(0, 10);
+    const shuffled = [...videos].sort(() => Math.random() - 0.5);
     setShuffledVideos(shuffled);
 
     // ウィンドウサイズの取得
@@ -47,6 +50,31 @@ export default function VideoCards() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // 表示する動画を決定（PCでは全件、スマホではページネーション）
+  const getDisplayVideos = () => {
+    if (windowSize.width >= 768) {
+      // PC・タブレットでは全件表示
+      return shuffledVideos;
+    } else {
+      // スマホでは10個区切りで表示
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return shuffledVideos.slice(startIndex, endIndex);
+    }
+  };
+
+  // 総ページ数を計算
+  const totalPages = Math.ceil(shuffledVideos.length / itemsPerPage);
+
+  // ページ変更ハンドラー
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // カードコンポーネントのトップへスクロール
+    if (cardsRef.current) {
+      cardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   // カード位置計算関数
   const getCardPosition = (index: number) => {
@@ -99,9 +127,9 @@ export default function VideoCards() {
         </div>
 
         {/* 動画リスト */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 lg:gap-16 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 lg:gap-16 relative" ref={cardsRef}>
           
-          {shuffledVideos.map((video, index) => {
+          {getDisplayVideos().map((video, index) => {
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
             const isActive = isHovered || isTouched;
@@ -376,7 +404,7 @@ export default function VideoCards() {
               {/* 動画情報（常に表示） */}
                 {/* カード情報の背景 */}
               <motion.div 
-                  className="absolute inset-0 top-48 bg-base-100 z-10"
+                  className="absolute inset-0 top-48 bg-base-100 z-10 rounded-b-lg"
                 layout
                 />
                 
@@ -437,6 +465,46 @@ export default function VideoCards() {
         
         {/* フッター */}
         <div className="text-center mt-12">
+          {/* スマホ用ページネーション */}
+          {windowSize.width < 768 && totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mb-6">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="btn btn-sm btn-outline disabled:opacity-50"
+              >
+                前へ
+              </button>
+              
+              <div className="flex gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`btn btn-sm ${currentPage === page ? 'btn-primary' : 'btn-outline'}`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="btn btn-sm btn-outline disabled:opacity-50"
+              >
+                次へ
+              </button>
+            </div>
+          )}
+          
+          {/* ページ情報表示 */}
+          {windowSize.width < 768 && (
+            <p className="text-base-content/60 text-sm mb-4">
+              {currentPage} / {totalPages} ページ ({shuffledVideos.length}件中 {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, shuffledVideos.length)}件)
+            </p>
+          )}
+          
           <p className="text-base-content/60 text-sm">
             ホバー/タッチでプレビュー、クリックで再生
           </p>
