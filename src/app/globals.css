@@ -80,3 +80,17 @@ html {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* カスタム点線スタイル */
+.border-dotted-spaced {
+  border-style: dotted;
+  border-width: 4px;
+  border-spacing: 8px;
+}
+
+/* より間隔の広い点線 */
+.border-dotted-wide {
+  border-style: dotted;
+  border-width: 4px;
+  border-spacing: 12px;
+}
