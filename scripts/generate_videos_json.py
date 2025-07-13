@@ -22,8 +22,8 @@ class NicovideoPlaylistParser:
 
     def extract_video_id_from_url(self, url: str) -> Optional[str]:
         """URLから動画IDを抽出"""
-        # sm12345678 形式のIDを抽出
-        match = re.search(r'sm\d+', url)
+        # sm12345678, so12345678, nm12345678 形式のIDを抽出
+        match = re.search(r's[mo]\d+|nm\d+', url)
         if match:
             return match.group()
         
@@ -32,7 +32,7 @@ class NicovideoPlaylistParser:
         if 'nicovideo.jp' in parsed.netloc:
             path_parts = parsed.path.split('/')
             for part in path_parts:
-                if part.startswith('sm'):
+                if part.startswith(('sm', 'so', 'nm')):
                     return part
         return None
 
@@ -58,6 +58,8 @@ class NicovideoPlaylistParser:
             # 投稿者を抽出
             user_match = re.search(r'<user_nickname>(.*?)</user_nickname>', content)
             artist = user_match.group(1) if user_match else "不明"
+            if artist == "不明":
+                print(f"# コメント: {video_id} の投稿者が不明です")
             
             # 再生回数を抽出
             view_count_match = re.search(r'<view_counter>(\d+)</view_counter>', content)
@@ -109,6 +111,8 @@ class NicovideoPlaylistParser:
                 print("マイリストIDが抽出できませんでした")
                 return []
             mylist_id = m.group(1)
+            
+            # まずRSSフィードを試す
             rss_url = f"https://www.nicovideo.jp/mylist/{mylist_id}?rss=2.0"
             response = self.session.get(rss_url)
             response.raise_for_status()
@@ -116,17 +120,29 @@ class NicovideoPlaylistParser:
             video_ids = []
             for item in root.findall(".//item"):
                 link = item.find("link").text
-                vid_match = re.search(r'sm\d+', link)
+                vid_match = re.search(r's[mo]\d+|nm\d+', link)
                 if vid_match:
                     video_ids.append(vid_match.group())
+            
+            # RSSで取得できなかった場合、直接マイリストページを解析
+            if not video_ids:
+                print("RSSから動画IDを取得できませんでした。マイリストページを直接解析します。")
+                mylist_url = f"https://www.nicovideo.jp/mylist/{mylist_id}"
+                response = self.session.get(mylist_url)
+                response.raise_for_status()
+                content = response.text
+                
+                # 動画IDを抽出
+                video_ids = re.findall(r's[mo]\d+|nm\d+', content)
+            
             unique_video_ids = sorted(list(set(video_ids)))
-            print(f"RSSから見つかった動画ID: {unique_video_ids}")
+            print(f"見つかった動画ID: {unique_video_ids}")
             return unique_video_ids
         except Exception as e:
-            print(f"RSSの解析に失敗: {e}")
+            print(f"マイリストの解析に失敗: {e}")
             return []
 
-    def generate_json_from_playlist(self, playlist_url: str, output_file: str = "../src/data/videos.json"):
+    def generate_json_from_playlist(self, playlist_url: str, output_file: str = "src/data/videos.json"):
         """プレイリストからJSONファイルを生成"""
         print(f"プレイリストを解析中: {playlist_url}")
         
@@ -163,8 +179,8 @@ class NicovideoPlaylistParser:
 def main():
     parser = argparse.ArgumentParser(description='ニコニコ動画のプレイリストからJSONファイルを生成')
     parser.add_argument('playlist_url', help='ニコニコ動画のプレイリストURL')
-    parser.add_argument('--output', '-o', default='../src/data/videos.json', 
-                       help='出力ファイルのパス (デフォルト: ../src/data/videos.json)')
+    parser.add_argument('--output', '-o', default='src/data/videos.json', 
+                       help='出力ファイルのパス (デフォルト: src/data/videos.json)')
     
     args = parser.parse_args()
     
