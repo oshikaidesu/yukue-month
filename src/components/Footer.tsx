@@ -7,10 +7,7 @@ export default function Footer() {
     <>
       <footer className="footer footer-horizontal footer-center bg-base-200 text-base-content rounded p-10">
         <div className="flex items-center gap-2">
-          <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
-          </svg>
-          <span className="text-xl font-bold">ゆくえレコーズ</span>
+          <img src="/Logo_Horizontal.svg" alt="Yukue Logo" className="h-7" />
         </div>
         <nav className="grid grid-flow-col gap-4">
           <a href="#about" className="link link-hover">About us</a>

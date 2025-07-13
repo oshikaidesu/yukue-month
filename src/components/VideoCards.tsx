@@ -357,7 +357,7 @@ export default function VideoCards() {
                   className="w-full h-full object-cover"
                 />
                 {/* 暗いオーバーレイ */}
-                  <div className="absolute inset-0 bg-black/30" />
+                  <div className="absolute inset-0 bg-custom-black/30" />
               </motion.div>
 
               {/* 通常のサムネイル（非ホバー時） */}
