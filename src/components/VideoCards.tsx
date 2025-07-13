@@ -8,6 +8,7 @@ import NicovideoThumbnail from "./NicovideoThumbnail";
 export default function VideoCards() {
   const [shuffledVideos, setShuffledVideos] = useState<VideoItem[]>([]);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [touchedCard, setTouchedCard] = useState<string | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 1024, height: 768 });
 
   // ランダムな色を生成する関数
@@ -102,6 +103,8 @@ export default function VideoCards() {
           
           {shuffledVideos.map((video, index) => {
             const isHovered = hoveredCard === video.id;
+            const isTouched = touchedCard === video.id;
+            const isActive = isHovered || isTouched;
             
             return (
             <motion.div
@@ -110,6 +113,8 @@ export default function VideoCards() {
               onClick={() => window.open(video.url, '_blank')}
                 onHoverStart={() => setHoveredCard(video.id)}
                 onHoverEnd={() => setHoveredCard(null)}
+                onTouchStart={() => setTouchedCard(video.id)}
+                onTouchEnd={() => setTouchedCard(null)}
               whileHover={{ 
                   scale: 1.05,
                   rotateY: 2,
@@ -118,11 +123,11 @@ export default function VideoCards() {
                 }}
               >
                 {/* 装飾図形 - カード内に配置 */}
-                <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+                <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
                   {/* 丸 - 上方向に飛び出す */}
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${generateRandomSize()} ${generateRandomColor()} rounded-full transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out`}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       x: 80,
                       y: -150,
                       scale: 1.4,
@@ -145,7 +150,7 @@ export default function VideoCards() {
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${generateRandomSize()} ${generateRandomColor()} transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out`}
                     style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)' }}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       x: -170,
                       y: -170,
                       scale: 1.4,
@@ -167,7 +172,7 @@ export default function VideoCards() {
                   {/* 四角 - 右上方向に飛び出す */}
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${generateRandomSize()} ${generateRandomColor()} rotate-45 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out`}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       x: 180,
                       y: -100,
                       scale: 1.4,
@@ -189,7 +194,7 @@ export default function VideoCards() {
                   {/* 渦巻き線 - 右方向に飛び出す */}
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${generateRandomSize()} border-4 border-white border-dashed rounded-full transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out`}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       x: 220,
                       scale: 1.4,
                       rotate: 720,
@@ -208,7 +213,7 @@ export default function VideoCards() {
                   {/* 渦巻き線2 - 右方向に飛び出す */}
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${generateRandomSize()} border-4 border-grey border-dotted-wide rounded-full transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out`}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       x: -220,
                       y: 100,
                       scale: 1.4,
@@ -230,7 +235,7 @@ export default function VideoCards() {
                   {/* 小さな丸 - 下方向に飛び出す */}
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${generateRandomSize()} ${generateRandomColor()} rounded-full transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out`}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       y: 120,
                       scale: 1.4,
                       rotate: -360,
@@ -250,7 +255,7 @@ export default function VideoCards() {
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${generateRandomSize()} ${generateRandomColor()} transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out`}
                     style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       x: -10,
                       y: -20,
                       scale: 1.4,
@@ -276,7 +281,7 @@ export default function VideoCards() {
                       clipPath: 'polygon(100% 50%,69.66% 53.67%,96.62% 68.06%,67% 60.53%,86.95% 83.68%,62.05% 65.96%,72.29% 94.76%,55.47% 69.24%,54.61% 99.79%,48.15% 69.91%,36.32% 98.09%,41.09% 67.9%,19.87% 89.9%,35.22% 63.47%,7.49% 76.32%,31.35% 57.22%,0.85% 59.19%,30% 50%,0.85% 40.81%,31.35% 42.78%,7.49% 23.68%,35.22% 36.53%,19.87% 10.1%,41.09% 32.1%,36.32% 1.91%,48.15% 30.09%,54.61% 0.21%,55.47% 30.76%,72.29% 5.24%,62.05% 34.04%,86.95% 16.32%,67% 39.47%,96.62% 31.94%,69.66% 46.33%)',
                       transform: 'scale(0.8)'
                     }}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       x: 190,
                       y: 190,
                       scale: 1.4,
@@ -299,7 +304,7 @@ export default function VideoCards() {
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${generateRandomSize()} ${generateRandomColor()} transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out`}
                     style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }}
-                    animate={isHovered ? {
+                    animate={isActive ? {
                       x: -150,
                       y: 120,
                       scale: 1.4,
@@ -412,7 +417,7 @@ export default function VideoCards() {
         {/* フッター */}
         <div className="text-center mt-12">
           <p className="text-base-content/60 text-sm">
-            ホバーでプレビュー、クリックで再生
+            ホバー/タッチでプレビュー、クリックで再生
           </p>
         </div>
       </div>
