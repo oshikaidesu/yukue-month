@@ -1,103 +1,122 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { videos } from "@/data/videos";
+// Marqueeのimport（実装は仮定）
+// import { Marquee } from "@/components/magicui/marquee";
+
+// ビデオカードのミニ版
+import type { VideoItem } from "@/data/videos";
+import NicovideoThumbnail from "./NicovideoThumbnail";
+import { useMemo } from 'react';
+const VideoCardMini = ({ video, onLoad }: { video: VideoItem, onLoad?: () => void }) => (
+  <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
+    <NicovideoThumbnail
+      videoId={video.id}
+      width={320}
+      height={180}
+      useServerApi={true}
+      className="w-full h-full object-cover rounded"
+      onLoad={onLoad}
+    />
+  </div>
+);
+
+// 乱雑配置用のビデオカード背景
+function VideoCardScatter() {
+  const cards = videos.slice(0, 60);
+  const [positions, setPositions] = useState<{top:number, left:number, rotate:number, scale:number}[]>([]);
+  const [loadedCount, setLoadedCount] = useState(0);
+  const isReady = loadedCount >= cards.length;
+
+  useEffect(() => {
+    function random(min: number, max: number) {
+      return Math.random() * (max - min) + min;
+    }
+    setPositions(
+      cards.map(() => ({
+        top: random(-10, 110),
+        left: random(-10, 110),
+        rotate: random(-30, 30),
+        scale: random(0.7, 2.0),
+      }))
+    );
+  }, [cards.length]);
+
+  if (positions.length === 0) return null;
+
+  return (
+    <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+      {cards.map((video, i) => {
+        const { top, left, rotate, scale } = positions[i];
+        const initialTop = top < 50 ? -20 : 120;
+        const initialLeft = left < 50 ? -20 : 120;
+        return (
+          <motion.div
+            key={video.id + i}
+            className="absolute"
+            initial={{
+              top: `${initialTop}%`,
+              left: `${initialLeft}%`,
+              transform: `rotate(${rotate}deg) scale(${scale})`,
+            }}
+            animate={isReady ? {
+              top: `${top}%`,
+              left: `${left}%`,
+              transform: `rotate(${rotate}deg) scale(${scale})`,
+            } : undefined}
+            transition={{
+              type: 'spring',
+              stiffness: 60,
+              damping: 18,
+              mass: 0.7,
+              delay: i * 0.01,
+            }}
+            style={{
+              zIndex: 0,
+              pointerEvents: 'none',
+            }}
+          >
+            <VideoCardMini video={video} onLoad={() => setLoadedCount(c => c + 1)} />
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+// グリッド背景用CSSを追加
+const gridBgStyle = {
+  backgroundImage: "url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect x=\'0\' y=\'0\' width=\'40\' height=\'40\' fill=\'none\' stroke=\'%23333\' stroke-width=\'1\'/%3E%3C/svg%3E')",
+  backgroundSize: '40px 40px',
+  opacity: 0.2,
+};
 
 export default function Hero() {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
     <div className="hero min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
-      {/* 背景の浮遊する円 */}
-      <motion.div
-        className="absolute top-20 left-20 w-32 h-32 bg-primary/5 rounded-full"
-        animate={{
-          y: [-5, 5, -5],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div
-        className="absolute top-40 right-32 w-24 h-24 bg-secondary/5 rounded-full"
-        animate={{
-          y: [-5, 5, -5],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}
-      />
-      <motion.div
-        className="absolute bottom-32 left-1/3 w-20 h-20 bg-accent/5 rounded-full"
-        animate={{
-          y: [-5, 5, -5],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2
-        }}
-      />
+      {/* === グリッド背景（インラインSVG） === */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <svg width="100%" height="100%" className="w-full h-full" style={{ position: 'absolute', inset: 0 }}>
+          <defs>
+            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+              <rect x="0" y="0" width="40" height="40" fill="none" stroke="#333" strokeWidth="1" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#grid)" opacity="0.2" />
+        </svg>
+      </div>
+      {/* === 背景のビデオカード乱雑配置 === */}
+      <VideoCardScatter />
+      {/* 黒の半透明オーバーレイ */}
+      <div className="absolute inset-0 bg-gray-900/45 z-10 pointer-events-none" />
 
-      {/* 背景の浮遊する四角形 */}
-      <motion.div
-        className="absolute top-1/4 right-1/4 w-16 h-16 bg-primary/10 rounded-lg rotate-45"
-        animate={{
-          y: [-10, 10, -10],
-          rotate: [45, 225, 45],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div
-        className="absolute bottom-1/4 left-1/4 w-12 h-12 bg-secondary/10 rounded-lg -rotate-12"
-        animate={{
-          y: [10, -10, 10],
-          rotate: [-12, 348, -12],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}
-      />
-      <motion.div
-        className="absolute top-1/3 left-1/6 w-8 h-8 bg-accent/10 rounded-md rotate-12"
-        animate={{
-          y: [-8, 8, -8],
-          rotate: [12, 372, 12],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 2
-        }}
-      />
 
-      {/* 背景の小さな四角形のパターン */}
-      <motion.div
-        className="absolute top-10 right-10 w-4 h-4 bg-primary/20 rounded-sm"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.5, 0.2],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+
+
       <motion.div
         className="absolute bottom-20 right-1/3 w-3 h-3 bg-secondary/20 rounded-sm"
         animate={{
@@ -151,14 +170,14 @@ export default function Hero() {
       />
 
       <motion.div 
-        className="hero-content text-left"
+        className="hero-content text-left relative z-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
         <div className="max-w-md">
           <motion.h1 
-            className="text-5xl font-bold text-base-content cursor-pointer"
+            className="text-5xl text-white font-bold text-base-content cursor-pointer"
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
@@ -172,8 +191,11 @@ export default function Hero() {
             ゆくえレコーズ
           </motion.h1>
 
+          {/* ここにMarquee3Dを追加 */}
+          {/* Marquee3Dは背景に配置 */}
+
           <motion.h1 
-            className="text-xl font-bold text-base-content cursor-pointer"
+            className="text-xl text-white font-bold text-base-content cursor-pointer"
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
@@ -201,12 +223,12 @@ export default function Hero() {
           </motion.div>
           
           <motion.p 
-            className="py-6 text-base-content/80"
+            className="py-6 text-white/80"
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
             whileHover={{ 
-              color: "hsl(var(--p))",
+              color: "white",
               transition: { duration: 0.3 }
             }}
           >
@@ -241,7 +263,7 @@ export default function Hero() {
             </motion.button>
             
             <motion.button 
-              className="btn btn-outline"
+              className="btn btn-outline text-white"
               whileHover={{
                 scale: 1.03,
                 boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",

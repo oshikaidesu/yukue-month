@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Image from 'next/image';
 
 type Props = {
   videoId: string;
@@ -8,6 +9,7 @@ type Props = {
   useApi?: boolean;
   useDirectUrl?: boolean;
   useServerApi?: boolean; // サーバーサイドAPIを使用するかどうか
+  onLoad?: () => void;
 };
 
 interface PreviewData {
@@ -134,13 +136,18 @@ export default function NicovideoThumbnail(props: Props) {
   // サーバーAPIでサムネイルを取得できた場合
   if (useServerApi && previewData?.image && !error) {
     return (
-      <img
+      <Image
         src={previewData.image}
         alt={previewData.title || `${videoId} のサムネイル`}
         width={width}
         height={height}
         className={`rounded-lg object-cover ${className}`}
-        onError={() => setError(true)}
+        onError={() => {
+          setError(true);
+          props.onLoad?.();
+        }}
+        onLoad={props.onLoad}
+        unoptimized
       />
     );
   }
@@ -148,13 +155,18 @@ export default function NicovideoThumbnail(props: Props) {
   // 直接URLまたはAPIでサムネイルを取得できた場合
   if ((useDirectUrl || useApi) && thumbnailUrl && !error) {
     return (
-      <img
+      <Image
         src={thumbnailUrl}
         alt={`${videoId} のサムネイル`}
         width={width}
         height={height}
         className={`rounded-lg object-cover ${className}`}
-        onError={handleImageError}
+        onError={e => {
+          handleImageError();
+          props.onLoad?.();
+        }}
+        onLoad={props.onLoad}
+        unoptimized
       />
     );
   }

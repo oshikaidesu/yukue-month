@@ -1,13 +1,14 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image';
 
 export default function Footer() {
   return (
     <>
       <footer className="footer footer-horizontal footer-center bg-base-200 text-base-content rounded p-10">
         <div className="flex items-center gap-2">
-          <img src="/Logo_Horizontal.svg" alt="Yukue Logo" className="h-7" />
+          <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={28} className="h-7" unoptimized />
         </div>
         <nav className="grid grid-flow-col gap-4">
           <a href="#about" className="link link-hover">About us</a>

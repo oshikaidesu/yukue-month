@@ -4,6 +4,7 @@
  * ヘッダーコンポーネント
  * daisyUIのdrawerコンポーネントを使用したサイドバーナビゲーション
  */
+import Image from 'next/image';
 export default function Header() {
   return (
     <div className="drawer">
@@ -13,7 +14,7 @@ export default function Header() {
       {/* メインコンテンツエリア */}
       <div className="drawer-content flex flex-col">
         {/* ナビゲーションバー */}
-        <div className="navbar fixed top-0 z-50 bg-base-100/10 shadow-lg w-full backdrop-blur-md border-b border-white/30">
+        <div className="navbar fixed top-0 z-50 bg-base-100/65 shadow-lg w-full backdrop-blur-md border-b border-white/10">
           {/* モバイル用サイドバートグルボタン */}
           <div className="flex-none lg:hidden">
             <label htmlFor="my-drawer-3" aria-label="open sidebar" className="btn btn-square btn-ghost">
@@ -36,7 +37,7 @@ export default function Header() {
           {/* ブランドロゴ */}
           <div className="flex-1 px-2 mx-2">
             <a className="btn btn-ghost text-xl">
-              <img src="/Logo_Horizontal.svg" alt="Yukue Logo" className="h-7" />
+              <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={28} className="h-7" unoptimized />
             </a>
           </div>
           
@@ -62,7 +63,7 @@ export default function Header() {
         <ul className="menu bg-base-200 min-h-full w-80 p-4">
           {/* サイドバーヘッダー */}
           <div className="flex items-center gap-2 mb-6 p-2">
-            <img src="/Logo_Horizontal.svg" alt="Yukue Logo" className="h-8" />
+            <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={32} className="h-8" unoptimized />
           </div>
           
           {/* メインナビゲーション */}

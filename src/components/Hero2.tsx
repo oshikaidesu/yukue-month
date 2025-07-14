@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import Image from 'next/image';
 
 export default function Hero2() {
   return (
@@ -35,7 +36,7 @@ export default function Hero2() {
                 <div className="stat-figure text-secondary">
                   <div className="avatar online">
                     <div className="w-16 rounded-full">
-                      <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                      <Image src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt="avatar" width={64} height={64} className="rounded-full" unoptimized />
                     </div>
                   </div>
                 </div>
