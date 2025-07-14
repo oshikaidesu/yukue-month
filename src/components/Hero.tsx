@@ -7,7 +7,7 @@ import { videos } from "@/data/videos";
 // import { Marquee } from "@/components/magicui/marquee";
 
 // ビデオカードのミニ版
-import type { VideoItem } from "@/data/videos";
+// import type { VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 
 // 乱雑配置用のビデオカード背景

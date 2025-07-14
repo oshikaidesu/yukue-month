@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
           platform: 'nicovideo'
         });
       } catch (oembedError: unknown) {
-        console.warn('oEmbed failed, falling back to scraping:', (oembedError as any).message);
+        console.warn('oEmbed failed, falling back to scraping:', (oembedError as unknown));
       }
     }
 
