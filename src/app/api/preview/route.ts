@@ -2,6 +2,24 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
+// oEmbed APIのレスポンス型を定義
+interface NicoOEmbedResponse {
+  type: string;
+  version: string;
+  title: string;
+  author_name: string;
+  author_url: string;
+  provider_name: string;
+  provider_url: string;
+  thumbnail_url: string;
+  thumbnail_width: number;
+  thumbnail_height: number;
+  html: string;
+  width: number;
+  height: number;
+  [key: string]: unknown; // 追加のプロパティも許容
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -16,7 +34,7 @@ export async function GET(request: NextRequest) {
       try {
         // oEmbed APIを試行
         const oembedUrl = `https://www.nicovideo.jp/api/oembed?url=${encodeURIComponent(url)}&format=json`;
-        const oembedResponse = await axios.get(oembedUrl);
+        const oembedResponse = await axios.get<NicoOEmbedResponse>(oembedUrl);
         
         return NextResponse.json({
           ...oembedResponse.data,

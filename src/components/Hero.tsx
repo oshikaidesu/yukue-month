@@ -7,7 +7,7 @@ import { videos } from "@/data/videos";
 // import { Marquee } from "@/components/magicui/marquee";
 
 // ビデオカードのミニ版
-import type { VideoItem } from "@/data/videos";
+import { VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 const VideoCardMini = ({ video, onLoad }: { video: VideoItem, onLoad?: () => void }) => (
   <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
