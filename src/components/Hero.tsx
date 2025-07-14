@@ -9,7 +9,6 @@ import { videos } from "@/data/videos";
 // ビデオカードのミニ版
 import type { VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
-import { useMemo } from 'react';
 const VideoCardMini = ({ video, onLoad }: { video: VideoItem, onLoad?: () => void }) => (
   <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
     <NicovideoThumbnail
@@ -25,30 +24,30 @@ const VideoCardMini = ({ video, onLoad }: { video: VideoItem, onLoad?: () => voi
 
 // 乱雑配置用のビデオカード背景
 function VideoCardScatter() {
-  const cards = videos.slice(0, 60);
+  const scatteredVideos = videos.slice(0, 60);
   const [positions, setPositions] = useState<{top:number, left:number, rotate:number, scale:number}[]>([]);
   const [loadedCount, setLoadedCount] = useState(0);
-  const isReady = loadedCount >= cards.length;
+  const isReady = loadedCount >= scatteredVideos.length;
 
   useEffect(() => {
     function random(min: number, max: number) {
       return Math.random() * (max - min) + min;
     }
     setPositions(
-      cards.map(() => ({
+      scatteredVideos.map(() => ({
         top: random(-10, 110),
         left: random(-10, 110),
         rotate: random(-30, 30),
         scale: random(0.7, 2.0),
       }))
     );
-  }, [cards.length]);
+  }, [scatteredVideos.length]);
 
   if (positions.length === 0) return null;
 
   return (
     <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-      {cards.map((video, i) => {
+      {scatteredVideos.map((video, i) => {
         const { top, left, rotate, scale } = positions[i];
         const initialTop = top < 50 ? -20 : 120;
         const initialLeft = left < 50 ? -20 : 120;
@@ -86,12 +85,6 @@ function VideoCardScatter() {
   );
 }
 
-// グリッド背景用CSSを追加
-const gridBgStyle = {
-  backgroundImage: "url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect x=\'0\' y=\'0\' width=\'40\' height=\'40\' fill=\'none\' stroke=\'%23333\' stroke-width=\'1\'/%3E%3C/svg%3E')",
-  backgroundSize: '40px 40px',
-  opacity: 0.2,
-};
 
 export default function Hero() {
   const [isHovered, setIsHovered] = useState(false)
