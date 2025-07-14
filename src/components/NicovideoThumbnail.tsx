@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Image from 'next/image';
 
 type Props = {
@@ -29,7 +29,7 @@ export default function NicovideoThumbnail(props: Props) {
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
 
   // ニコニコ動画のサムネイルURLパターン
-  const thumbnailUrls = useMemo(() => [
+  const thumbnailUrls = [
     `https://tn.smilevideo.jp/smile?i=${videoId}`,
     `https://tn.smilevideo.jp/smile?i=${videoId}.L`,
     `https://tn.smilevideo.jp/smile?i=${videoId}.M`,
@@ -38,7 +38,7 @@ export default function NicovideoThumbnail(props: Props) {
     `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/${videoId}.L`,
     `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/${videoId}.M`,
     `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/${videoId}.S`,
-  ], [videoId]);
+  ];
 
   useEffect(() => {
     if (!useApi && !useDirectUrl && !useServerApi) {
@@ -109,7 +109,7 @@ export default function NicovideoThumbnail(props: Props) {
     };
 
     fetchThumbnail();
-  }, [videoId, useApi, useDirectUrl, useServerApi, thumbnailUrls]);
+  }, [videoId, useApi, useDirectUrl, useServerApi]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {
@@ -161,7 +161,10 @@ export default function NicovideoThumbnail(props: Props) {
         width={width}
         height={height}
         className={`rounded-lg object-cover ${className}`}
-        onError={() => { handleImageError(); props.onLoad?.(); }}
+        onError={e => {
+          handleImageError();
+          props.onLoad?.();
+        }}
         onLoad={props.onLoad}
         unoptimized
       />

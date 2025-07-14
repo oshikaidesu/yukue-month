@@ -25,6 +25,8 @@ export async function GET(request: NextRequest) {
       } catch (oembedError: unknown) {
         if (oembedError instanceof Error) {
           console.warn('oEmbed failed, falling back to scraping:', oembedError.message);
+        } else if (typeof oembedError === "object" && oembedError && "message" in oembedError) {
+          console.warn('oEmbed failed, falling back to scraping:', (oembedError as { message: string }).message);
         } else {
           console.warn('oEmbed failed, falling back to scraping:', oembedError);
         }
