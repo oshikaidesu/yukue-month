@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
           ...oembedResponse.data,
           platform: 'nicovideo'
         });
-      } catch (oembedError: any) {
-        console.warn('oEmbed failed, falling back to scraping:', oembedError.message);
+      } catch (oembedError: unknown) {
+        console.warn('oEmbed failed, falling back to scraping:', (oembedError as any).message);
       }
     }
 
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json(metadata);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Preview API Error:', error);
     return NextResponse.json(
       { error: 'プレビューの取得に失敗しました' }, 

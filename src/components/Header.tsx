@@ -5,6 +5,7 @@
  * daisyUIのdrawerコンポーネントを使用したサイドバーナビゲーション
  */
 import Image from 'next/image';
+import Link from "next/link";
 export default function Header() {
   return (
     <div className="drawer">
@@ -44,10 +45,10 @@ export default function Header() {
           {/* デスクトップ用ナビゲーションメニュー */}
           <div className="hidden flex-none lg:block">
             <ul className="menu menu-horizontal">
-              <li><a href="#home" className="hover:text-primary">ホーム</a></li>
-              <li><a href="#videos" className="hover:text-primary">動画一覧</a></li>
-              <li><a href="#about" className="hover:text-primary">About</a></li>
-              <li><a href="#contact" className="hover:text-primary">お問い合わせ</a></li>
+              <li><Link href="#home" className="hover:text-primary">ホーム</Link></li>
+              <li><Link href="#videos" className="hover:text-primary">動画一覧</Link></li>
+              <li><Link href="#about" className="hover:text-primary">About</Link></li>
+              <li><Link href="#contact" className="hover:text-primary">お問い合わせ</Link></li>
             </ul>
           </div>
           
@@ -71,37 +72,37 @@ export default function Header() {
             <span>メインメニュー</span>
           </li>
           <li>
-            <a href="#home" className="flex items-center gap-3">
+            <Link href="#home" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
               </svg>
               ホーム
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#videos" className="flex items-center gap-3">
+            <Link href="#videos" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" strokeWidth="2"></circle>
                 <circle cx="12" cy="12" r="3" strokeWidth="2"></circle>
               </svg>
               楽曲一覧
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#about" className="flex items-center gap-3">
+            <Link href="#about" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
               About
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#contact" className="flex items-center gap-3">
+            <Link href="#contact" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
               </svg>
               お問い合わせ
-            </a>
+            </Link>
           </li>
           
           {/* セパレーター */}
@@ -112,48 +113,48 @@ export default function Header() {
             <span>カテゴリ</span>
           </li>
           <li>
-            <a href="#programming" className="flex items-center gap-3">
+            <Link href="#programming" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
               </svg>
               2025年7月
-            </a>
+            </Link>
           </li>
           
           <li>
-            <a href="#programming" className="flex items-center gap-3">
+            <Link href="#programming" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
               </svg>
               2025年7月
-            </a>
+            </Link>
           </li>
           
           <li>
-            <a href="#programming" className="flex items-center gap-3">
+            <Link href="#programming" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
               </svg>
               2025年7月
-            </a>
+            </Link>
           </li>
           
           <li>
-            <a href="#programming" className="flex items-center gap-3">
+            <Link href="#programming" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
               </svg>
               2025年7月
-            </a>
+            </Link>
           </li>
           
           <li>
-            <a href="#programming" className="flex items-center gap-3">
+            <Link href="#programming" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
               </svg>
               2025年7月
-            </a>
+            </Link>
           </li>
           
 

@@ -1,7 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import Image from 'next/image';
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -11,10 +11,10 @@ export default function Footer() {
           <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={28} className="h-7" unoptimized />
         </div>
         <nav className="grid grid-flow-col gap-4">
-          <a href="#about" className="link link-hover">About us</a>
-          <a href="#contact" className="link link-hover">Contact</a>
-          <a href="#playlist" className="link link-hover">プレイリスト</a>
-          <a href="#archive" className="link link-hover">アーカイブ</a>
+          <Link href="#about" className="link link-hover">About us</Link>
+          <Link href="#contact" className="link link-hover">Contact</Link>
+          <Link href="#playlist" className="link link-hover">プレイリスト</Link>
+          <Link href="#archive" className="link link-hover">アーカイブ</Link>
         </nav>
         <nav>
           <div className="grid grid-flow-col gap-4">

@@ -109,7 +109,7 @@ export default function NicovideoThumbnail(props: Props) {
     };
 
     fetchThumbnail();
-  }, [videoId, useApi, useDirectUrl, useServerApi]);
+  }, [videoId, useApi, useDirectUrl, useServerApi, thumbnailUrls]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {

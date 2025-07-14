@@ -148,7 +148,7 @@ const VideoManager: React.FC<VideoManagerProps> = ({ videos, onVideosChange }) =
                 <select
                   className="select select-bordered bg-white/20 border-white/30 text-white"
                   value={formData.platform}
-                  onChange={(e) => setFormData({ ...formData, platform: e.target.value as any })}
+                  onChange={(e) => setFormData({ ...formData, platform: e.target.value as string })}
                 >
                   <option value="youtube">YouTube</option>
                   <option value="vimeo">Vimeo</option>

@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { videos, VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
+import Link from "next/link";
 
 export default function VideoCards() {
   const [shuffledVideos, setShuffledVideos] = useState<VideoItem[]>([]);
@@ -97,43 +98,6 @@ export default function VideoCards() {
     // カードコンポーネントのトップへスクロール
     if (cardsRef.current) {
       cardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  // カード位置計算関数
-  const getCardPosition = (index: number) => {
-    // デスクトップ（3列）
-    if (windowSize.width >= 1024) {
-      const row = Math.floor(index / 3);
-      const col = index % 3;
-      const cardWidth = 100 / 3;
-      const cardHeight = 280;
-      const gap = 64;
-      return {
-        left: `${col * cardWidth + cardWidth / 2}%`,
-        top: `${row * (cardHeight + gap) + cardHeight / 2}px`
-      };
-    }
-    // タブレット（2列）
-    else if (windowSize.width >= 768) {
-      const row = Math.floor(index / 2);
-      const col = index % 2;
-      const cardWidth = 100 / 2;
-      const cardHeight = 280;
-      const gap = 64;
-      return {
-        left: `${col * cardWidth + cardWidth / 2}%`,
-        top: `${row * (cardHeight + gap) + cardHeight / 2}px`
-      };
-    }
-    // モバイル（1列）
-    else {
-      const cardHeight = 280;
-      const gap = 64;
-      return {
-        left: '50%',
-        top: `${index * (cardHeight + gap) + cardHeight / 2}px`
-      };
     }
   };
 
@@ -533,11 +497,11 @@ export default function VideoCards() {
             本サイトは楽曲との出会いの偏りを減らすため<br></br>更新するたび、ランダムに並び替えています。
           </p>
               <p className="text-base-content/60 text-sm">
-             <a 
+             <Link 
                href="https://www.nicovideo.jp/user/131010307/mylist/76687470" 
              >
                https://www.nicovideo.jp/user/131010307/mylist/76687470
-             </a>
+             </Link>
            </p>
         </div>
       </div>

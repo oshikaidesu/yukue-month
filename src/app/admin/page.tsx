@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import VideoManager from '../../components/VideoManager';
 import { VideoItem } from '../../data/videos';
+import Link from "next/link";
 
 export default function AdminPage() {
   const [videos, setVideos] = useState<VideoItem[]>([
@@ -77,9 +78,7 @@ export default function AdminPage() {
             <h1 className="text-2xl font-bold text-white">動画管理画面</h1>
           </div>
           <div className="navbar-end">
-            <a href="/" className="btn btn-primary glass border-0">
-              サイトに戻る
-            </a>
+            <Link href="/" className="btn btn-primary glass border-0">トップへ戻る</Link>
           </div>
         </div>
       </header>

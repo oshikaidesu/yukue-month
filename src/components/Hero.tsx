@@ -9,19 +9,6 @@ import { videos } from "@/data/videos";
 // ビデオカードのミニ版
 import type { VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
-import { useMemo } from 'react';
-const VideoCardMini = ({ video, onLoad }: { video: VideoItem, onLoad?: () => void }) => (
-  <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
-    <NicovideoThumbnail
-      videoId={video.id}
-      width={320}
-      height={180}
-      useServerApi={true}
-      className="w-full h-full object-cover rounded"
-      onLoad={onLoad}
-    />
-  </div>
-);
 
 // 乱雑配置用のビデオカード背景
 function VideoCardScatter() {
@@ -42,7 +29,7 @@ function VideoCardScatter() {
         scale: random(0.7, 2.0),
       }))
     );
-  }, [cards.length]);
+  }, [cards]);
 
   if (positions.length === 0) return null;
 
@@ -78,20 +65,13 @@ function VideoCardScatter() {
               pointerEvents: 'none',
             }}
           >
-            <VideoCardMini video={video} onLoad={() => setLoadedCount(c => c + 1)} />
+            <NicovideoThumbnail videoId={video.id} onLoad={() => setLoadedCount(c => c + 1)} />
           </motion.div>
         );
       })}
     </div>
   );
 }
-
-// グリッド背景用CSSを追加
-const gridBgStyle = {
-  backgroundImage: "url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect x=\'0\' y=\'0\' width=\'40\' height=\'40\' fill=\'none\' stroke=\'%23333\' stroke-width=\'1\'/%3E%3C/svg%3E')",
-  backgroundSize: '40px 40px',
-  opacity: 0.2,
-};
 
 export default function Hero() {
   const [isHovered, setIsHovered] = useState(false)
