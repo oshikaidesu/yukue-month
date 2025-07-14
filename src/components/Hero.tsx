@@ -275,35 +275,7 @@ export default function Hero() {
             >
               アーカイブ
             </motion.button>
-          </motion.div>
-
-          {/* インタラクティブな音楽ノート */}
-          <motion.div 
-            className="mt-8 flex gap-2"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.0, ease: "easeOut" }}
-          >
-            {[1, 2, 3, 4, 5].map((note, index) => (
-              <motion.div
-                key={note}
-                className="w-2 h-8 bg-primary/30 rounded-full"
-                whileHover={{ 
-                  scale: 1.3,
-                  backgroundColor: "hsl(var(--p))",
-                  transition: { duration: 0.2, ease: "easeOut" }
-                }}
-                animate={{
-                  height: [32, 40, 32],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  delay: index * 0.2,
-                  ease: "easeInOut"
-                }}
-              />
-            ))}
+          
           </motion.div>
         </div>
       </motion.div>
