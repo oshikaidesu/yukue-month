@@ -45,10 +45,29 @@ export default function Header() {
           {/* デスクトップ用ナビゲーションメニュー */}
           <div className="hidden flex-none lg:block">
             <ul className="menu menu-horizontal">
-              <li><Link href="#home" className="hover:text-primary">ホーム</Link></li>
-              <li><Link href="#videos" className="hover:text-primary">動画一覧</Link></li>
-              <li><Link href="#about" className="hover:text-primary">About</Link></li>
-              <li><Link href="#contact" className="hover:text-primary">お問い合わせ</Link></li>
+            <li>
+            <Link href="/archive" className="flex items-center gap-3">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" strokeWidth="2"></circle>
+                <circle cx="12" cy="12" r="3" strokeWidth="2"></circle>
+              </svg>
+              アーカイブ
+            </Link>
+          </li>
+          <li>
+            <Link href="/about" className="flex items-center gap-3">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              About
+            </Link>
+          </li>
+          <li>
+            <Link href="https://yukuerecords.studio.site/contact" className="flex items-center gap-3">
+            <Image src="/mail.svg" alt="contact" width={20} height={20} className="w-5 h-4" unoptimized />
+              お問い合わせ・デモ音源
+            </Link>
+          </li>
             </ul>
           </div>
           
@@ -89,7 +108,7 @@ export default function Header() {
             </Link>
           </li>
           <li>
-            <Link href="#about" className="flex items-center gap-3">
+            <Link href="/about" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
