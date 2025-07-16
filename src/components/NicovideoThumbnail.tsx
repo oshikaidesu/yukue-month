@@ -104,7 +104,7 @@ export default function NicovideoThumbnail(props: Props) {
           if (response.ok) {
             const data = await response.json();
             if (!cancelled) {
-              setPreviewData(data);
+              setPreviewData(data as PreviewData);
               if (data.image) {
                 setThumbnailUrl(data.image);
               } else {
