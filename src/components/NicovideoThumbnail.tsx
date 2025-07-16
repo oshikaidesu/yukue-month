@@ -1,6 +1,56 @@
 import { useState, useEffect, useMemo } from "react";
 import Image from 'next/image';
 
+// サムネイル画像表示専用
+function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading }: {
+  src: string,
+  alt: string,
+  width: number,
+  height: number,
+  className?: string,
+  onError?: () => void,
+  onLoad?: () => void,
+  loading?: "lazy" | "eager"
+}) {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      className={`rounded-lg object-cover ${className ?? ''}`}
+      onError={onError}
+      onLoad={onLoad}
+      loading={loading}
+    />
+  );
+}
+
+// iframeフォールバック用
+function NicovideoIframeFallback({ videoId, width, height, className }: {
+  videoId: string,
+  width: number,
+  height: number,
+  className?: string
+}) {
+  return (
+    <iframe 
+      width={width} 
+      height={height} 
+      src={`https://ext.nicovideo.jp/thumb/${videoId}`} 
+      scrolling="no" 
+      style={{ border: 'none' }} 
+      frameBorder="0"
+      className={`rounded-lg ${className ?? ''}`}
+      title={`${videoId} のサムネイル`}
+    >
+      <a href={`https://www.nicovideo.jp/watch/${videoId}`}>
+        ニコニコ動画: {videoId}
+      </a>
+    </iframe>
+  );
+}
+
 type Props = {
   videoId: string;
   width?: number;
@@ -10,6 +60,7 @@ type Props = {
   useDirectUrl?: boolean;
   useServerApi?: boolean; // サーバーサイドAPIを使用するかどうか
   onLoad?: () => void;
+  loading?: "lazy" | "eager"; // ← 追加
 };
 
 interface PreviewData {
@@ -25,99 +76,94 @@ export default function NicovideoThumbnail(props: Props) {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
+  const [fallbackToDirect, setFallbackToDirect] = useState(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
 
   // ニコニコ動画のサムネイルURLパターン
-  const thumbnailUrls = useMemo(() => [
-    `https://tn.smilevideo.jp/smile?i=${videoId}`,
-    `https://tn.smilevideo.jp/smile?i=${videoId}.L`,
-    `https://tn.smilevideo.jp/smile?i=${videoId}.M`,
-    `https://tn.smilevideo.jp/smile?i=${videoId}.S`,
-    `https://ext.nicovideo.jp/thumb/${videoId}`,
-    `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/${videoId}.L`,
-    `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/${videoId}.M`,
-    `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/${videoId}.S`,
-  ], [videoId]);
+  const directThumbnailUrl = useMemo(() => `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`, [videoId]);
+  const smileThumbnailUrl = useMemo(() => `https://tn.smilevideo.jp/smile?i=${videoId}.S`, [videoId]);
 
   useEffect(() => {
+    let cancelled = false;
+    setError(false);
+    setIsLoading(true);
+    setThumbnailUrl(null);
+    setPreviewData(null);
+    setFallbackToDirect(false);
+
     if (!useApi && !useDirectUrl && !useServerApi) {
       setIsLoading(false);
       return;
     }
 
-    if (useServerApi) {
+    if (useServerApi && !fallbackToDirect) {
       // サーバーサイドAPIを使用
       const fetchPreviewData = async () => {
         try {
-          setIsLoading(true);
-          setError(false);
-          
           const videoUrl = `https://www.nicovideo.jp/watch/${videoId}`;
           const response = await fetch(`/api/preview?url=${encodeURIComponent(videoUrl)}`);
-          
           if (response.ok) {
             const data = await response.json();
-            setPreviewData(data);
-            if (data.image) {
-              setThumbnailUrl(data.image);
+            if (!cancelled) {
+              setPreviewData(data);
+              if (data.image) {
+                setThumbnailUrl(data.image);
+              } else {
+                // サムネイルURLが取れなかった場合はフォールバック
+                setFallbackToDirect(true);
+              }
             }
           } else {
             throw new Error('Failed to fetch preview data');
           }
         } catch (err) {
-          console.warn('Server API failed, using fallback:', err);
-          setError(true);
+          if (!cancelled) {
+            setFallbackToDirect(true);
+          }
         } finally {
-          setIsLoading(false);
+          if (!cancelled) setIsLoading(false);
         }
       };
-
       fetchPreviewData();
-      return;
+      return () => { cancelled = true; };
     }
 
-    if (useDirectUrl) {
-      setThumbnailUrl(thumbnailUrls[0]);
+    if (useDirectUrl || fallbackToDirect) {
+      // 直接URLで表示
+      setThumbnailUrl(directThumbnailUrl);
       setIsLoading(false);
       return;
     }
 
-    const fetchThumbnail = async () => {
-      try {
-        setIsLoading(true);
-        setError(false);
-        
-        const response = await fetch(`https://api.nicovideo.jp/v1/video/${videoId}`, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (compatible; YukueBot/1.0)'
+    if (useApi) {
+      const fetchThumbnail = async () => {
+        try {
+          const response = await fetch(`https://api.nicovideo.jp/v1/video/${videoId}`, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (compatible; YukueBot/1.0)'
+            }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            if (!cancelled) setThumbnailUrl(data.data.thumbnail?.url || null);
+          } else {
+            throw new Error('Failed to fetch thumbnail');
           }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setThumbnailUrl(data.data.thumbnail?.url || null);
-        } else {
-          throw new Error('Failed to fetch thumbnail');
+        } catch (err) {
+          if (!cancelled) setFallbackToDirect(true);
+        } finally {
+          if (!cancelled) setIsLoading(false);
         }
-      } catch (err) {
-        console.warn('Failed to fetch thumbnail from API, using fallback:', err);
-        setError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchThumbnail();
-  }, [videoId, useApi, useDirectUrl, useServerApi]);
+      };
+      fetchThumbnail();
+      return () => { cancelled = true; };
+    }
+  }, [videoId, useApi, useDirectUrl, useServerApi, directThumbnailUrl, fallbackToDirect]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {
-    if (useDirectUrl && currentUrlIndex < thumbnailUrls.length - 1) {
-      // 次のURLを試す
-      const nextIndex = currentUrlIndex + 1;
-      setCurrentUrlIndex(nextIndex);
-      setThumbnailUrl(thumbnailUrls[nextIndex]);
+    if (!fallbackToDirect) {
+      setFallbackToDirect(true);
     } else {
       setError(true);
     }
@@ -130,10 +176,11 @@ export default function NicovideoThumbnail(props: Props) {
         className={`flex items-center justify-center bg-[#EEEEEE] rounded-lg ${className}`}
         style={{ width, height }}
       >
-         <img
+         <Image
            src="/Logo_Mark.svg"
            alt="ローディング中"
-           style={{ width: Math.min(width, 64), height: Math.min(height, 64) }}
+           width={Math.min(width, 64)}
+           height={Math.min(height, 64)}
            className="yukue-spin"
          />
       </div>
@@ -141,58 +188,50 @@ export default function NicovideoThumbnail(props: Props) {
   }
 
   // サーバーAPIでサムネイルを取得できた場合
-  if (useServerApi && previewData?.image && !error) {
+  if (useServerApi && previewData?.image && !fallbackToDirect && !error) {
     return (
-      <Image
+      <NicovideoImage
         src={previewData.image}
         alt={previewData.title || `${videoId} のサムネイル`}
         width={width}
         height={height}
-        className={`rounded-lg object-cover ${className}`}
-        onError={() => {
-          setError(true);
-          props.onLoad?.();
-        }}
-        onLoad={props.onLoad}
-        unoptimized
-      />
-    );
-  }
-
-  // 直接URLまたはAPIでサムネイルを取得できた場合
-  if ((useDirectUrl || useApi) && thumbnailUrl && !error) {
-    return (
-      <Image
-        src={thumbnailUrl}
-        alt={`${videoId} のサムネイル`}
-        width={width}
-        height={height}
-        className={`rounded-lg object-cover ${className}`}
+        className={className}
         onError={() => {
           handleImageError();
           props.onLoad?.();
         }}
         onLoad={props.onLoad}
-        unoptimized
+        loading={props.loading}
       />
     );
   }
 
-  // デフォルト: iframeを使用したサムネイル表示（最も確実）
+  // 直接URLまたはAPIでサムネイルを取得できた場合
+  if ((useDirectUrl || fallbackToDirect || useApi) && thumbnailUrl && !error) {
+    return (
+      <NicovideoImage
+        src={thumbnailUrl}
+        alt={`${videoId} のサムネイル`}
+        width={width}
+        height={height}
+        className={className}
+        onError={() => {
+          handleImageError();
+          props.onLoad?.();
+        }}
+        onLoad={props.onLoad}
+        loading={props.loading}
+      />
+    );
+  }
+
+  // それでもダメならiframeで表示
   return (
-    <iframe 
-      width={width} 
-      height={height} 
-      src={`https://ext.nicovideo.jp/thumb/${videoId}`} 
-      scrolling="no" 
-      style={{ border: 'none' }} 
-      frameBorder="0"
-      className={`rounded-lg ${className}`}
-      title={`${videoId} のサムネイル`}
-    >
-      <a href={`https://www.nicovideo.jp/watch/${videoId}`}>
-        ニコニコ動画: {videoId}
-      </a>
-    </iframe>
+    <NicovideoIframeFallback
+      videoId={videoId}
+      width={width}
+      height={height}
+      className={className}
+    />
   );
 } 

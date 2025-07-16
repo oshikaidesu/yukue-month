@@ -5,6 +5,7 @@ import VideoCards from "@/components/VideoCards";
 import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { VideoItem } from "@/types/video";
 
 const yearOptions = [
   { label: "2024年", value: "2024" },
@@ -22,7 +23,7 @@ type YearType = keyof typeof availableMonthsMap;
 export default function ArchivePage() {
   const [selectedYear, setSelectedYear] = useState<YearType>("2025");
   const [selectedMonth, setSelectedMonth] = useState<string>(availableMonthsMap["2025"][0] ?? "");
-  const [videoList, setVideoList] = useState<any[]>([]);
+  const [videoList, setVideoList] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState(false);
 
   // 年が変わったら、その年の最初の月に自動で切り替え
@@ -47,9 +48,9 @@ export default function ArchivePage() {
     const loadVideos = async () => {
       setLoading(true);
       try {
-        const module = await import(`@/data/${selectedYear}/videos_${selectedMonth}.json`);
-        setVideoList(module.default);
-      } catch (e) {
+        const videoModule = await import(`@/data/${selectedYear}/videos_${selectedMonth}.json`);
+        setVideoList(videoModule.default);
+      } catch {
         setVideoList([]);
       }
       setLoading(false);
@@ -82,7 +83,7 @@ export default function ArchivePage() {
           </div>
           <div className="w-full max-w-md mx-auto">
             <div className="flex overflow-x-auto gap-2 py-1 px-1 scrollbar-thin scrollbar-thumb-base-300">
-              {availableMonths.map((value: string, i: number) => (
+              {availableMonths.map((value: string) => (
                 <button
                   key={value}
                   className={`btn btn-sm min-w-[56px] ${
@@ -96,7 +97,6 @@ export default function ArchivePage() {
             </div>
           </div>
         </div>
-        <div className="text-xl font-bold mb-4 text-center">{yearMonth}</div>
         {selectedMonth === "" ? (
           <div className="text-center">月データがありません</div>
         ) : loading ? (

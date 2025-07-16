@@ -2,13 +2,19 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
-import { videos, VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
 import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
-import throttle from 'lodash.throttle';
 import { isMobile as isMobileDevice } from 'react-device-detect';
 
+
+interface VideoItem {
+  id: string;
+  title: string;
+  artist: string;
+  url: string;
+  // 必要に応じて他のプロパティもここに追加
+}
 // props型を追加
 interface VideoCardsProps {
   videoList?: VideoItem[];
@@ -64,7 +70,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     ];
     const sizes = ['w-16 h-16', 'w-20 h-20', 'w-24 h-24', 'w-28 h-28', 'w-32 h-32', 'w-36 h-36', 'w-40 h-40'];
     // 各動画ごとに図形ごとに色・サイズをランダムで決定
-    return (videoList ?? videos).map((_, videoIdx) =>
+    return (videoList ?? []).map((_, videoIdx) =>
       Array.from({ length: SHAPE_COUNT }, (_, shapeIdx) => {
         // 疑似乱数: 動画indexと図形indexで決定的に
         const colorIdx = (videoIdx * 31 + shapeIdx * 17) % colors.length;
@@ -90,7 +96,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
 
   useEffect(() => {
     // 全動画を取得してランダムに並び替え
-    const shuffled = [...(videoList ?? videos)].sort(() => Math.random() - 0.5);
+    const shuffled = [...(videoList ?? [])].sort(() => Math.random() - 0.5);
     setShuffledVideos(shuffled);
 
     // ウィンドウサイズの取得
@@ -135,7 +141,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
       window.removeEventListener('scroll', handleCheckCenter);
       window.removeEventListener('resize', handleCheckCenter);
     };
-  }, [mounted, windowSize, currentPage, shuffledVideos]);
+  }, [mounted, windowSize, currentPage, shuffledVideos, isMobile]);
 
   if (!videoList || videoList.length === 0) {
     return <div className="text-center py-12">動画データがありません</div>;
@@ -489,7 +495,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 </motion.h3>
                 
                 <motion.p 
-                    className="text-sm mt-1 truncate transition-all duration-500 ease-out group-hover:text-white/90 group-hover:drop-shadow-lg"
+                    className="text-sm mt-1 truncate transition-all duration-500 ease-out group-hover:text-white/90 group-hover:drop-shadow-lg flex items-center justify-between"
                   layout
                     whileHover={{ 
                       y: -1,
@@ -498,16 +504,9 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     title={video.artist}
                 >
                   {video.artist}
-                </motion.p>
-                
-                {/* 外部リンクインジケーター */}
-                <motion.div 
-                  className="flex items-center justify-between mt-3 text-xs transition-colors group-hover:text-white/70 group-hover:drop-shadow-lg"
-                  layout
-                >
-                  <span>ニコニコ動画</span>
+                  {/* 外部リンクインジケーターを右端に配置 */}
                   <motion.svg 
-                    className="w-3 h-3" 
+                    className="w-3 h-3 ml-2 flex-shrink-0" 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -520,7 +519,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </motion.svg>
-                </motion.div>
+                </motion.p>
+                {/* 外部リンクインジケーターの元の位置は削除 */}
               </motion.div>
             </motion.div>
             );

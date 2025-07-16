@@ -3,32 +3,40 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import videos_2025_06 from "@/data/2025/videos_06.json";
-// Marqueeのimport（実装は仮定）
-// import { Marquee } from "@/components/magicui/marquee";
+
 
 // ビデオカードのミニ版
-import { VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
-const VideoCardMini = ({ video, onLoad }: { video: Partial<VideoItem>, onLoad?: () => void }) => (
-  <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
-    <NicovideoThumbnail
-      videoId={video.id ?? ""}
-      width={320}
-      height={180}
-      useServerApi={true}
-      className="w-full h-full object-cover rounded"
-      onLoad={onLoad}
-    />
-  </div>
-);
+const VideoCardMini = ({ video, onLoad }: { video: { id?: string, url?: string }, onLoad?: () => void }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  return (
+    <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
+      {!isLoaded && (
+        <div className="w-full h-full bg-white/40 animate-pulse rounded object-cover absolute" style={{ aspectRatio: '16/9' }} />
+      )}
+      <NicovideoThumbnail
+        videoId={video.id ?? ""}
+        width={320}
+        height={180}
+        useServerApi={true}
+        className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        onLoad={() => {
+          setIsLoaded(true);
+          console.log("onLoad fired", video.id);
+          onLoad && onLoad();
+        }}
+        loading="lazy" // ← 追加
+      />
+    </div>
+  );
+};
 
 // 乱雑配置用のビデオカード背景
 function VideoCardScatter() {
-  const scatteredVideos = videos_2025_06.slice(0, 60);
+  const scatteredVideos = videos_2025_06.slice(0, 20); // ← 20個に減らす
   const [positions, setPositions] = useState<{top:number, left:number, rotate:number, scale:number}[]>([]);
-  const [loadedCount, setLoadedCount] = useState(0);
-  const isReady = loadedCount >= scatteredVideos.length;
+  const [loadedFlags, setLoadedFlags] = useState<boolean[]>(Array(scatteredVideos.length).fill(false));
 
   useEffect(() => {
     function random(min: number, max: number) {
@@ -39,16 +47,26 @@ function VideoCardScatter() {
         top: random(-10, 110),
         left: random(-10, 110),
         rotate: random(-30, 30),
-        scale: random(0.7, 2.0),
+        scale: random(0.6, 2.5),
       }))
     );
-  }, [scatteredVideos.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // ← 依存配列を空に
 
   if (positions.length === 0) return null;
+
+  const handleLoad = (idx: number) => {
+    setLoadedFlags(flags => {
+      const newFlags = [...flags];
+      newFlags[idx] = true;
+      return newFlags;
+    });
+  };
 
   return (
     <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
       {scatteredVideos.map((video, i) => {
+        // if (!loadedFlags[i]) return null; // ← 一時的にコメントアウト
         const { top, left, rotate, scale } = positions[i];
         const initialTop = top < 50 ? -20 : 120;
         const initialLeft = left < 50 ? -20 : 120;
@@ -61,11 +79,11 @@ function VideoCardScatter() {
               left: `${initialLeft}%`,
               transform: `rotate(${rotate}deg) scale(${scale})`,
             }}
-            animate={isReady ? {
+            animate={{
               top: `${top}%`,
               left: `${left}%`,
               transform: `rotate(${rotate}deg) scale(${scale})`,
-            } : undefined}
+            }}
             transition={{
               type: 'spring',
               stiffness: 60,
@@ -78,7 +96,7 @@ function VideoCardScatter() {
               pointerEvents: 'none',
             }}
           >
-            <VideoCardMini video={video} onLoad={() => setLoadedCount(c => c + 1)} />
+            <VideoCardMini video={video} onLoad={() => handleLoad(i)} />
           </motion.div>
         );
       })}
