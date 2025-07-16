@@ -13,7 +13,7 @@ const VideoCardMini = ({ video, onLoad }: { video: { id?: string, url?: string }
   return (
     <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
       {!isLoaded && (
-        <div className="w-full h-full bg-white/40 animate-pulse rounded object-cover absolute" style={{ aspectRatio: '16/9' }} />
+        <div className="w-full h-full bg-white/0 animate-pulse rounded object-cover absolute" style={{ aspectRatio: '16/9' }} />
       )}
       <NicovideoThumbnail
         videoId={video.id ?? ""}
