@@ -5,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: '動画紹介サイト - Yukue',
-  description: 'おすすめ動画をカード形式で紹介するサイト',
+  title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
+  description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
 }
 
 export default function RootLayout({
