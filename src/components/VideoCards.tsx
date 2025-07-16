@@ -168,6 +168,20 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     };
   }, [mounted, windowSize, currentPage, shuffledVideos, isMobile, getDisplayVideos]);
 
+  // サムネイル読み込み状態を管理
+  const [thumbnailsLoaded, setThumbnailsLoaded] = useState<boolean[]>([]);
+  const handleThumbnailLoad = useCallback((idx: number) => {
+    setThumbnailsLoaded(prev => {
+      const updated = [...prev];
+      updated[idx] = true;
+      return updated;
+    });
+  }, []);
+
+  if (!mounted) {
+    return null; // もしくは <div>Loading...</div> など
+  }
+
   if (!videoList || videoList.length === 0) {
     return <div className="text-center py-12">動画データがありません</div>;
   }
@@ -191,8 +205,10 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           {getDisplayVideos().map((video, index) => {
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
+            // サムネイル読み込み済みかどうか
+            const isThumbnailLoaded = thumbnailsLoaded[index];
             // PCは常にホバー/タッチ、スマホ2列以上はタッチのみ、スマホ1列は中央判定
-            const isActive = mounted && (
+            const isActive = mounted && isThumbnailLoaded && (
               isMobile
                 ? (
                   isMultiColumn
@@ -206,7 +222,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
             return (
             <motion.div
               key={video.id}
-                className="card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-sm mx-auto min-h-[280px] z-10 overflow-visible"
+                className={`card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-sm mx-auto min-h-[280px] z-10 overflow-visible ${!isThumbnailLoaded ? 'opacity-50 pointer-events-none' : ''}`}
               ref={el => { cardItemRefs.current[index] = el; }}
               onClick={() => window.open(video.url, '_blank')}
               onHoverStart={isTouchOnly ? undefined : () => setHoveredCard(video.id)}
@@ -453,6 +469,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   height={225}
                   useServerApi={true}
                   className="w-full h-full object-cover"
+                  onLoad={() => handleThumbnailLoad(index)}
                 />
                 {/* 暗いオーバーレイ */}
                   <div className="absolute inset-0 bg-black/10" />
@@ -468,6 +485,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   height={225}
                   useServerApi={true}
                   className="w-full h-48 object-cover rounded-t-lg"
+                  onLoad={() => handleThumbnailLoad(index)}
                 />
               </motion.figure>
 
@@ -570,15 +588,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           )}
           
           <p className="text-base-content/60 text-sm">
-            本サイトは楽曲との出会いの偏りを減らすため<br></br>更新するたび、ランダムに並び替えています。
+            本サイトは楽曲との出会いの偏りを減らすため<br></br>更新するたび、ランダムに並び替えています
           </p>
-              <p className="text-base-content/60 text-sm">
-             <Link 
-               href="https://www.nicovideo.jp/user/131010307/mylist/76687470" 
-             >
-               https://www.nicovideo.jp/user/131010307/mylist/76687470
-             </Link>
-           </p>
         </div>
       </div>
     </div>
