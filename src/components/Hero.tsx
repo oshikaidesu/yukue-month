@@ -24,7 +24,7 @@ const VideoCardMini = ({ video, onLoad }: { video: { id?: string, url?: string }
         onLoad={() => {
           setIsLoaded(true);
           console.log("onLoad fired", video.id);
-          onLoad && onLoad();
+          if (onLoad) onLoad();
         }}
         loading="lazy" // ← 追加
       />
@@ -36,7 +36,6 @@ const VideoCardMini = ({ video, onLoad }: { video: { id?: string, url?: string }
 function VideoCardScatter() {
   const scatteredVideos = videos_2025_06.slice(0, 20); // ← 20個に減らす
   const [positions, setPositions] = useState<{top:number, left:number, rotate:number, scale:number}[]>([]);
-  const [loadedFlags, setLoadedFlags] = useState<boolean[]>(Array(scatteredVideos.length).fill(false));
 
   useEffect(() => {
     function random(min: number, max: number) {
@@ -55,18 +54,9 @@ function VideoCardScatter() {
 
   if (positions.length === 0) return null;
 
-  const handleLoad = (idx: number) => {
-    setLoadedFlags(flags => {
-      const newFlags = [...flags];
-      newFlags[idx] = true;
-      return newFlags;
-    });
-  };
-
   return (
     <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
       {scatteredVideos.map((video, i) => {
-        // if (!loadedFlags[i]) return null; // ← 一時的にコメントアウト
         const { top, left, rotate, scale } = positions[i];
         const initialTop = top < 50 ? -20 : 120;
         const initialLeft = left < 50 ? -20 : 120;
@@ -96,7 +86,7 @@ function VideoCardScatter() {
               pointerEvents: 'none',
             }}
           >
-            <VideoCardMini video={video} onLoad={() => handleLoad(i)} />
+            <VideoCardMini video={video} />
           </motion.div>
         );
       })}
@@ -254,13 +244,14 @@ export default function Hero() {
             transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
           >
             <motion.button 
-              className="btn btn-primary group relative overflow-hidden"
+              className="btn btn-primary group relative overflow-hidden flex items-center"
               whileHover={{
                 scale: 1.03,
                 boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
                 transition: { duration: 0.2, ease: "easeOut" }
               }}
               whileTap={{ scale: 0.98 }}
+              onClick={() => window.open("https://www.nicovideo.jp/user/131010307/mylist/76687470", "_blank", "noopener noreferrer")}
             >
               <motion.div
                 className="absolute inset-0 bg-white/20"
@@ -271,7 +262,7 @@ export default function Hero() {
               <svg className="w-5 h-5 relative z-10" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
               </svg>
-              <span className="relative z-10">今月のピックアップ</span>
+              <span className="relative z-10 ml-2">ニコニコマイリスト</span>
             </motion.button>
             
             <Link href="/archive" className="w-full h-full block">

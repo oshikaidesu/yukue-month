@@ -81,7 +81,6 @@ export default function NicovideoThumbnail(props: Props) {
 
   // ニコニコ動画のサムネイルURLパターン
   const directThumbnailUrl = useMemo(() => `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`, [videoId]);
-  const smileThumbnailUrl = useMemo(() => `https://tn.smilevideo.jp/smile?i=${videoId}.S`, [videoId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,7 +115,7 @@ export default function NicovideoThumbnail(props: Props) {
           } else {
             throw new Error('Failed to fetch preview data');
           }
-        } catch (err) {
+        } catch {
           if (!cancelled) {
             setFallbackToDirect(true);
           }
@@ -149,7 +148,7 @@ export default function NicovideoThumbnail(props: Props) {
           } else {
             throw new Error('Failed to fetch thumbnail');
           }
-        } catch (err) {
+        } catch {
           if (!cancelled) setFallbackToDirect(true);
         } finally {
           if (!cancelled) setIsLoading(false);

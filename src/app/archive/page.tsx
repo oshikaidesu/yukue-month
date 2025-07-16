@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import VideoCards from "@/components/VideoCards";
-import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
+// import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { VideoItem } from "@/types/video";
@@ -60,7 +60,6 @@ export default function ArchivePage() {
 
   const availableMonths = availableMonthsMap[selectedYear] ?? [];
   const dataPath = `src/data/${selectedYear}/videos_${selectedMonth}.json`;
-  const yearMonth = getYearMonthFromPath(dataPath);
 
   return (
     <div className="min-h-screen bg-[#EEEEEE]">

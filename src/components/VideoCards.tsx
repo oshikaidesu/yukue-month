@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
@@ -115,6 +115,31 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, [videoList]);
 
+  // 表示する動画を決定（PCでは全件、スマホではページネーション）
+  const getDisplayVideos = useCallback(() => {
+    if (windowSize.width >= 768) {
+      // PC・タブレットでは全件表示
+      return shuffledVideos;
+    } else {
+      // スマホでは10個区切りで表示
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      return shuffledVideos.slice(startIndex, endIndex);
+    }
+  }, [windowSize.width, shuffledVideos, currentPage, itemsPerPage]);
+
+  // 総ページ数を計算
+  const totalPages = Math.ceil(shuffledVideos.length / itemsPerPage);
+
+  // ページ変更ハンドラー
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // カードコンポーネントのトップへスクロール
+    if (cardsRef.current) {
+      cardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   // スクロール・リサイズ時に中央付近判定
   useEffect(() => {
     if (!mounted) return;
@@ -141,36 +166,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
       window.removeEventListener('scroll', handleCheckCenter);
       window.removeEventListener('resize', handleCheckCenter);
     };
-  }, [mounted, windowSize, currentPage, shuffledVideos, isMobile]);
+  }, [mounted, windowSize, currentPage, shuffledVideos, isMobile, getDisplayVideos]);
 
   if (!videoList || videoList.length === 0) {
     return <div className="text-center py-12">動画データがありません</div>;
   }
-
-  // 表示する動画を決定（PCでは全件、スマホではページネーション）
-  const getDisplayVideos = () => {
-    if (windowSize.width >= 768) {
-      // PC・タブレットでは全件表示
-      return shuffledVideos;
-    } else {
-      // スマホでは10個区切りで表示
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return shuffledVideos.slice(startIndex, endIndex);
-    }
-  };
-
-  // 総ページ数を計算
-  const totalPages = Math.ceil(shuffledVideos.length / itemsPerPage);
-
-  // ページ変更ハンドラー
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    // カードコンポーネントのトップへスクロール
-    if (cardsRef.current) {
-      cardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
 
   return (
     <div className="py-16 bg-[#EEEEEE] overflow-hidden">
