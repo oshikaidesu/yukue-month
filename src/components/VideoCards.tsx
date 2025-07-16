@@ -406,7 +406,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
               {/* 動画情報（常に表示） */}
                 {/* カード情報の背景 */}
               <motion.div 
-                  className="absolute inset-0 top-48 bg-[#EEEEEE] z-10 rounded-b-lg"
+                  className="absolute inset-0 top-48 bg-base-200 z-10 rounded-b-lg"
                 layout
                 />
                 
