@@ -2,17 +2,18 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { videos } from "@/data/videos";
+import videos_2025_06 from "@/data/2025/videos_06.json";
 // Marqueeのimport（実装は仮定）
 // import { Marquee } from "@/components/magicui/marquee";
 
 // ビデオカードのミニ版
 import { VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
-const VideoCardMini = ({ video, onLoad }: { video: VideoItem, onLoad?: () => void }) => (
+import Link from "next/link";
+const VideoCardMini = ({ video, onLoad }: { video: Partial<VideoItem>, onLoad?: () => void }) => (
   <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
     <NicovideoThumbnail
-      videoId={video.id}
+      videoId={video.id ?? ""}
       width={320}
       height={180}
       useServerApi={true}
@@ -24,7 +25,7 @@ const VideoCardMini = ({ video, onLoad }: { video: VideoItem, onLoad?: () => voi
 
 // 乱雑配置用のビデオカード背景
 function VideoCardScatter() {
-  const scatteredVideos = videos.slice(0, 60);
+  const scatteredVideos = videos_2025_06.slice(0, 60);
   const [positions, setPositions] = useState<{top:number, left:number, rotate:number, scale:number}[]>([]);
   const [loadedCount, setLoadedCount] = useState(0);
   const isReady = loadedCount >= scatteredVideos.length;
@@ -255,19 +256,21 @@ export default function Hero() {
               <span className="relative z-10">今月のピックアップ</span>
             </motion.button>
             
-            <motion.button 
-              className="btn btn-outline text-white"
-              whileHover={{
-                scale: 1.03,
-                boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
-                borderColor: "hsl(var(--p))",
-                color: "hsl(var(--p))",
-                transition: { duration: 0.2, ease: "easeOut" }
-              }}
-              whileTap={{ scale: 0.98 }}
-            >
-              アーカイブ
-            </motion.button>
+            <Link href="/archive" className="w-full h-full block">
+              <motion.button 
+                className="btn btn-outline text-white w-full"
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
+                  borderColor: "hsl(var(--p))",
+                  color: "hsl(var(--p))",
+                  transition: { duration: 0.2, ease: "easeOut" }
+                }}
+                whileTap={{ scale: 0.98 }}
+              >
+                アーカイブ
+              </motion.button>
+            </Link>
           
           </motion.div>
         </div>

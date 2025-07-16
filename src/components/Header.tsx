@@ -37,9 +37,9 @@ export default function Header() {
           
           {/* ブランドロゴ */}
           <div className="flex-1 px-2 mx-2">
-            <a className="btn btn-ghost text-xl">
+            <Link href="/" className="btn btn-ghost text-xl">
               <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={28} className="h-7" unoptimized />
-            </a>
+            </Link>
           </div>
           
           {/* デスクトップ用ナビゲーションメニュー */}
@@ -72,7 +72,7 @@ export default function Header() {
             <span>メインメニュー</span>
           </li>
           <li>
-            <Link href="#home" className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
               </svg>
@@ -80,12 +80,12 @@ export default function Header() {
             </Link>
           </li>
           <li>
-            <Link href="#videos" className="flex items-center gap-3">
+            <Link href="/archive" className="flex items-center gap-3">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" strokeWidth="2"></circle>
                 <circle cx="12" cy="12" r="3" strokeWidth="2"></circle>
               </svg>
-              楽曲一覧
+              アーカイブ
             </Link>
           </li>
           <li>
@@ -97,11 +97,9 @@ export default function Header() {
             </Link>
           </li>
           <li>
-            <Link href="#contact" className="flex items-center gap-3">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>
-              お問い合わせ
+            <Link href="https://yukuerecords.studio.site/contact" className="flex items-center gap-3">
+            <Image src="/mail.svg" alt="contact" width={20} height={20} className="w-5 h-4" unoptimized />
+              お問い合わせ・デモ音源
             </Link>
           </li>
           
@@ -110,52 +108,65 @@ export default function Header() {
           
           {/* カテゴリメニュー */}
           <li className="menu-title">
-            <span>カテゴリ</span>
+            <span>各種リンク</span>
           </li>
           <li>
-            <Link href="#programming" className="flex items-center gap-3">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
-              </svg>
-              2025年7月
+            <Link href="https://yukuerecords.studio.site/" className="flex items-center gap-3">
+              <Image src="/Logo_Mark.svg" alt="Yukue Logo Mark" width={20} height={20} className="w-5 h-4" unoptimized />
+              ゆくえレコーズ 公式HP
+            </Link>
+          </li>
+
+          <li>
+            <Link href="https://twitter.com/YUKUE_RECORDS" className="flex items-center gap-3">
+              <Image src="/x.svg" alt="X (Twitter)" width={20} height={20} className="w-5 h-4" unoptimized />
+              X(Twitter)
             </Link>
           </li>
           
           <li>
-            <Link href="#programming" className="flex items-center gap-3">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
-              </svg>
-              2025年7月
+            <Link href="https://www.youtube.com/@YUKUE_RECORDS" className="flex items-center gap-3">
+              <Image src="/youtube.svg" alt="YouTube" width={20} height={20} className="w-5 h-4" unoptimized />
+              YouTube
             </Link>
           </li>
+
+            <li>
+              <Link href="https://www.nicovideo.jp/user/131010307" className="flex items-center gap-3">
+                <Image src="/niconico.svg" alt="niconico" width={20} height={20} className="w-5 h-4" unoptimized />
+                niconico
+              </Link>
+            </li>
+
+            <li>
+              <Link href="https://yukuerecords.bandcamp.com/album/s" className="flex items-center gap-3">
+                <Image src="/bandcamp.svg" alt="bandcamp" width={20} height={20} className="w-5 h-4" unoptimized />
+                bandcamp
+              </Link>
+            </li>
+            
+            <li>
+              <Link href="https://www.instagram.com/yukue_records/" className="flex items-center gap-3">
+                <Image src="/instagram.svg" alt="Instagram" width={20} height={20} className="w-5 h-4" unoptimized />
+                Instagram
+              </Link>
+            </li>
+
+            <li>
+              <Link href="https://big-up.style/labels/649" className="flex items-center gap-3">
+                <Image src="/music-note.svg" alt="musicbrainz" width={20} height={20} className="w-5 h-4" unoptimized />
+                配信先(BIG UP!)
+              </Link>
+            </li>
+
+            <li>
+              <Link href="https://kiite.jp/user/yukue_records" className="flex items-center gap-3">
+                <Image src="/kiite_favicon.png" alt="musicbrainz" width={20} height={20} className="w-5 h-5 rounded-full" unoptimized />
+                Kiite
+              </Link>
+            </li>
           
-          <li>
-            <Link href="#programming" className="flex items-center gap-3">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
-              </svg>
-              2025年7月
-            </Link>
-          </li>
           
-          <li>
-            <Link href="#programming" className="flex items-center gap-3">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
-              </svg>
-              2025年7月
-            </Link>
-          </li>
-          
-          <li>
-            <Link href="#programming" className="flex items-center gap-3">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"></path>
-              </svg>
-              2025年7月
-            </Link>
-          </li>
           
 
           

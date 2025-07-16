@@ -5,20 +5,27 @@ import { motion } from "framer-motion";
 import { videos, VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
+import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
 
-export default function VideoCards() {
+// props型を追加
+interface VideoCardsProps {
+  videoList?: VideoItem[];
+  dataPath?: string; // 追加
+}
+
+export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const [shuffledVideos, setShuffledVideos] = useState<VideoItem[]>([]);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [touchedCard, setTouchedCard] = useState<string | null>(null);
   const [windowSize, setWindowSize] = useState({ width: 1024, height: 768 });
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 8;
   const cardsRef = useRef<HTMLDivElement>(null);
 
   // 図形の種類数（丸・三角・四角・渦巻き線・渦巻き線2・小丸・六角形・星型・ダイヤモンド）
   const SHAPE_COUNT = 8;
 
-  // 各動画ごとに図形ごとに異なる色・サイズを固定化
+  // useMemo で videos → videoList ?? videos に変更
   const fixedColorsAndSizes = useMemo(() => {
     const colors = [
       'bg-gradient-to-bl from-indigo-500 from-0% via-lime-100 via-50% to-fuchsia-500 to-100%',
@@ -34,7 +41,7 @@ export default function VideoCards() {
     ];
     const sizes = ['w-16 h-16', 'w-20 h-20', 'w-24 h-24', 'w-28 h-28', 'w-32 h-32', 'w-36 h-36', 'w-40 h-40'];
     // 各動画ごとに図形ごとに色・サイズをランダムで決定
-    return videos.map((_, videoIdx) =>
+    return (videoList ?? videos).map((_, videoIdx) =>
       Array.from({ length: SHAPE_COUNT }, (_, shapeIdx) => {
         // 疑似乱数: 動画indexと図形indexで決定的に
         const colorIdx = (videoIdx * 31 + shapeIdx * 17) % colors.length;
@@ -45,7 +52,7 @@ export default function VideoCards() {
         };
       })
     );
-  }, []);
+  }, [videoList]);
 
   // 固定化された色・サイズを取得する関数
   const getFixedColor = (videoIdx: number, shapeIdx: number) => {
@@ -55,9 +62,12 @@ export default function VideoCards() {
     return fixedColorsAndSizes[videoIdx]?.[shapeIdx]?.size || fixedColorsAndSizes[0][0].size;
   };
 
+  // 年月の表示
+  const yearMonth = dataPath ? getYearMonthFromPath(dataPath) : null;
+
   useEffect(() => {
     // 全動画を取得してランダムに並び替え
-    const shuffled = [...videos].sort(() => Math.random() - 0.5);
+    const shuffled = [...(videoList ?? videos)].sort(() => Math.random() - 0.5);
     setShuffledVideos(shuffled);
 
     // ウィンドウサイズの取得
@@ -74,7 +84,11 @@ export default function VideoCards() {
     // リサイズイベントリスナー
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [videoList]);
+
+  if (!videoList || videoList.length === 0) {
+    return <div className="text-center py-12">動画データがありません</div>;
+  }
 
   // 表示する動画を決定（PCでは全件、スマホではページネーション）
   const getDisplayVideos = () => {
@@ -106,12 +120,12 @@ export default function VideoCards() {
       <div className="w-full px-4 max-w-7xl mx-auto">
         {/* ヘッダー */}
         <div className="text-center mb-12">
+          {yearMonth && (
+            <div className="text-lg font-semibold mb-2">{yearMonth}</div>
+          )}
           <h2 className="text-4xl font-bold text-base-content mb-4">
             MONTHLY PICKUP PLAYLIST
           </h2>
-          <p className="text-base-content/70 max-w-2xl mx-auto mb-8">
-            2025年7月
-          </p>
         </div>
 
         {/* 動画リスト */}
@@ -419,9 +433,9 @@ export default function VideoCards() {
                       y: -1,
                       transition: { duration: 0.3, ease: "easeOut", delay: 0.1 }
                     }}
-                    title={`${video.artist} / ${video.vocaloid}`}
+                    title={video.artist}
                 >
-                  {video.artist} / {video.vocaloid}
+                  {video.artist}
                 </motion.p>
                 
                 {/* 外部リンクインジケーター */}

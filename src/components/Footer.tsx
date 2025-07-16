@@ -12,9 +12,9 @@ export default function Footer() {
         </div>
         <nav className="grid grid-flow-col gap-4">
           <Link href="#about" className="link link-hover">About us</Link>
-          <Link href="#contact" className="link link-hover">Contact</Link>
-          <Link href="#playlist" className="link link-hover">プレイリスト</Link>
-          <Link href="#archive" className="link link-hover">アーカイブ</Link>
+          <Link href="https://yukuerecords.studio.site/contact" className="link link-hover">お問い合わせ</Link>
+          {/* <Link href="#playlist" className="link link-hover">プレイリスト</Link> */}
+          <Link href="/archive" className="link link-hover">アーカイブ</Link>
         </nav>
         <nav>
           <div className="grid grid-flow-col gap-4">

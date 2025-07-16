@@ -127,9 +127,16 @@ export default function NicovideoThumbnail(props: Props) {
   if (isLoading) {
     return (
       <div 
-        className={`bg-base-300 animate-pulse rounded-lg ${className}`}
+        className={`flex items-center justify-center bg-base-300 rounded-lg ${className}`}
         style={{ width, height }}
-      />
+      >
+         <img
+           src="/Logo_Mark.svg"
+           alt="ローディング中"
+           style={{ width: Math.min(width, 64), height: Math.min(height, 64) }}
+           className="yukue-spin"
+         />
+      </div>
     );
   }
 
