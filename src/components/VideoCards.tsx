@@ -6,7 +6,8 @@ import { videos, VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
 import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
-import { isMobile } from 'react-device-detect';
+import throttle from 'lodash.throttle';
+import { isMobile as isMobileDevice } from 'react-device-detect';
 
 // props型を追加
 interface VideoCardsProps {
@@ -24,7 +25,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const cardsRef = useRef<HTMLDivElement>(null);
   // SSR対策: マウント前は描画しない
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => { 
+    setMounted(true);
+    setIsMobile(isMobileDevice);
+  }, []);
 
   // スマホ用: 中央付近にあるカードIDを管理
   const [centerActiveId, setCenterActiveId] = useState<string | null>(null);
@@ -171,9 +176,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           {getDisplayVideos().map((video, index) => {
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
-            const isActive = isMobile
-              ? (mounted && centerActiveId === video.id)
-              : (mounted && (isHovered || isTouched));
+            const isActive = mounted && (
+              isMobile
+                ? centerActiveId === video.id
+                : (isHovered || isTouched)
+            );
             
             return (
             <motion.div
