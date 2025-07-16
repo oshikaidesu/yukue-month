@@ -185,25 +185,26 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           {getDisplayVideos().map((video, index) => {
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
-            // 2列以上のときはタッチのみでアクティブ、1列のときは中央判定またはホバーも有効
+            // PCは常にホバー/タッチ、スマホ2列以上はタッチのみ、スマホ1列は中央判定
             const isActive = mounted && (
-              isMultiColumn
-                ? isTouched
-                : (isMobile
-                    ? centerActiveId === video.id
-                    : (isHovered || isTouched)
-                  )
+              isMobile
+                ? (
+                  isMultiColumn
+                    ? isTouched // スマホ2列以上はタッチのみ
+                    : centerActiveId === video.id // スマホ1列は中央判定
+                )
+                : (isHovered || isTouched) // PCは常にホバー/タッチ
             );
-            
+            // スマホ2列以上のときだけホバーイベントを無効化
+            const isTouchOnly = isMobile && isMultiColumn;
             return (
             <motion.div
               key={video.id}
                 className="card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-sm mx-auto min-h-[280px] z-10 overflow-visible"
               ref={el => { cardItemRefs.current[index] = el; }}
               onClick={() => window.open(video.url, '_blank')}
-              // 2列以上のときはホバーイベントを無効化
-              onHoverStart={isMultiColumn ? undefined : () => setHoveredCard(video.id)}
-              onHoverEnd={isMultiColumn ? undefined : () => setHoveredCard(null)}
+              onHoverStart={isTouchOnly ? undefined : () => setHoveredCard(video.id)}
+              onHoverEnd={isTouchOnly ? undefined : () => setHoveredCard(null)}
               onTouchStart={() => setTouchedCard(video.id)}
               onTouchEnd={() => setTouchedCard(null)}
               whileHover={{ 
