@@ -2,8 +2,6 @@
 
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import Image from 'next/image'
-import { motion } from 'framer-motion'
 import PickupBackground from '@/components/PickupBackground'
 
 export default function About() {

@@ -4,8 +4,15 @@ const PickupBackground: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
