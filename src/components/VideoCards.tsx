@@ -6,6 +6,7 @@ import { videos, VideoItem } from "@/data/videos";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
 import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
+import { isMobile } from 'react-device-detect';
 
 // props型を追加
 interface VideoCardsProps {
@@ -97,7 +98,6 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   // スクロール・リサイズ時に中央付近判定
   useEffect(() => {
     if (!mounted) return;
-    const isMobile = windowSize.width < 768;
     if (!isMobile) return;
     const handleCheckCenter = () => {
       const windowCenter = window.innerHeight / 2;
@@ -171,7 +171,6 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           {getDisplayVideos().map((video, index) => {
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
-            const isMobile = windowSize.width < 768;
             const isActive = isMobile
               ? (mounted && centerActiveId === video.id)
               : (mounted && (isHovered || isTouched));
