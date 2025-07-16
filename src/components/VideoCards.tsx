@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import NicovideoThumbnail from "./NicovideoThumbnail";
-import Link from "next/link";
 import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
 import { isMobile as isMobileDevice } from 'react-device-detect';
 
@@ -407,20 +406,21 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       transition: { duration: 0.2, ease: "easeOut" }
                     }}
                   /> */}
-                  {/* 星型（20個のトゲ） - 右下方向に飛び出す */}
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 7)} ${getFixedColor(index, 7)} pointer-events-none`}
-                    style={{ 
-                      clipPath: 'polygon(100% 50%,69.66% 53.67%,96.62% 68.06%,67% 60.53%,86.95% 83.68%,62.05% 65.96%,72.29% 94.76%,55.47% 69.24%,54.61% 99.79%,48.15% 69.91%,36.32% 98.09%,41.09% 67.9%,19.87% 89.9%,35.22% 63.47%,7.49% 76.32%,31.35% 57.22%,0.85% 59.19%,30% 50%,0.85% 40.81%,31.35% 42.78%,7.49% 23.68%,35.22% 36.53%,19.87% 10.1%,41.09% 32.1%,36.32% 1.91%,48.15% 30.09%,54.61% 0.21%,55.47% 30.76%,72.29% 5.24%,62.05% 34.04%,86.95% 16.32%,67% 39.47%,96.62% 31.94%,69.66% 46.33%)',
-                      transform: 'translateZ(0) scale(0.8)'
+                  {/* 星型（svg） - 右下方向に飛び出す */}
+                  <motion.img
+                    src="/point-star-1.svg"
+                    alt="star"
+                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 7)} pointer-events-none`}
+                    style={{
+                      transform: 'translateZ(0) scale(0.8)',
                     }}
                     initial={{ x: '-50%', y: '-50%', scale: 0.8, rotate: 0 }}
                     animate={isActive ? {
-                      x: 'calc(-50% + 190px)',
-                      y: 'calc(-50% + 190px)',
+                      x: 'calc(-50% + 200px)',
+                      y: 'calc(-50% + 150px)',
                       scale: 1.4,
                       rotate: 180,
-                      transition: { 
+                      transition: {
                         x: { duration: 0.3, ease: "easeOut" },
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
