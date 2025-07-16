@@ -5,6 +5,7 @@ import VideoCards from "@/components/VideoCards";
 // import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import PickupBackground from '@/components/PickupBackground'
 import { VideoItem } from "@/types/video";
 
 const yearOptions = [
@@ -62,49 +63,52 @@ export default function ArchivePage() {
   const dataPath = `src/data/${selectedYear}/videos_${selectedMonth}.json`;
 
   return (
-    <div className="min-h-screen bg-[#EEEEEE]">
-      <Header />
-      <div className="max-w-7xl mx-auto px-4 pt-30 pb-12">
-        <h1 className="text-3xl font-bold mb-6 text-center">アーカイブ</h1>
-        <div className="flex flex-col items-center mb-8 gap-4">
-          <div className="w-full flex justify-center">
-            <div className="flex gap-10 py-2 px-2">
-              {yearOptions.map((y: { label: string; value: YearType }) => (
-                <button
-                  key={y.value}
-                  className={`btn btn-lg btn-neutral btn-outline rounded-full shadow-md transition-opacity duration-200 min-w-[100px] text-lg font-semibold tracking-wide ${selectedYear === y.value ? 'opacity-100 border-primary text-primary bg-[#EEEEEE]' : 'opacity-70 hover:opacity-100'}`}
-                  onClick={() => setSelectedYear(y.value)}
-                >
-                  {y.label}
-                </button>
-              ))}
+    <div className="relative min-h-screen bg-[#EEEEEE]">
+      <PickupBackground />
+      <div className="relative z-10">
+        <Header />
+        <div className="max-w-7xl mx-auto px-4 pt-30 pb-12">
+          <h1 className="text-3xl font-bold mb-6 text-center">アーカイブ</h1>
+          <div className="flex flex-col items-center mb-8 gap-4">
+            <div className="w-full flex justify-center">
+              <div className="flex gap-10 py-2 px-2">
+                {yearOptions.map((y: { label: string; value: YearType }) => (
+                  <button
+                    key={y.value}
+                    className={`btn btn-lg btn-neutral btn-outline rounded-full shadow-md transition-opacity duration-200 min-w-[100px] text-lg font-semibold tracking-wide ${selectedYear === y.value ? 'opacity-100 border-primary text-primary bg-[#EEEEEE]' : 'opacity-70 hover:opacity-100'}`}
+                    onClick={() => setSelectedYear(y.value)}
+                  >
+                    {y.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="w-full max-w-md mx-auto">
+              <div className="flex overflow-x-auto gap-2 py-1 px-1 scrollbar-thin scrollbar-thumb-base-300">
+                {availableMonths.map((value: string) => (
+                  <button
+                    key={value}
+                    className={`btn btn-sm min-w-[56px] ${
+                      selectedMonth === value ? "btn-primary" : "btn-ghost"
+                    }`}
+                    onClick={() => setSelectedMonth(value)}
+                  >
+                    {value === "voca_winter" ? "ボカコレ冬" : `${parseInt(value, 10)}月`}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="w-full max-w-md mx-auto">
-            <div className="flex overflow-x-auto gap-2 py-1 px-1 scrollbar-thin scrollbar-thumb-base-300">
-              {availableMonths.map((value: string) => (
-                <button
-                  key={value}
-                  className={`btn btn-sm min-w-[56px] ${
-                    selectedMonth === value ? "btn-primary" : "btn-ghost"
-                  }`}
-                  onClick={() => setSelectedMonth(value)}
-                >
-                  {value === "voca_winter" ? "ボカコレ冬" : `${parseInt(value, 10)}月`}
-                </button>
-              ))}
-            </div>
-          </div>
+          {selectedMonth === "" ? (
+            <div className="text-center">月データがありません</div>
+          ) : loading ? (
+            <div className="text-center">読み込み中...</div>
+          ) : (
+            <VideoCards videoList={videoList} dataPath={dataPath} />
+          )}
         </div>
-        {selectedMonth === "" ? (
-          <div className="text-center">月データがありません</div>
-        ) : loading ? (
-          <div className="text-center">読み込み中...</div>
-        ) : (
-          <VideoCards videoList={videoList} dataPath={dataPath} />
-        )}
+        <Footer />
       </div>
-      <Footer />
     </div>
   );
 } 

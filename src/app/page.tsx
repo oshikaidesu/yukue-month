@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import VideoCards from '@/components/VideoCards'
 import Footer from '@/components/Footer'
+import PickupBackground from '@/components/PickupBackground'
 import videos_2025_06 from "@/data/2025/videos_06.json";
 
 export default function Home() {
@@ -14,7 +15,8 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        {/* <Hero2 /> */}
+        <PickupBackground />
+
         <VideoCards videoList={videoList} dataPath={dataPath} />
       </main>
       <Footer />

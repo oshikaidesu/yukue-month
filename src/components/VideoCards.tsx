@@ -187,7 +187,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   }
 
   return (
-    <div className="py-16 bg-[#EEEEEE] overflow-hidden">
+    <div className="py-16 bg-none overflow-hidden relative z-10">
       <div className="w-full px-4 max-w-7xl mx-auto">
         {/* ヘッダー */}
         <div className="text-center mb-12">
