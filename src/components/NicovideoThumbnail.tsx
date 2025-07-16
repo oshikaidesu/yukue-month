@@ -127,7 +127,7 @@ export default function NicovideoThumbnail(props: Props) {
   if (isLoading) {
     return (
       <div 
-        className={`flex items-center justify-center bg-base-300 rounded-lg ${className}`}
+        className={`flex items-center justify-center bg-[#EEEEEE] rounded-lg ${className}`}
         style={{ width, height }}
       >
          <img

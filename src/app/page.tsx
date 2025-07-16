@@ -11,7 +11,7 @@ export default function Home() {
   const videoList = videos_2025_06;
   const dataPath = "src/data/2025/videos_06.json";
   return (
-    <div className="min-h-screen bg-base-100" data-theme="light">
+    <div className="min-h-screen bg-[#EEEEEE]" data-theme="light">
       <Header />
       <main>
         <Hero />

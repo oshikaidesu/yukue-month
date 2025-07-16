@@ -116,7 +116,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   };
 
   return (
-    <div className="py-16 bg-base-200 overflow-hidden">
+    <div className="py-16 bg-[#EEEEEE] overflow-hidden">
       <div className="w-full px-4 max-w-7xl mx-auto">
         {/* ヘッダー */}
         <div className="text-center mb-12">
@@ -139,7 +139,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
             return (
             <motion.div
               key={video.id}
-                className="card bg-base-100 shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-sm mx-auto min-h-[280px] z-10 overflow-visible"
+                className="card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-sm mx-auto min-h-[280px] z-10 overflow-visible"
               onClick={() => window.open(video.url, '_blank')}
                 onHoverStart={() => setHoveredCard(video.id)}
                 onHoverEnd={() => setHoveredCard(null)}
@@ -387,7 +387,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   className="w-full h-full object-cover"
                 />
                 {/* 暗いオーバーレイ */}
-                  <div className="absolute inset-0 bg-black/10" />
+                  <div className="absolute inset-0 bg-[#EEEEEE]" />
               </motion.div>
 
               {/* 通常のサムネイル（非ホバー時） */}
@@ -406,7 +406,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
               {/* 動画情報（常に表示） */}
                 {/* カード情報の背景 */}
               <motion.div 
-                  className="absolute inset-0 top-48 bg-base-100 z-10 rounded-b-lg"
+                  className="absolute inset-0 top-48 bg-[#EEEEEE] z-10 rounded-b-lg"
                 layout
                 />
                 

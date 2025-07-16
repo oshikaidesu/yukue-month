@@ -4,10 +4,10 @@ import Image from 'next/image';
 
 export default function Hero2() {
   return (
-    <div className="hero bg-base-200 py-16">
+    <div className="hero bg-[#EEEEEE] py-16">
       <div className="hero-content flex-col lg:flex-row-reverse gap-8">
-        <div className="mockup-window border bg-base-300 w-full max-w-lg">
-          <div className="flex justify-center px-4 py-16 bg-base-200">
+        <div className="mockup-window border bg-[#EEEEEE] w-full max-w-lg">
+          <div className="flex justify-center px-4 py-16 bg-[#EEEEEE]">
             <div className="stats shadow">
               {/* <div className="stat">
                 <div className="stat-figure text-primary">

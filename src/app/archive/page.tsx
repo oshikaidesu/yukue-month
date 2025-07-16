@@ -62,7 +62,7 @@ export default function ArchivePage() {
   const yearMonth = getYearMonthFromPath(dataPath);
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-screen bg-[#EEEEEE]">
       <Header />
       <div className="max-w-7xl mx-auto px-4 pt-30 pb-12">
         <h1 className="text-3xl font-bold mb-6 text-center">アーカイブ</h1>
@@ -72,7 +72,7 @@ export default function ArchivePage() {
               {yearOptions.map((y: { label: string; value: YearType }) => (
                 <button
                   key={y.value}
-                  className={`btn btn-lg btn-neutral btn-outline rounded-full shadow-md transition-opacity duration-200 min-w-[100px] text-lg font-semibold tracking-wide ${selectedYear === y.value ? 'opacity-100 border-primary text-primary bg-base-100' : 'opacity-70 hover:opacity-100'}`}
+                  className={`btn btn-lg btn-neutral btn-outline rounded-full shadow-md transition-opacity duration-200 min-w-[100px] text-lg font-semibold tracking-wide ${selectedYear === y.value ? 'opacity-100 border-primary text-primary bg-[#EEEEEE]' : 'opacity-70 hover:opacity-100'}`}
                   onClick={() => setSelectedYear(y.value)}
                 >
                   {y.label}
