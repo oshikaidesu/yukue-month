@@ -387,7 +387,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   className="w-full h-full object-cover"
                 />
                 {/* 暗いオーバーレイ */}
-                  <div className="absolute inset-0 bg-[#EEEEEE]" />
+                  <div className="absolute inset-0 bg-black/10" />
               </motion.div>
 
               {/* 通常のサムネイル（非ホバー時） */}
