@@ -20,6 +20,8 @@ interface NicoOEmbedResponse {
   [key: string]: unknown; // 追加のプロパティも許容
 }
 
+export const runtime = 'edge';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
