@@ -71,6 +71,14 @@ interface PreviewData {
   platform?: string;
 }
 
+type NicoApiResponse = {
+  data?: {
+    thumbnail?: {
+      url?: string;
+    };
+  };
+};
+
 export default function NicovideoThumbnail(props: Props) {
   const { videoId, width = 312, height = 176, className = "", useApi = false, useDirectUrl = false, useServerApi = false } = props;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
@@ -105,8 +113,9 @@ export default function NicovideoThumbnail(props: Props) {
             const data = await response.json();
             if (!cancelled) {
               setPreviewData(data as PreviewData);
-              if (data.image) {
-                setThumbnailUrl(data.image);
+              const preview = data as PreviewData;
+              if (preview.image) {
+                setThumbnailUrl(preview.image);
               } else {
                 // サムネイルURLが取れなかった場合はフォールバック
                 setFallbackToDirect(true);
@@ -143,8 +152,8 @@ export default function NicovideoThumbnail(props: Props) {
             }
           });
           if (response.ok) {
-            const data = await response.json();
-            if (!cancelled) setThumbnailUrl(data.data.thumbnail?.url || null);
+            const data: NicoApiResponse = await response.json();
+            if (!cancelled) setThumbnailUrl(data.data?.thumbnail?.url || null);
           } else {
             throw new Error('Failed to fetch thumbnail');
           }
