@@ -26,9 +26,18 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   // SSR対策: マウント前は描画しない
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  // 2列以上かどうかを判定するstateを追加
+  const [isMultiColumn, setIsMultiColumn] = useState(false);
   useEffect(() => { 
     setMounted(true);
     setIsMobile(isMobileDevice);
+    // 2列以上かどうかを判定（例: 640px以上で2列）
+    const checkMultiColumn = () => {
+      setIsMultiColumn(window.innerWidth >= 640); // sm: 640px以上で2列
+    };
+    checkMultiColumn();
+    window.addEventListener('resize', checkMultiColumn);
+    return () => window.removeEventListener('resize', checkMultiColumn);
   }, []);
 
   // スマホ用: 中央付近にあるカードIDを管理
@@ -37,7 +46,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const cardItemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // 図形の種類数（丸・三角・四角・渦巻き線・渦巻き線2・小丸・六角形・星型・ダイヤモンド）
-  const SHAPE_COUNT = 8;
+  const SHAPE_COUNT = 7;
 
   // useMemo で videos → videoList ?? videos に変更
   const fixedColorsAndSizes = useMemo(() => {
@@ -176,10 +185,14 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           {getDisplayVideos().map((video, index) => {
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
+            // 2列以上のときはタッチのみでアクティブ、1列のときは中央判定またはホバーも有効
             const isActive = mounted && (
-              isMobile
-                ? centerActiveId === video.id
-                : (isHovered || isTouched)
+              isMultiColumn
+                ? isTouched
+                : (isMobile
+                    ? centerActiveId === video.id
+                    : (isHovered || isTouched)
+                  )
             );
             
             return (
@@ -188,10 +201,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 className="card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-sm mx-auto min-h-[280px] z-10 overflow-visible"
               ref={el => { cardItemRefs.current[index] = el; }}
               onClick={() => window.open(video.url, '_blank')}
-                onHoverStart={() => setHoveredCard(video.id)}
-                onHoverEnd={() => setHoveredCard(null)}
-                onTouchStart={() => setTouchedCard(video.id)}
-                onTouchEnd={() => setTouchedCard(null)}
+              // 2列以上のときはホバーイベントを無効化
+              onHoverStart={isMultiColumn ? undefined : () => setHoveredCard(video.id)}
+              onHoverEnd={isMultiColumn ? undefined : () => setHoveredCard(null)}
+              onTouchStart={() => setTouchedCard(video.id)}
+              onTouchEnd={() => setTouchedCard(null)}
               whileHover={{ 
                   scale: 1.05,
                   transition: { duration: 0.4, ease: "easeOut" }
@@ -346,7 +360,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       transition: { duration: 0.2, ease: "easeOut" }
                     }}
                   />
-                  {/* 六角形 - 左上方向に飛び出す */}
+                  {/* 六角形 - 左上方向に飛び出す
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 6)} ${getFixedColor(index, 6)} pointer-events-none`}
                     style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)', transform: 'translateZ(0)' }}
@@ -369,7 +383,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       rotate: 0,
                       transition: { duration: 0.2, ease: "easeOut" }
                     }}
-                  />
+                  /> */}
                   {/* 星型（20個のトゲ） - 右下方向に飛び出す */}
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 7)} ${getFixedColor(index, 7)} pointer-events-none`}
