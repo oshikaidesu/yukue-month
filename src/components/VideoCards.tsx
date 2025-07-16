@@ -21,6 +21,14 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const cardsRef = useRef<HTMLDivElement>(null);
+  // SSR対策: マウント前は描画しない
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  // スマホ用: 中央付近にあるカードIDを管理
+  const [centerActiveId, setCenterActiveId] = useState<string | null>(null);
+  // カードごとのref配列
+  const cardItemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // 図形の種類数（丸・三角・四角・渦巻き線・渦巻き線2・小丸・六角形・星型・ダイヤモンド）
   const SHAPE_COUNT = 8;
@@ -86,6 +94,35 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     return () => window.removeEventListener('resize', handleResize);
   }, [videoList]);
 
+  // スクロール・リサイズ時に中央付近判定
+  useEffect(() => {
+    if (!mounted) return;
+    const isMobile = windowSize.width < 768;
+    if (!isMobile) return;
+    const handleCheckCenter = () => {
+      const windowCenter = window.innerHeight / 2;
+      let foundId: string | null = null;
+      getDisplayVideos().forEach((video, idx) => {
+        const ref = cardItemRefs.current[idx];
+        if (!ref) return;
+        const rect = ref.getBoundingClientRect();
+        const cardCenter = rect.top + rect.height / 2;
+        if (Math.abs(cardCenter - windowCenter) < 200) {
+          foundId = video.id;
+        }
+      });
+      setCenterActiveId(foundId);
+    };
+    window.addEventListener('scroll', handleCheckCenter, { passive: true });
+    window.addEventListener('resize', handleCheckCenter);
+    // 初回も実行
+    handleCheckCenter();
+    return () => {
+      window.removeEventListener('scroll', handleCheckCenter);
+      window.removeEventListener('resize', handleCheckCenter);
+    };
+  }, [mounted, windowSize, currentPage, shuffledVideos]);
+
   if (!videoList || videoList.length === 0) {
     return <div className="text-center py-12">動画データがありません</div>;
   }
@@ -134,12 +171,16 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           {getDisplayVideos().map((video, index) => {
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
-            const isActive = isHovered || isTouched;
+            const isMobile = windowSize.width < 768;
+            const isActive = isMobile
+              ? (mounted && centerActiveId === video.id)
+              : (mounted && (isHovered || isTouched));
             
             return (
             <motion.div
               key={video.id}
                 className="card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-sm mx-auto min-h-[280px] z-10 overflow-visible"
+              ref={el => { cardItemRefs.current[index] = el; }}
               onClick={() => window.open(video.url, '_blank')}
                 onHoverStart={() => setHoveredCard(video.id)}
                 onHoverEnd={() => setHoveredCard(null)}
