@@ -5,8 +5,11 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:worker": "npx @cloudflare/next-on-pages",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "pages:dev": "npx wrangler pages dev .vercel/output/static --compatibility-date=2025-07-17 --compatibility-flag=nodejs_compat",
+    "pages:deploy": "npm run build && npm run build:worker && npx wrangler pages deploy .vercel/output/static --project-name=next-website-yukue"
   },
   "dependencies": {
     "axios": "^1.10.0",
