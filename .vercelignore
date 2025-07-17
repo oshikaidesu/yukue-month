@@ -1,0 +1,9 @@
+# Sample app directory
+sampleapp/
+
+# Common files to ignore
+.git/
+.gitignore
+README.md
+.env.local
+.env*.local 
