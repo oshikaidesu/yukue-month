@@ -31,6 +31,58 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'URLが必要です' }, { status: 400 });
     }
 
+    // YouTube動画の場合
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      try {
+        // YouTube動画IDを抽出
+        let videoId: string | null = null;
+        const patterns = [
+          /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+          /youtube\.com\/v\/([^&\n?#]+)/,
+        ];
+        
+        for (const pattern of patterns) {
+          const match = url.match(pattern);
+          if (match && match[1]) {
+            videoId = match[1];
+            break;
+          }
+        }
+        
+        if (videoId) {
+          // YouTube oEmbed APIを使用
+          const oembedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
+          try {
+            const oembedResponse = await axios.get(oembedUrl);
+            const data = oembedResponse.data;
+            
+            return NextResponse.json({
+              title: data.title,
+              description: data.author_name,
+              image: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+              url: url,
+              platform: 'youtube',
+              provider_name: data.provider_name,
+              author_name: data.author_name,
+              thumbnail_url: data.thumbnail_url,
+              html: data.html
+            });
+          } catch (oembedError) {
+            // oEmbedが失敗した場合、直接情報を返す
+            return NextResponse.json({
+              title: `YouTube Video ${videoId}`,
+              description: 'YouTube',
+              image: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+              url: url,
+              platform: 'youtube'
+            });
+          }
+        }
+      } catch (error) {
+        console.error('YouTube preview error:', error);
+      }
+    }
+
     // ニコニコ動画の場合
     if (url.includes('nicovideo.jp')) {
       try {

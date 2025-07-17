@@ -53,6 +53,7 @@ function NicovideoIframeFallback({ videoId, width, height, className }: {
 
 type Props = {
   videoId: string;
+  videoUrl?: string; // YouTube対応のためURLも受け取れるように
   width?: number;
   height?: number;
   className?: string;
@@ -81,8 +82,51 @@ type NicoApiResponse = {
   };
 };
 
+// YouTubeのビデオIDを抽出する関数
+function extractYouTubeVideoId(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/v\/([^&\n?#]+)/,
+    /youtube\.com\/shorts\/([^&\n?#]+)/, // YouTube Shorts対応
+    /youtube\.com\/watch\?.*&v=([^&\n?#]+)/, // パラメータ順序が異なる場合
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  return null;
+}
+
+// プラットフォームを判定する関数
+function detectPlatform(videoId: string, videoUrl?: string): 'nicovideo' | 'youtube' | 'unknown' {
+  // URLが提供されている場合
+  if (videoUrl) {
+    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+      return 'youtube';
+    }
+    if (videoUrl.includes('nicovideo.jp')) {
+      return 'nicovideo';
+    }
+  }
+  
+  // videoIdのパターンで判定
+  if (/^(sm|so|nm)\d+$/.test(videoId)) {
+    return 'nicovideo';
+  }
+  
+  // YouTube IDのパターン（11文字の英数字とハイフン、アンダースコア、ドット）
+  if (/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+    return 'youtube';
+  }
+  
+  return 'unknown';
+}
+
 export default function NicovideoThumbnail(props: Props) {
-  const { videoId, width = 312, height = 176, className = "", useApi = false, useDirectUrl = false, useServerApi = false, onError, onPrivateVideo } = props;
+  const { videoId, videoUrl, width = 312, height = 176, className = "", useApi = false, useDirectUrl = false, useServerApi = false, onError, onPrivateVideo } = props;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -92,8 +136,37 @@ export default function NicovideoThumbnail(props: Props) {
   const [retryCount, setRetryCount] = useState(0); // リトライカウント追加
   const MAX_RETRIES = 1; // 最大リトライ回数
 
+  // プラットフォームを判定
+  const platform = useMemo(() => detectPlatform(videoId, videoUrl), [videoId, videoUrl]);
+  
+  // YouTubeのビデオIDを抽出（必要な場合）
+  const youtubeVideoId = useMemo(() => {
+    if (platform === 'youtube' && videoUrl) {
+      return extractYouTubeVideoId(videoUrl) || videoId;
+    }
+    return videoId;
+  }, [platform, videoId, videoUrl]);
+
   // ニコニコ動画のサムネイルURLパターン
-  const directThumbnailUrl = useMemo(() => `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`, [videoId]);
+  const directThumbnailUrl = useMemo(() => {
+    if (platform === 'youtube') {
+      // YouTubeの高画質サムネイル（存在しない場合は自動的に次のフォールバックに移行）
+      return `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`;
+    }
+    return `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`;
+  }, [videoId, youtubeVideoId, platform]);
+  
+  // YouTubeのフォールバックサムネイルURL（画質順に並べ替え）
+  const youtubeFallbackUrls = useMemo(() => {
+    if (platform !== 'youtube') return [];
+    return [
+      `https://img.youtube.com/vi/${youtubeVideoId}/maxresdefault.jpg`, // 最高画質（存在しない場合が多い）
+      `https://img.youtube.com/vi/${youtubeVideoId}/sddefault.jpg`,     // 標準画質（1280x720）
+      `https://img.youtube.com/vi/${youtubeVideoId}/hqdefault.jpg`,     // 高画質（480x360）
+      `https://img.youtube.com/vi/${youtubeVideoId}/mqdefault.jpg`,     // 中画質（320x180）
+      `https://img.youtube.com/vi/${youtubeVideoId}/default.jpg`        // 低画質（120x90）
+    ];
+  }, [youtubeVideoId, platform]);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,12 +182,19 @@ export default function NicovideoThumbnail(props: Props) {
       return;
     }
 
+    // YouTubeの場合は直接URLを使用
+    if (platform === 'youtube') {
+      setThumbnailUrl(directThumbnailUrl);
+      setIsLoading(false);
+      return;
+    }
+
     if (useServerApi && !fallbackToDirect) {
       // サーバーサイドAPIを使用
       const fetchPreviewData = async () => {
         try {
-          const videoUrl = `https://www.nicovideo.jp/watch/${videoId}`;
-          const response = await fetch(`/api/preview?url=${encodeURIComponent(videoUrl)}`);
+          const videoUrlToFetch = videoUrl || `https://www.nicovideo.jp/watch/${videoId}`;
+          const response = await fetch(`/api/preview?url=${encodeURIComponent(videoUrlToFetch)}`);
           
           // 500エラーの場合のみ特別処理（リトライまたは非公開として扱う）
           if (response.status === 500) {
@@ -209,16 +289,30 @@ export default function NicovideoThumbnail(props: Props) {
       fetchThumbnail();
       return () => { cancelled = true; };
     }
-  }, [videoId, useApi, useDirectUrl, useServerApi, directThumbnailUrl, fallbackToDirect, onPrivateVideo, onError, retryCount]);
+  }, [videoId, videoUrl, useApi, useDirectUrl, useServerApi, directThumbnailUrl, fallbackToDirect, onPrivateVideo, onError, retryCount, platform]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {
-    if (!fallbackToDirect) {
-      setFallbackToDirect(true);
+    if (platform === 'youtube') {
+      // YouTubeの場合、フォールバックURLを試す
+      const currentIndex = youtubeFallbackUrls.findIndex(url => url === thumbnailUrl);
+      if (currentIndex < youtubeFallbackUrls.length - 1) {
+        console.log(`YouTube thumbnail fallback: ${youtubeVideoId} (${currentIndex + 1}/${youtubeFallbackUrls.length})`);
+        setThumbnailUrl(youtubeFallbackUrls[currentIndex + 1]);
+      } else {
+        console.log(`YouTube thumbnail failed: ${youtubeVideoId}`);
+        setError(true);
+        onError?.({ type: 'error', videoId });
+      }
     } else {
-      setError(true);
-      // 画像読み込みエラーの場合は通常のエラーとして扱う（非公開とは限らない）
-      onError?.({ type: 'error', videoId });
+      // ニコニコ動画の場合
+      if (!fallbackToDirect) {
+        setFallbackToDirect(true);
+      } else {
+        setError(true);
+        // 画像読み込みエラーの場合は通常のエラーとして扱う（非公開とは限らない）
+        onError?.({ type: 'error', videoId });
+      }
     }
   };
 

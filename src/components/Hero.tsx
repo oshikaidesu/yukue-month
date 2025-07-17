@@ -28,6 +28,7 @@ const VideoCardMini = ({ video, onLoad, onPrivateVideo }: {
       )}
       <NicovideoThumbnail
         videoId={video.id ?? ""}
+        videoUrl={video.url}
         width={320}
         height={180}
         useServerApi={true}

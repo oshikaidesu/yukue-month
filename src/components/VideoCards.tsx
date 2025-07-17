@@ -483,6 +483,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
               >
                 <NicovideoThumbnail
                   videoId={video.id}
+                  videoUrl={video.url}
                   width={400}
                   height={225}
                   useServerApi={true}
@@ -500,6 +501,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
               >
                 <NicovideoThumbnail
                   videoId={video.id}
+                  videoUrl={video.url}
                   width={400}
                   height={225}
                   useServerApi={true}
