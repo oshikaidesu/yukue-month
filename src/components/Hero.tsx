@@ -1,44 +1,20 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useState, useRef, memo } from 'react'
+import { useEffect, useState } from 'react'
 import videos_2025_06 from "@/data/2025/videos_06.json";
 
 
 // ビデオカードのミニ版
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
-const VideoCardMini = memo(({ video, onLoad, onPrivateVideo }: { 
+const VideoCardMini = ({ video, onLoad, onPrivateVideo }: { 
   video: { id?: string, url?: string }, 
   onLoad?: () => void,
   onPrivateVideo?: (videoId: string) => void
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  
-  // Intersection Observerで画面表示を検知
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect(); // 一度表示されたら監視を停止
-        }
-      },
-      {
-        threshold: 0.1, // 10%表示されたら読み込み開始
-        rootMargin: '50px' // 50px手前から読み込み開始
-      }
-    );
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
   
   // 500エラーが継続する動画の場合は表示しない
   if (isPrivate) {
@@ -46,65 +22,42 @@ const VideoCardMini = memo(({ video, onLoad, onPrivateVideo }: {
   }
   
   return (
-    <div 
-      ref={cardRef}
-      className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" 
-      onClick={() => window.open(video.url, '_blank')}
-    >
+    <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
       {!isLoaded && (
         <div className="w-full h-full bg-white/0 animate-pulse rounded object-cover absolute" style={{ aspectRatio: '16/9' }} />
       )}
-      {isVisible && (
-        <NicovideoThumbnail
-          videoId={video.id ?? ""}
-          videoUrl={video.url}
-          width={320}
-          height={180}
-          useServerApi={true}
-          className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => {
-            setIsLoaded(true);
-            console.log("onLoad fired", video.id);
-            if (onLoad) onLoad();
-          }}
-          onPrivateVideo={(videoId) => {
-            setIsPrivate(true);
-            onPrivateVideo?.(videoId);
-          }}
-          loading="lazy"
-        />
-      )}
+      <NicovideoThumbnail
+        videoId={video.id ?? ""}
+        videoUrl={video.url}
+        width={320}
+        height={180}
+        useServerApi={true}
+        className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        onLoad={() => {
+          setIsLoaded(true);
+          console.log("onLoad fired", video.id);
+          if (onLoad) onLoad();
+        }}
+        onPrivateVideo={(videoId) => {
+          setIsPrivate(true);
+          onPrivateVideo?.(videoId);
+        }}
+        loading="lazy" // ← 追加
+      />
     </div>
   );
-});
-
-VideoCardMini.displayName = 'VideoCardMini';
+};
 
 // 乱雑配置用のビデオカード背景
 function VideoCardScatter() {
   const [privateVideoIds, setPrivateVideoIds] = useState<Set<string>>(new Set());
-  const [visibleVideos, setVisibleVideos] = useState<number>(5); // 初期表示数を5個に制限
-  const scatteredVideos = videos_2025_06.slice(0, 20);
+  const scatteredVideos = videos_2025_06.slice(0, 20); // ← 20個に減らす
   const [positions, setPositions] = useState<{top:number, left:number, rotate:number, scale:number}[]>([]);
 
   const handlePrivateVideo = (videoId: string) => {
     console.log(`Hero: 500エラーが継続する動画を除外: ${videoId}`);
     setPrivateVideoIds(prev => new Set(prev).add(videoId));
   };
-
-  // 順次読み込みのためのタイマー
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setVisibleVideos(prev => {
-        if (prev < scatteredVideos.length) {
-          return prev + 1;
-        }
-        return prev;
-      });
-    }, 200); // 200ms間隔で1つずつ追加
-
-    return () => clearInterval(timer);
-  }, [scatteredVideos.length]);
 
   useEffect(() => {
     function random(min: number, max: number) {
@@ -125,7 +78,7 @@ function VideoCardScatter() {
 
   return (
     <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-      {scatteredVideos.slice(0, visibleVideos).map((video, i) => {
+      {scatteredVideos.map((video, i) => {
         // 500エラーが継続する動画はスキップ
         if (privateVideoIds.has(video.id)) {
           return null;
@@ -142,20 +95,18 @@ function VideoCardScatter() {
               top: `${initialTop}%`,
               left: `${initialLeft}%`,
               transform: `rotate(${rotate}deg) scale(${scale})`,
-              opacity: 0,
             }}
             animate={{
               top: `${top}%`,
               left: `${left}%`,
               transform: `rotate(${rotate}deg) scale(${scale})`,
-              opacity: 1,
             }}
             transition={{
               type: 'spring',
               stiffness: 60,
               damping: 18,
               mass: 0.7,
-              delay: i * 0.05, // アニメーションの遅延を調整
+              delay: i * 0.01,
             }}
             style={{
               zIndex: 0,
