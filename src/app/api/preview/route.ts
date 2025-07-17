@@ -22,6 +22,12 @@ interface NicoOEmbedResponse {
 
 export const runtime = 'edge';
 
+// ニコニコ動画IDを抽出する関数
+function extractNicovideoId(url: string): string | null {
+  const match = url.match(/sm\d+|so\d+|nm\d+/);
+  return match ? match[0] : null;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -85,57 +91,86 @@ export async function GET(request: NextRequest) {
 
     // ニコニコ動画の場合
     if (url.includes('nicovideo.jp')) {
-      try {
-        // oEmbed APIを試行
-        const oembedUrl = `https://www.nicovideo.jp/api/oembed?url=${encodeURIComponent(url)}&format=json`;
-        const oembedResponse = await axios.get<NicoOEmbedResponse>(oembedUrl);
-        
-        return NextResponse.json({
-          ...oembedResponse.data,
-          platform: 'nicovideo'
-        });
-      } catch (oembedError: unknown) {
-        // axiosエラーの詳細を確認
-        if (axios.isAxiosError(oembedError)) {
-          const status = oembedError.response?.status;
+      const videoId = extractNicovideoId(url);
+      
+      if (videoId) {
+        try {
+          // oEmbed APIを試行
+          const oembedUrl = `https://www.nicovideo.jp/api/oembed?url=${encodeURIComponent(url)}&format=json`;
+          const oembedResponse = await axios.get<NicoOEmbedResponse>(oembedUrl, {
+            timeout: 5000, // タイムアウトを短縮
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (compatible; YukueBot/1.0)'
+            }
+          });
           
-          // エラーログを出力
-          if (status) {
-            console.warn(`oEmbed API error: ${status} for ${url}`);
-          }
-        }
-        
-        if (oembedError instanceof Error) {
-          console.warn('oEmbed failed, falling back to scraping:', oembedError.message);
-        } else if (typeof oembedError === "object" && oembedError && "message" in oembedError) {
-          console.warn('oEmbed failed, falling back to scraping:', (oembedError as { message: string }).message);
-        } else {
-          console.warn('oEmbed failed, falling back to scraping:', oembedError);
+          return NextResponse.json({
+            ...oembedResponse.data,
+            platform: 'nicovideo'
+          });
+        } catch (oembedError: unknown) {
+          // Cloudflare環境では外部APIが制限される可能性があるため、
+          // 直接サムネイルURLを返すフォールバック
+          console.warn('oEmbed API failed, using direct thumbnail URL:', oembedError);
+          
+          return NextResponse.json({
+            title: `ニコニコ動画 ${videoId}`,
+            description: 'ニコニコ動画',
+            image: `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`,
+            url: url,
+            platform: 'nicovideo',
+            thumbnail_url: `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`
+          });
         }
       }
     }
 
-    // 通常のスクレイピング
-    const response = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      },
-      timeout: 10000
-    });
+    // 通常のスクレイピング（Cloudflare環境では制限される可能性）
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        },
+        timeout: 5000 // タイムアウトを短縮
+      });
 
-    const $ = cheerio.load(response.data);
-    
-    const metadata = {
-      title: $('meta[property="og:title"]').attr('content') || $('title').text(),
-      description: $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content'),
-      image: $('meta[property="og:image"]').attr('content'),
-      url: $('meta[property="og:url"]').attr('content') || url,
-      type: $('meta[property="og:type"]').attr('content'),
-      siteName: $('meta[property="og:site_name"]').attr('content'),
-      platform: 'generic'
-    };
+      const $ = cheerio.load(response.data);
+      
+      const metadata = {
+        title: $('meta[property="og:title"]').attr('content') || $('title').text(),
+        description: $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content'),
+        image: $('meta[property="og:image"]').attr('content'),
+        url: $('meta[property="og:url"]').attr('content') || url,
+        type: $('meta[property="og:type"]').attr('content'),
+        siteName: $('meta[property="og:site_name"]').attr('content'),
+        platform: 'generic'
+      };
 
-    return NextResponse.json(metadata);
+      return NextResponse.json(metadata);
+    } catch (scrapingError) {
+      // スクレイピングが失敗した場合、基本的な情報のみ返す
+      console.warn('Scraping failed, returning basic info:', scrapingError);
+      
+      if (url.includes('nicovideo.jp')) {
+        const videoId = extractNicovideoId(url);
+        if (videoId) {
+          return NextResponse.json({
+            title: `ニコニコ動画 ${videoId}`,
+            description: 'ニコニコ動画',
+            image: `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`,
+            url: url,
+            platform: 'nicovideo'
+          });
+        }
+      }
+      
+      return NextResponse.json({
+        title: '動画',
+        description: '動画情報を取得できませんでした',
+        url: url,
+        platform: 'unknown'
+      });
+    }
   } catch (error: unknown) {
     console.error('Preview API Error:', error);
     

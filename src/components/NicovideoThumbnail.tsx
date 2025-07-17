@@ -66,29 +66,30 @@ type Props = {
   onPrivateVideo?: (videoId: string) => void; // 非公開動画検出時のコールバック追加
 };
 
+// プレビューデータの型定義
 interface PreviewData {
   title?: string;
   description?: string;
   image?: string;
   url?: string;
   platform?: string;
+  thumbnail_url?: string;
 }
 
-type NicoApiResponse = {
+// ニコニコAPIレスポンスの型定義
+interface NicoApiResponse {
   data?: {
     thumbnail?: {
-      url?: string;
+      url: string;
     };
   };
-};
+}
 
 // YouTubeのビデオIDを抽出する関数
 function extractYouTubeVideoId(url: string): string | null {
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
     /youtube\.com\/v\/([^&\n?#]+)/,
-    /youtube\.com\/shorts\/([^&\n?#]+)/, // YouTube Shorts対応
-    /youtube\.com\/watch\?.*&v=([^&\n?#]+)/, // パラメータ順序が異なる場合
   ];
   
   for (const pattern of patterns) {
@@ -176,6 +177,13 @@ export default function NicovideoThumbnail(props: Props) {
     setPreviewData(null);
     setFallbackToDirect(false);
     setIsPrivateVideo(false);
+
+    // Cloudflare環境では直接URLを優先的に使用
+    if (platform === 'nicovideo' && !useApi && !useServerApi) {
+      setThumbnailUrl(directThumbnailUrl);
+      setIsLoading(false);
+      return;
+    }
 
     if (!useApi && !useDirectUrl && !useServerApi && platform !== 'youtube') {
       setIsLoading(false);
@@ -289,7 +297,7 @@ export default function NicovideoThumbnail(props: Props) {
       fetchThumbnail();
       return () => { cancelled = true; };
     }
-  }, [videoId, videoUrl, useApi, useDirectUrl, useServerApi, directThumbnailUrl, fallbackToDirect, onPrivateVideo, onError, retryCount, platform]);
+  }, [videoId, videoUrl, useApi, useDirectUrl, useServerApi, fallbackToDirect, retryCount, platform, directThumbnailUrl, onPrivateVideo, onError]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {
