@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
               thumbnail_url: data.thumbnail_url,
               html: data.html
             });
-          } catch (oembedError) {
+          } catch {
             // oEmbedが失敗した場合、直接情報を返す
             return NextResponse.json({
               title: `YouTube Video ${videoId}`,

@@ -246,7 +246,7 @@ export default function NicovideoThumbnail(props: Props) {
           } else {
             throw new Error('Failed to fetch preview data');
           }
-        } catch (err) {
+        } catch {
           if (!cancelled) {
             // エラーが発生した場合、まず直接URLを試す
             setFallbackToDirect(true);
