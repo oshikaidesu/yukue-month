@@ -177,7 +177,7 @@ export default function NicovideoThumbnail(props: Props) {
     setFallbackToDirect(false);
     setIsPrivateVideo(false);
 
-    if (!useApi && !useDirectUrl && !useServerApi) {
+    if (!useApi && !useDirectUrl && !useServerApi && platform !== 'youtube') {
       setIsLoading(false);
       return;
     }
@@ -359,7 +359,7 @@ export default function NicovideoThumbnail(props: Props) {
   }
 
   // 直接URLまたはAPIでサムネイルを取得できた場合
-  if ((useDirectUrl || fallbackToDirect || useApi) && thumbnailUrl && !error) {
+  if ((useDirectUrl || fallbackToDirect || useApi || platform === 'youtube') && thumbnailUrl && !error) {
     return (
       <NicovideoImage
         src={thumbnailUrl}
