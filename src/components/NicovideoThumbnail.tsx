@@ -61,6 +61,8 @@ type Props = {
   useServerApi?: boolean; // サーバーサイドAPIを使用するかどうか
   onLoad?: () => void;
   loading?: "lazy" | "eager"; // ← 追加
+  onError?: (error: { type: 'private' | 'error', videoId: string }) => void; // エラーコールバック追加
+  onPrivateVideo?: (videoId: string) => void; // 非公開動画検出時のコールバック追加
 };
 
 interface PreviewData {
@@ -80,12 +82,15 @@ type NicoApiResponse = {
 };
 
 export default function NicovideoThumbnail(props: Props) {
-  const { videoId, width = 312, height = 176, className = "", useApi = false, useDirectUrl = false, useServerApi = false } = props;
+  const { videoId, width = 312, height = 176, className = "", useApi = false, useDirectUrl = false, useServerApi = false, onError, onPrivateVideo } = props;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [fallbackToDirect, setFallbackToDirect] = useState(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
+  const [isPrivateVideo, setIsPrivateVideo] = useState(false); // 非公開動画フラグ追加
+  const [retryCount, setRetryCount] = useState(0); // リトライカウント追加
+  const MAX_RETRIES = 1; // 最大リトライ回数
 
   // ニコニコ動画のサムネイルURLパターン
   const directThumbnailUrl = useMemo(() => `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`, [videoId]);
@@ -97,6 +102,7 @@ export default function NicovideoThumbnail(props: Props) {
     setThumbnailUrl(null);
     setPreviewData(null);
     setFallbackToDirect(false);
+    setIsPrivateVideo(false);
 
     if (!useApi && !useDirectUrl && !useServerApi) {
       setIsLoading(false);
@@ -109,6 +115,41 @@ export default function NicovideoThumbnail(props: Props) {
         try {
           const videoUrl = `https://www.nicovideo.jp/watch/${videoId}`;
           const response = await fetch(`/api/preview?url=${encodeURIComponent(videoUrl)}`);
+          
+          // 500エラーの場合のみ特別処理（リトライまたは非公開として扱う）
+          if (response.status === 500) {
+            if (!cancelled) {
+              if (retryCount < MAX_RETRIES) {
+                // リトライ
+                console.log(`500エラー検出、リトライ ${retryCount + 1}/${MAX_RETRIES}: ${videoId}`);
+                setRetryCount(prev => prev + 1);
+                // 少し待ってから再実行
+                setTimeout(() => {
+                  if (!cancelled) {
+                    fetchPreviewData();
+                  }
+                }, 1000 * (retryCount + 1)); // 指数バックオフ
+                return;
+              } else {
+                // リトライ上限に達したら非公開として扱う
+                console.log(`500エラーが継続、非公開動画として処理: ${videoId}`);
+                setIsPrivateVideo(true);
+                onPrivateVideo?.(videoId);
+                onError?.({ type: 'private', videoId });
+                return;
+              }
+            }
+          }
+          
+          // 403/404エラーは通常のフォールバック処理
+          if (response.status === 403 || response.status === 404) {
+            if (!cancelled) {
+              console.log(`${response.status}エラー、フォールバック処理: ${videoId}`);
+              setFallbackToDirect(true);
+            }
+            return;
+          }
+          
           if (response.ok) {
             const data = await response.json();
             if (!cancelled) {
@@ -116,6 +157,7 @@ export default function NicovideoThumbnail(props: Props) {
               const preview = data as PreviewData;
               if (preview.image) {
                 setThumbnailUrl(preview.image);
+                setRetryCount(0); // 成功したらリセット
               } else {
                 // サムネイルURLが取れなかった場合はフォールバック
                 setFallbackToDirect(true);
@@ -124,8 +166,9 @@ export default function NicovideoThumbnail(props: Props) {
           } else {
             throw new Error('Failed to fetch preview data');
           }
-        } catch {
+        } catch (err) {
           if (!cancelled) {
+            // エラーが発生した場合、まず直接URLを試す
             setFallbackToDirect(true);
           }
         } finally {
@@ -166,7 +209,7 @@ export default function NicovideoThumbnail(props: Props) {
       fetchThumbnail();
       return () => { cancelled = true; };
     }
-  }, [videoId, useApi, useDirectUrl, useServerApi, directThumbnailUrl, fallbackToDirect]);
+  }, [videoId, useApi, useDirectUrl, useServerApi, directThumbnailUrl, fallbackToDirect, onPrivateVideo, onError, retryCount]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {
@@ -174,8 +217,15 @@ export default function NicovideoThumbnail(props: Props) {
       setFallbackToDirect(true);
     } else {
       setError(true);
+      // 画像読み込みエラーの場合は通常のエラーとして扱う（非公開とは限らない）
+      onError?.({ type: 'error', videoId });
     }
   };
+
+  // 非公開動画の場合は何も表示しない
+  if (isPrivateVideo) {
+    return null;
+  }
 
   // ローディング状態
   if (isLoading) {

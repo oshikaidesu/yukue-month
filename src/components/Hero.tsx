@@ -8,8 +8,19 @@ import videos_2025_06 from "@/data/2025/videos_06.json";
 // ビデオカードのミニ版
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
-const VideoCardMini = ({ video, onLoad }: { video: { id?: string, url?: string }, onLoad?: () => void }) => {
+const VideoCardMini = ({ video, onLoad, onPrivateVideo }: { 
+  video: { id?: string, url?: string }, 
+  onLoad?: () => void,
+  onPrivateVideo?: (videoId: string) => void
+}) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
+  
+  // 500エラーが継続する動画の場合は表示しない
+  if (isPrivate) {
+    return null;
+  }
+  
   return (
     <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
       {!isLoaded && (
@@ -26,6 +37,10 @@ const VideoCardMini = ({ video, onLoad }: { video: { id?: string, url?: string }
           console.log("onLoad fired", video.id);
           if (onLoad) onLoad();
         }}
+        onPrivateVideo={(videoId) => {
+          setIsPrivate(true);
+          onPrivateVideo?.(videoId);
+        }}
         loading="lazy" // ← 追加
       />
     </div>
@@ -34,8 +49,14 @@ const VideoCardMini = ({ video, onLoad }: { video: { id?: string, url?: string }
 
 // 乱雑配置用のビデオカード背景
 function VideoCardScatter() {
+  const [privateVideoIds, setPrivateVideoIds] = useState<Set<string>>(new Set());
   const scatteredVideos = videos_2025_06.slice(0, 20); // ← 20個に減らす
   const [positions, setPositions] = useState<{top:number, left:number, rotate:number, scale:number}[]>([]);
+
+  const handlePrivateVideo = (videoId: string) => {
+    console.log(`Hero: 500エラーが継続する動画を除外: ${videoId}`);
+    setPrivateVideoIds(prev => new Set(prev).add(videoId));
+  };
 
   useEffect(() => {
     function random(min: number, max: number) {
@@ -57,6 +78,11 @@ function VideoCardScatter() {
   return (
     <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
       {scatteredVideos.map((video, i) => {
+        // 500エラーが継続する動画はスキップ
+        if (privateVideoIds.has(video.id)) {
+          return null;
+        }
+        
         const { top, left, rotate, scale } = positions[i];
         const initialTop = top < 50 ? -20 : 120;
         const initialLeft = left < 50 ? -20 : 120;
@@ -86,7 +112,7 @@ function VideoCardScatter() {
               pointerEvents: 'none',
             }}
           >
-            <VideoCardMini video={video} />
+            <VideoCardMini video={video} onPrivateVideo={handlePrivateVideo} />
           </motion.div>
         );
       })}

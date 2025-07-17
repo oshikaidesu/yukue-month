@@ -43,6 +43,16 @@ export async function GET(request: NextRequest) {
           platform: 'nicovideo'
         });
       } catch (oembedError: unknown) {
+        // axiosエラーの詳細を確認
+        if (axios.isAxiosError(oembedError)) {
+          const status = oembedError.response?.status;
+          
+          // エラーログを出力
+          if (status) {
+            console.warn(`oEmbed API error: ${status} for ${url}`);
+          }
+        }
+        
         if (oembedError instanceof Error) {
           console.warn('oEmbed failed, falling back to scraping:', oembedError.message);
         } else if (typeof oembedError === "object" && oembedError && "message" in oembedError) {
@@ -76,6 +86,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(metadata);
   } catch (error: unknown) {
     console.error('Preview API Error:', error);
+    
+    // エラーの詳細をログに記録
+    if (axios.isAxiosError(error)) {
+      console.error('Axios error details:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url
+      });
+    }
+    
     return NextResponse.json(
       { error: 'プレビューの取得に失敗しました' }, 
       { status: 500 }

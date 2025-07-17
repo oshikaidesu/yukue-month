@@ -33,6 +33,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const [isMobile, setIsMobile] = useState(false);
   // 2列以上かどうかを判定するstateを追加
   const [isMultiColumn, setIsMultiColumn] = useState(false);
+  // 500エラーが継続する動画のIDを管理（非公開または問題のある動画）
+  const [privateVideoIds, setPrivateVideoIds] = useState<Set<string>>(new Set());
   useEffect(() => { 
     setMounted(true);
     setIsMobile(isMobileDevice);
@@ -94,8 +96,9 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const yearMonth = dataPath ? getYearMonthFromPath(dataPath) : null;
 
   useEffect(() => {
-    // 全動画を取得してランダムに並び替え
-    const shuffled = [...(videoList ?? [])].sort(() => Math.random() - 0.5);
+    // 全動画を取得してランダムに並び替え（500エラーが継続する動画を除外）
+    const validVideos = (videoList ?? []).filter(video => !privateVideoIds.has(video.id));
+    const shuffled = [...validVideos].sort(() => Math.random() - 0.5);
     setShuffledVideos(shuffled);
 
     // ウィンドウサイズの取得
@@ -112,23 +115,33 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     // リサイズイベントリスナー
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [videoList]);
+  }, [videoList, privateVideoIds]);
+
+  // 500エラーが継続する動画を検出した時のハンドラー
+  const handlePrivateVideo = useCallback((videoId: string) => {
+    console.log(`500エラーが継続する動画を除外: ${videoId}`);
+    setPrivateVideoIds(prev => new Set(prev).add(videoId));
+  }, []);
 
   // 表示する動画を決定（PCでは全件、スマホではページネーション）
   const getDisplayVideos = useCallback(() => {
+    // 500エラーが継続する動画を除外
+    const validVideos = shuffledVideos.filter(video => !privateVideoIds.has(video.id));
+    
     if (windowSize.width >= 768) {
       // PC・タブレットでは全件表示
-      return shuffledVideos;
+      return validVideos;
     } else {
       // スマホでは10個区切りで表示
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
-      return shuffledVideos.slice(startIndex, endIndex);
+      return validVideos.slice(startIndex, endIndex);
     }
-  }, [windowSize.width, shuffledVideos, currentPage, itemsPerPage]);
+  }, [windowSize.width, shuffledVideos, currentPage, itemsPerPage, privateVideoIds]);
 
-  // 総ページ数を計算
-  const totalPages = Math.ceil(shuffledVideos.length / itemsPerPage);
+  // 総ページ数を計算（500エラーが継続する動画を除外した数で計算）
+  const validVideosCount = shuffledVideos.filter(video => !privateVideoIds.has(video.id)).length;
+  const totalPages = Math.ceil(validVideosCount / itemsPerPage);
 
   // ページ変更ハンドラー
   const handlePageChange = (page: number) => {
@@ -202,6 +215,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 lg:gap-16 relative" ref={cardsRef}>
           
           {getDisplayVideos().map((video, index) => {
+            // 500エラーが継続する動画はスキップ
+            if (privateVideoIds.has(video.id)) {
+              return null;
+            }
+            
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
             // サムネイル読み込み済みかどうか
@@ -470,6 +488,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   useServerApi={true}
                   className="w-full h-full object-cover"
                   onLoad={() => handleThumbnailLoad(index)}
+                  onPrivateVideo={handlePrivateVideo}
                 />
                 {/* 暗いオーバーレイ */}
                   <div className="absolute inset-0 bg-black/10" />
@@ -486,6 +505,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   useServerApi={true}
                   className="w-full h-48 object-cover rounded-t-lg"
                   onLoad={() => handleThumbnailLoad(index)}
+                  onPrivateVideo={handlePrivateVideo}
                 />
               </motion.figure>
 
@@ -581,11 +601,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           )}
           
           {/* ページ情報表示 */}
-          {windowSize.width < 768 && (
+          {/* {windowSize.width < 768 && (
             <p className="text-base-content/60 text-sm mb-4">
-              {currentPage} / {totalPages} ページ ({shuffledVideos.length}件中 {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, shuffledVideos.length)}件)
+              {currentPage} / {totalPages} ページ ({validVideosCount}件中 {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, validVideosCount)}件)
             </p>
-          )}
+          )} */}
           
           <p className="text-base-content/60 text-sm">
             本サイトは楽曲との出会いの偏りを減らすため<br></br>更新するたび、ランダムに並び替えています
