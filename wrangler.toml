@@ -1,12 +1,13 @@
 name = "next-website-yukue"
 compatibility_date = "2025-07-17"
 compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output/static"
 
-[build]
-command = "npm run build"
+# アカウントIDが必要な場合はここに追加
+# account_id = "your-account-id"
 
-[build.upload]
-format = "service-worker"
+[env.production]
+name = "next-website-yukue-production"
 
-[dev]
-local = true 
+[env.preview]
+name = "next-website-yukue-preview"

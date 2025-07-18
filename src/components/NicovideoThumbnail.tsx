@@ -65,6 +65,7 @@ type Props = {
   thumbnail?: string; // ローカルサムネイルパス
 };
 
+
 // プラットフォームを判定する関数
 function detectPlatform(videoId: string, videoUrl?: string): 'nicovideo' | 'youtube' | 'unknown' {
   if (videoUrl) {
