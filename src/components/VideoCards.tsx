@@ -13,6 +13,7 @@ interface VideoItem {
   artist: string;
   url: string;
   thumbnail?: string; // ローカルサムネイルパス
+  ogpThumbnailUrl?: string; // OGPサムネイルURL
   // 必要に応じて他のプロパティもここに追加
 }
 // props型を追加
@@ -483,6 +484,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 <NicovideoThumbnail
                   videoId={video.id ?? ""}
                   videoUrl={video.url}
+                  thumbnail={video.thumbnail}
+                  ogpThumbnailUrl={video.ogpThumbnailUrl}
                   width={400}
                   height={225}
                   className="w-full h-48 object-cover rounded-t-lg transition-all duration-500 ease-out group-hover:scale-105"

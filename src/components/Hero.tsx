@@ -9,7 +9,7 @@ import videos_2025_06 from "@/data/2025/videos_06.json";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
 const VideoCardMini = ({ video, onLoad, onPrivateVideo }: { 
-  video: { id?: string, url?: string }, 
+  video: { id?: string, url?: string, thumbnail?: string, ogpThumbnailUrl?: string }, 
   onLoad?: () => void,
   onPrivateVideo?: (videoId: string) => void
 }) => {
@@ -29,9 +29,10 @@ const VideoCardMini = ({ video, onLoad, onPrivateVideo }: {
       <NicovideoThumbnail
         videoId={video.id ?? ""}
         videoUrl={video.url}
+        thumbnail={video.thumbnail}
+        ogpThumbnailUrl={video.ogpThumbnailUrl}
         width={320}
         height={180}
-        useOgpApi={true}
         className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => {
           setIsLoaded(true);

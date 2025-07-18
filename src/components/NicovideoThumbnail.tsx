@@ -62,6 +62,7 @@ type Props = {
   onError?: (error: { type: 'private' | 'error', videoId: string }) => void;
   onPrivateVideo?: (videoId: string) => void;
   thumbnail?: string; // ローカルサムネイルパス
+  ogpThumbnailUrl?: string; // OGPサムネイルURL
 };
 
 // プラットフォームを判定する関数
@@ -87,7 +88,7 @@ function detectPlatform(videoId: string, videoUrl?: string): 'nicovideo' | 'yout
 }
 
 const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) {
-  const { videoId, videoUrl, width = 312, height = 176, className = "", onError, thumbnail } = props;
+  const { videoId, videoUrl, width = 312, height = 176, className = "", onError, thumbnail, ogpThumbnailUrl } = props;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -103,7 +104,23 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     setIsLoading(true);
     setThumbnailUrl(null);
 
-    // ローカルサムネイルが利用可能な場合は優先使用
+    // OGPサムネイルURLが利用可能な場合は最優先使用
+    if (ogpThumbnailUrl) {
+      console.log(`[NicovideoThumbnail] Using OGP thumbnail for ${videoId}: ${ogpThumbnailUrl.substring(0, 50)}...`);
+      setThumbnailUrl(ogpThumbnailUrl);
+      setIsLoading(false);
+      return;
+    }
+
+    // YouTube動画でogpThumbnailUrlがnullの場合は、ローカルサムネイルを優先使用
+    if (platform === 'youtube' && thumbnail) {
+      console.log(`[NicovideoThumbnail] Using local thumbnail for YouTube video ${videoId}: ${thumbnail}`);
+      setThumbnailUrl(thumbnail);
+      setIsLoading(false);
+      return;
+    }
+
+    // その他のローカルサムネイルが利用可能な場合は次に優先使用
     if (thumbnail) {
       console.log(`[NicovideoThumbnail] Using local thumbnail for ${videoId}: ${thumbnail}`);
       setThumbnailUrl(thumbnail);
@@ -138,7 +155,7 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
 
   useEffect(() => {
     fetchThumbnail();
-  }, [videoId, platform, thumbnail]);
+  }, [videoId, platform, thumbnail, ogpThumbnailUrl]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {
