@@ -12,6 +12,7 @@ interface VideoItem {
   title: string;
   artist: string;
   url: string;
+  thumbnail?: string; // ローカルサムネイルパス
   // 必要に応じて他のプロパティもここに追加
 }
 // props型を追加
@@ -477,38 +478,21 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     }}
                   />
                 </div>
-              {/* サムネイル背景（ホバー時） */}
-              <motion.div
-                  className="absolute inset-0 z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out"
-              >
+              {/* サムネイル（共通） */}
+              <motion.figure className="relative z-20">
                 <NicovideoThumbnail
-                  videoId={video.id}
+                  videoId={video.id ?? ""}
                   videoUrl={video.url}
                   width={400}
                   height={225}
-                  useServerApi={true}
-                  className="w-full h-full object-cover"
+                  useOgpApi={true}
+                  className="w-full h-48 object-cover rounded-t-lg transition-all duration-500 ease-out group-hover:scale-105"
                   onLoad={() => handleThumbnailLoad(index)}
                   onPrivateVideo={handlePrivateVideo}
+                  loading="lazy"
                 />
-                {/* 暗いオーバーレイ */}
-                  <div className="absolute inset-0 bg-black/10" />
-              </motion.div>
-
-              {/* 通常のサムネイル（非ホバー時） */}
-              <motion.figure
-                  className="relative z-20 opacity-100 group-hover:opacity-0 transition-all duration-500 ease-out"
-              >
-                <NicovideoThumbnail
-                  videoId={video.id}
-                  videoUrl={video.url}
-                  width={400}
-                  height={225}
-                  useServerApi={true}
-                  className="w-full h-48 object-cover rounded-t-lg"
-                  onLoad={() => handleThumbnailLoad(index)}
-                  onPrivateVideo={handlePrivateVideo}
-                />
+                {/* ホバー時の暗いオーバーレイ */}
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out rounded-t-lg" />
               </motion.figure>
 
               {/* 動画情報（常に表示） */}

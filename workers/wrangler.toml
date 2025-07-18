@@ -1,0 +1,10 @@
+name = "nicovideo-ogp"
+main = "nicovideo-ogp.js"
+compatibility_date = "2025-07-09"
+
+[dev]
+port = 8787
+
+[[rules]]
+type = "ESModule"
+globs = ["**/*.js"] 

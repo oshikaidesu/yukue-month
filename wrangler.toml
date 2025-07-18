@@ -1,0 +1,12 @@
+name = "next-website-yukue"
+compatibility_date = "2025-07-17"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run build"
+
+[build.upload]
+format = "service-worker"
+
+[dev]
+local = true 

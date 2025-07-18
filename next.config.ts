@@ -2,7 +2,11 @@ import type { NextConfig } from "next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
+  // Wrangler用の設定 - APIルートを有効にする
+  // output: 'export', // コメントアウト
+  trailingSlash: true,
   images: {
+    unoptimized: true,
     domains: [
       "img.cdn.nimg.jp",
       "nicovideo.cdn.nimg.jp",

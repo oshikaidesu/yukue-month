@@ -31,7 +31,7 @@ const VideoCardMini = ({ video, onLoad, onPrivateVideo }: {
         videoUrl={video.url}
         width={320}
         height={180}
-        useServerApi={true}
+        useOgpApi={true}
         className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => {
           setIsLoaded(true);
@@ -42,7 +42,7 @@ const VideoCardMini = ({ video, onLoad, onPrivateVideo }: {
           setIsPrivate(true);
           onPrivateVideo?.(videoId);
         }}
-        loading="lazy" // ← 追加
+        loading="lazy"
       />
     </div>
   );

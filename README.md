@@ -1,228 +1,150 @@
-# Yukue - 動画ポートフォリオサイト
+# ゆくえレコーズ MONTHLY PICKUP PLAYLIST
 
-美しい動画ポートフォリオサイトです。Next.js、React、Tailwind CSSを使用して構築されており、YouTube、Vimeo、ニコニコ動画の動画を美しく表示できます。
+リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト
 
-## 🎥 主な機能
+## 開発環境のセットアップ
 
-- **動画埋め込み**: YouTube、Vimeo、ニコニコ動画の動画を簡単に埋め込み
-- **ニコニコ動画プレイリスト解析**: Pythonスクリプトでプレイリストから自動的に動画情報を取得
-- **動画管理システム**: 動画の追加、編集、削除が可能な管理画面
-- **カテゴリ分け**: 動画をカテゴリ別に整理（VOCALOID、その他など）
-- **検索機能**: タイトル、説明、カテゴリで動画を検索
-- **ランキング表示**: 再生回数、いいね数、ランク順での表示
-- **レスポンシブデザイン**: あらゆるデバイスで美しく表示
-- **モダンなUI**: ガラス効果とグラデーションを使用した美しいデザイン
-- **アニメーション**: Framer Motionによる滑らかなアニメーション
-
-## 🚀 技術スタック
-
-- **フレームワーク**: Next.js 15.3.4
-- **言語**: TypeScript
-- **スタイリング**: Tailwind CSS + DaisyUI
-- **アニメーション**: Framer Motion
-- **開発環境**: Turbopack
-- **スクリプト**: Python 3（ニコニコ動画プレイリスト解析用）
-
-## 📦 セットアップ
-
-### 前提条件
-
-- Node.js 18.0.0以上
-- Python 3.7以上（ニコニコ動画プレイリスト解析用）
+### 必要な環境
+- Node.js 18以上
 - npm または yarn
 
 ### インストール
-
-1. リポジトリをクローン
-```bash
-git clone https://github.com/oshikaidesu/next-website-yukue.git
-cd next-website-yukue
-```
-
-2. 依存関係をインストール
 ```bash
 npm install
 ```
 
-3. Python依存関係をインストール（オプション）
-```bash
-cd scripts
-pip install -r requirements.txt
-cd ..
-```
+## 開発サーバーの起動
 
-4. 開発サーバーを起動
+### Next.js開発サーバー（通常の開発用）
 ```bash
 npm run dev
 ```
+- http://localhost:3000 でアクセス可能
 
-5. ブラウザで [http://localhost:3000](http://localhost:3000) にアクセス
-
-## 🔧 ニコニコ動画プレイリスト解析
-
-### 使用方法
-
-1. ニコニコ動画のマイリストURLを取得
-2. 以下のコマンドを実行：
-
+### Wrangler開発サーバー（Cloudflare Pages用）
 ```bash
-cd scripts
-python generate_videos_json.py "https://www.nicovideo.jp/mylist/12345678"
+# ビルド
+npm run build:pages
+
+# 開発サーバー起動
+npm run pages:dev
+```
+- http://localhost:8788 でアクセス可能
+
+## ビルド
+
+### 通常のビルド
+```bash
+npm run build
 ```
 
-3. 生成されたJSONファイルが`src/data/videos.json`に保存されます
-
-### 機能
-
-- マイリストから動画IDを自動抽出
-- 各動画の詳細情報（タイトル、説明、投稿者、再生回数、いいね数）を取得
-- VOCALOID動画の自動判定
-- タグ情報の取得
-
-## 📁 プロジェクト構造
-
-```
-next-website-yukue/
-├── public/                 # 静的ファイル
-│   ├── logo.svg           # ロゴファイル
-│   ├── Logo_Horizontal.svg
-│   └── placeholder-video.jpg
-├── scripts/               # Pythonスクリプト
-│   ├── generate_videos_json.py  # ニコニコ動画プレイリスト解析
-│   ├── requirements.txt
-│   └── README.md
-├── src/
-│   ├── app/               # Next.js App Router
-│   │   ├── page.tsx       # メインページ
-│   │   ├── admin/         # 管理画面
-│   │   │   └── page.tsx
-│   │   ├── api/           # APIルート
-│   │   │   └── preview/   # プレビューAPI
-│   │   └── layout.tsx     # レイアウト
-│   ├── components/        # Reactコンポーネント
-│   │   ├── VideoCards.tsx # 動画カード表示
-│   │   ├── VideoManager.tsx # 動画管理
-│   │   ├── VideoPortfolio.tsx # 動画ポートフォリオ
-│   │   ├── NicovideoThumbnail.tsx # ニコニコ動画サムネイル
-│   │   ├── AnimatedButton.tsx # アニメーションボタン
-│   │   ├── AnimatedCard.tsx # アニメーションカード
-│   │   ├── AnimatedSection.tsx # アニメーションセクション
-│   │   ├── TodoList.tsx # TODOリスト
-│   │   ├── Header.tsx # ヘッダー
-│   │   ├── Hero.tsx # ヒーローセクション
-│   │   ├── Hero2.tsx # ヒーローセクション2
-│   │   └── Footer.tsx # フッター
-│   ├── data/              # データファイル
-│   │   ├── videos.json    # 動画データ（JSON）
-│   │   └── videos.ts      # 動画データとユーティリティ関数
-│   ├── icons/             # アイコンファイル
-│   │   └── yukue_Logo/    # Yukueロゴ
-│   └── types/             # TypeScript型定義
-│       └── json.d.ts
-├── tailwind.config.js     # Tailwind設定
-└── package.json
+### Cloudflare Pages用ビルド
+```bash
+npm run build:pages
 ```
 
-## 🎯 主要コンポーネント
+## デプロイ
 
-### VideoCards
-動画の表示とURLからの自動取得機能を担当
+### Cloudflare Pagesへのデプロイ
+```bash
+npm run pages:deploy
+```
 
-### VideoManager
-動画の管理機能（追加、編集、削除）を提供
+## OGP API
 
-### VideoPortfolio
-動画のポートフォリオ表示を担当
+### 概要
+open-graph-scraperを使用して、URLからOGP（Open Graph Protocol）情報を取得するAPIです。
 
-### NicovideoThumbnail
-ニコニコ動画のサムネイル表示を担当
+### エンドポイント
+- `GET /api/ogp?url={URL}` - URLパラメータでOGP情報を取得
+- `POST /api/ogp` - リクエストボディでOGP情報を取得
+- `GET /api/ogp/nicovideo?url={URL}` - ニコニコ動画専用API
+- `POST /api/ogp/nicovideo` - ニコニコ動画専用API
+- `GET /api/ogp/test?url={URL}` - テスト用API（モックデータ）
+- `POST /api/ogp/test` - テスト用API（モックデータ）
 
-### 動画データ管理
-`src/data/videos.ts`で動画データを管理し、以下の機能を提供：
-- 最新動画の取得
-- ランキング順での取得
-- カテゴリ別での取得
-- 再生回数順での取得
-- いいね数順での取得
-- 検索機能
-
-## 🎨 カスタマイズ
-
-### 動画の追加方法
-
-#### 1. 手動追加
-`src/data/videos.json`を編集して動画を追加：
-
+### レスポンス形式
 ```json
 {
-  "id": "sm12345678",
-  "title": "動画タイトル",
-  "description": "動画の説明",
-  "url": "https://www.nicovideo.jp/watch/sm12345678",
-  "platform": "nicovideo",
-  "category": "VOCALOID",
-  "dateAdded": "2024-01-01",
-  "views": 1000,
-  "likes": 100,
-  "artist": "投稿者名",
-  "tags": ["タグ1", "タグ2"]
+  "success": true,
+  "data": {
+    "title": "ページタイトル",
+    "description": "ページの説明",
+    "image": "サムネイル画像URL",
+    "siteName": "サイト名",
+    "url": "ページURL",
+    "type": "コンテンツタイプ",
+    "videoId": "動画ID（ニコニコ動画専用）",
+    "length": "動画の長さ（ニコニコ動画専用）",
+    "viewCount": "再生回数（ニコニコ動画専用）",
+    "commentCount": "コメント数（ニコニコ動画専用）",
+    "mylistCount": "マイリスト数（ニコニコ動画専用）"
+  }
 }
 ```
 
-#### 2. ニコニコ動画プレイリストから自動取得（推奨）
-```bash
-cd scripts
-python generate_videos_json.py "https://www.nicovideo.jp/mylist/12345678"
+### 使用例
+```javascript
+// 一般OGP API
+const response = await fetch('/api/ogp?url=https://example.com');
+const data = await response.json();
+
+// ニコニコ動画専用API
+const response = await fetch('/api/ogp/nicovideo?url=https://www.nicovideo.jp/watch/sm12345678');
+const data = await response.json();
+
+// POSTリクエスト
+const response = await fetch('/api/ogp', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ url: 'https://example.com' })
+});
+const data = await response.json();
+
+// テスト用API（モックデータ）
+const response = await fetch('/api/ogp/test?url=https://example.com');
+const data = await response.json();
 ```
 
-#### 3. 管理画面から追加
-`/admin`ページにアクセスして、Webインターフェースから動画を管理
+### ニコニコ動画専用APIの特徴
+- ニコニコ動画の公式API（getthumbinfo）を使用
+- 動画の詳細情報（タイトル、説明、再生回数、コメント数など）を取得
+- 高品質なサムネイル画像を提供
+- フォールバック機能付き（API失敗時は基本的なサムネイルURLを返す）
 
-### スタイルの変更
-`tailwind.config.js`でTailwind CSSの設定をカスタマイズ
+### テストページ
+- http://localhost:3008/test-api - OGP APIのテストページ
+  - 本番APIとテスト用APIの切り替えが可能
+  - 一般OGP APIとニコニコ動画専用APIの選択が可能
+  - サムネイル表示の比較テスト
+  - 各種URLのテスト例
 
-### ロゴの変更
-`public/`ディレクトリ内のロゴファイルを新しいロゴに置き換え
+## プロジェクト構造
 
-## 📱 レスポンシブ対応
-
-- モバイル: 1列グリッド
-- タブレット: 2列グリッド
-- デスクトップ: 3列グリッド
-
-## 🔧 開発コマンド
-
-```bash
-npm run dev      # 開発サーバー起動（Turbopack使用）
-npm run build    # プロダクションビルド
-npm run start    # プロダクションサーバー起動
-npm run lint     # ESLint実行
+```
+src/
+├── app/                 # Next.js App Router
+│   ├── page.tsx        # ホームページ
+│   ├── about/          # Aboutページ
+│   ├── archive/        # アーカイブページ
+│   ├── test-api/       # OGP APIテストページ
+│   └── api/            # APIエンドポイント
+│       └── ogp/        # OGP API
+├── components/         # Reactコンポーネント
+├── data/              # 動画データ（JSON）
+└── types/             # TypeScript型定義
 ```
 
-## 🌐 デプロイ
+## 技術スタック
 
-### Vercel（推奨）
-1. VercelにGitHubリポジトリを接続
-2. 自動デプロイが有効になります
+- **フレームワーク**: Next.js 15
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS + DaisyUI
+- **アニメーション**: Framer Motion
+- **デプロイ**: Cloudflare Pages
+- **開発サーバー**: Wrangler
+- **OGP取得**: open-graph-scraper
 
-### その他のプラットフォーム
-```bash
-npm run build
-npm run start
-```
+## ライセンス
 
-## 📄 ライセンス
-
-MIT License
-
-## 🤝 コントリビューション
-
-プルリクエストやイシューの報告を歓迎します！
-
-## 📞 お問い合わせ
-
-ご質問やご相談がございましたら、お気軽にお問い合わせください。
-
----
-
-**Yukue** - 美しい動画ポートフォリオサイト
+Copyright © 2025 - All rights reserved by ゆくえレコーズ.
