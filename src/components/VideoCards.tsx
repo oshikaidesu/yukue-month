@@ -485,7 +485,6 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   videoUrl={video.url}
                   width={400}
                   height={225}
-                  useOgpApi={true}
                   className="w-full h-48 object-cover rounded-t-lg transition-all duration-500 ease-out group-hover:scale-105"
                   onLoad={() => handleThumbnailLoad(index)}
                   onPrivateVideo={handlePrivateVideo}
