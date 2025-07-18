@@ -208,7 +208,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           {yearMonth && (
             <div className="text-lg font-semibold mb-2">{yearMonth}</div>
           )}
-          <h2 className="text-4xl font-bold text-base-content mb-4">
+          <h2 className="text-4xl font-bold text-base-content mb-4 relative z-50">
             MONTHLY PICKUP PLAYLIST
           </h2>
         </div>
@@ -268,7 +268,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     animate={isActive ? {
                       x: 'calc(-50% + 80px)',
                       y: 'calc(-50% - 150px)',
-                      scale: 1.4,
+                      scale: 1.2,
                       rotate: 360,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
@@ -292,7 +292,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     animate={isActive ? {
                       x: 'calc(-50% - 170px)',
                       y: 'calc(-50% - 170px)',
-                      scale: 1.4,
+                      scale: 1.2,
                       rotate: 360,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
@@ -316,7 +316,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     animate={isActive ? {
                       x: 'calc(-50% + 180px)',
                       y: 'calc(-50% - 100px)',
-                      scale: 1.4,
+                      scale: 1.2,
                       rotate: 405,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
@@ -344,7 +344,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     animate={isActive ? {
                       x: 'calc(-50% + 220px)',
                       y: '-50%',
-                      scale: 1.4,
+                      scale: 1.2,
                       rotate: 720,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
@@ -371,7 +371,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     animate={isActive ? {
                       x: 'calc(-50% - 220px)',
                       y: 'calc(-50% + 100px)',
-                      scale: 1.4,
+                      scale: 1.2,
                       rotate: 720,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
@@ -395,7 +395,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     animate={isActive ? {
                       x: '-50%',
                       y: 'calc(-50% + 120px)',
-                      scale: 1.4,
+                      scale: 1.2,
                       rotate: -360,
                       transition: { 
                         y: { duration: 0.3, ease: "easeOut" },
@@ -446,7 +446,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     animate={isActive ? {
                       x: 'calc(-50% + 200px)',
                       y: 'calc(-50% + 150px)',
-                      scale: 1.4,
+                      scale: 1.2,
                       rotate: 180,
                       transition: {
                         x: { duration: 0.3, ease: "easeOut" },
@@ -470,7 +470,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     animate={isActive ? {
                       x: 'calc(-50% - 150px)',
                       y: 'calc(-50% + 120px)',
-                      scale: 1.4,
+                      scale: 1.2,
                       rotate: 90,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
@@ -604,7 +604,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
         <div className="text-center mt-12">
           {/* スマホ用ページネーション */}
           {windowSize.width < 768 && totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mb-6">
+            <div className="flex justify-center items-center gap-2 mb-6 relative z-50">
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
@@ -642,8 +642,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
             </p>
           )} */}
           
-          <p className="text-base-content/60 text-sm">
-            本サイトは楽曲との出会いの偏りを減らすため<br></br>更新するたび、ランダムに並び替えています
+          <p className="text-base-content/60 text-sm mb-2">
+            本サイトは楽曲との出会いの偏りを減らすため<br></br>更新するたびランダムに並び替えています
+          </p>
+          <p className="text-base-content/60 text-[10px]">
+            niconicoでのリンクが取得できなかった場合、youtubeのリンクを表示します
           </p>
         </div>
       </div>
