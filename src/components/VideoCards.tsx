@@ -214,7 +214,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
         </div>
 
         {/* 動画リスト */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 lg:gap-16 relative" ref={cardsRef}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10 relative" ref={cardsRef}>
           
           {getDisplayVideos().map((video, index) => {
             // 500エラーが継続する動画はスキップ
@@ -241,7 +241,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
             return (
             <motion.div
               key={video.id}
-                className={`card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-sm mx-auto min-h-[280px] z-10 overflow-visible ${!isThumbnailLoaded ? 'opacity-50 pointer-events-none' : ''}`}
+                className={`card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-xs mx-auto min-h-[240px] z-10 overflow-visible ${!isThumbnailLoaded ? 'opacity-50 pointer-events-none' : ''}`}
               ref={el => { cardItemRefs.current[index] = el; }}
               onClick={() => window.open(video.url, '_blank')}
               onHoverStart={isTouchOnly ? undefined : () => setHoveredCard(video.id)}
@@ -333,9 +333,13 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     }}
                   />
                   {/* 渦巻き線 - 右方向に飛び出す */}
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 3)} border-4 border-white border-dashed rounded-full pointer-events-none`}
-                    style={{ transform: 'translateZ(0)' }}
+                  <motion.img
+                    src="/dashed-circle-svgrepo-com.svg"
+                    alt="dashed circle"
+                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 3)} pointer-events-none`}
+                    style={{
+                      transform: 'translateZ(0)'
+                    }}
                     initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
                     animate={isActive ? {
                       x: 'calc(-50% + 220px)',
@@ -356,9 +360,13 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     }}
                   />
                   {/* 渦巻き線2 - 左方向に飛び出す */}
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 4)} border-4 border-gray-400 border-dotted rounded-full pointer-events-none`}
-                    style={{ transform: 'translateZ(0)' }}
+                  <motion.img
+                    src="/dashed-circle-gray.svg"
+                    // alt="dashed circle"
+                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 4)} pointer-events-none`}
+                    style={{
+                      transform: 'translateZ(0)'
+                    }}
                     initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
                     animate={isActive ? {
                       x: 'calc(-50% - 220px)',
@@ -480,7 +488,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   />
                 </div>
               {/* サムネイル（共通） */}
-              <motion.figure className="relative z-20">
+              <motion.figure className="relative z-20 overflow-hidden">
                 <NicovideoThumbnail
                   videoId={video.id ?? ""}
                   videoUrl={video.url}
@@ -488,19 +496,58 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   ogpThumbnailUrl={video.ogpThumbnailUrl}
                   width={400}
                   height={225}
-                  className="w-full h-48 object-cover rounded-t-lg transition-all duration-500 ease-out group-hover:scale-105"
+                  className="w-full h-40 object-cover rounded-t-lg transition-all duration-500 ease-out"
                   onLoad={() => handleThumbnailLoad(index)}
                   onPrivateVideo={handlePrivateVideo}
                   loading="lazy"
                 />
-                {/* ホバー時の暗いオーバーレイ */}
-                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out rounded-t-lg" />
               </motion.figure>
+              
+              {/* ホバー時の全面画像表示 */}
+              <motion.div 
+                className="absolute inset-0 z-40 pointer-events-none overflow-hidden rounded-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isActive ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {isThumbnailLoaded && (
+                  <NicovideoThumbnail
+                    videoId={video.id ?? ""}
+                    videoUrl={video.url}
+                    thumbnail={video.thumbnail}
+                    ogpThumbnailUrl={video.ogpThumbnailUrl}
+                    width={400}
+                    height={280}
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                  />
+                )}
+                {/* ホバー時の暗いオーバーレイ */}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-800/80 via-gray-800/20 to-transparent" />
+                
+                {/* ホバー時の動画情報 */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                  <h3 className="text-lg font-bold line-clamp-2 mb-1 drop-shadow-lg">
+                    {video.title}
+                  </h3>
+                  <p className="text-sm opacity-90 truncate flex items-center justify-between drop-shadow-lg">
+                    {video.artist}
+                    <svg 
+                      className="w-4 h-4 ml-2 flex-shrink-0" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </p>
+                </div>
+              </motion.div>
 
               {/* 動画情報（常に表示） */}
                 {/* カード情報の背景 */}
               <motion.div 
-                  className="absolute inset-0 top-48 bg-base-200 z-10 rounded-b-lg"
+                  className="absolute inset-0 top-40 bg-base-200 z-10 rounded-b-lg"
                 layout
                 />
                 
