@@ -4,9 +4,9 @@
 
 ## プロジェクト概要
 
-ゆくえレコーズ マンスリープレイリストのサイト制作
-現状ニコニコのマイリスト機能 + kiite cafe を活用しているだけで告知がTwitterのみに止まっているため、サイトを制作することで掲載されることへの付加価値を上げる。=> 文化への貢献を狙う。
-アニメーションの味が強い、LPのようなビジュアルを重視したWebサイトの制作
+ゆくえレコーズ マンスリープレイリストのサイト制作  
+現状ニコニコのマイリスト機能 + kiite cafe を活用しているだけで告知がTwitterのみに止まっているため、サイトを制作することで掲載されることへの付加価値を上げる。=> 文化への貢献を狙う。  
+アニメーションの味が強い、LPのようなビジュアルを重視したWebサイトの制作  
 
 ### コンセプト
 
@@ -93,16 +93,57 @@ src/
 ### 動画データ（JSON）
 各月の動画データは `src/data/YYYY/videos_MM.json` の形式で保存されています。
 
+#### ファイル構造
+```
+src/data/
+├── 2024/
+│   ├── videos_04.json
+│   ├── videos_05.json
+│   ├── videos_08.json
+│   ├── videos_09.json
+│   ├── videos_10.json
+│   ├── videos_11.json
+│   └── videos_12.json
+└── 2025/
+    ├── videos_01.json
+    ├── videos_02.json
+    ├── videos_03.json
+    ├── videos_04.json
+    ├── videos_05.json
+    ├── videos_06.json
+    └── videos_voca_winter.json
+```
+
+#### データ形式
 ```json
 [
   {
-    "id": "sm12345678",
-    "title": "動画タイトル",
-    "artist": "アーティスト名",
-    "description": "動画の説明",
-    "ogpThumbnailUrl": "https://example.com/thumbnail.jpg"
+    "id": "sm44500976",
+    "title": "パヘル・マータの音と機微 / 夏色花梨・四国めたん・楚瓷・嗒啦啦",
+    "url": "https://www.nicovideo.jp/watch/sm44500976",
+    "artist": "いふみ",
+    "thumbnail": "/thumbnails/sm44500976.jpg",
+    "ogpThumbnailUrl": "https://img.cdn.nimg.jp/s/nicovideo/thumbnails/44500976/44500976.18380660.original/r1280x720l?key=..."
   }
 ]
+```
+
+#### フィールド説明
+- **id**: ニコニコ動画の動画ID（例: `sm44500976`）
+- **title**: 動画のタイトル
+- **url**: 動画の完全URL
+- **artist**: アーティスト名
+- **thumbnail**: ローカルサムネイル画像のパス（現在は使用されていない）
+- **ogpThumbnailUrl**: OGPから取得した高品質サムネイル画像のURL
+
+#### TypeScript型定義
+```typescript
+export type VideoItem = {
+  id: string;
+  title: string;
+  url: string;
+  artist: string;
+};
 ```
 
 ## 機能
