@@ -55,6 +55,13 @@ npm run build
 npm run pages:deploy
 ```
 
+**注意**: このプロジェクトはNode.js機能（API Routes等）を使用しているため、GitHub Pages（静的サイトのみ）ではなく、Cloudflare Pagesでのデプロイを推奨しています。
+
+### デプロイ先の選択理由
+- **Cloudflare Pages**: Node.js機能をサポート、API Routesが使用可能
+- **GitHub Pages**: 静的サイトのみ、Node.js機能は使用不可
+- **Vercel**: 有料プランが必要な場合がある
+
 ## プロジェクト構造
 
 ```
@@ -129,3 +136,24 @@ src/data/
 - **レスポンシブデザイン**: モバイル・デスクトップ対応
 - **アニメーション**: Framer Motionを使用したスムーズなアニメーション
 - **アーカイブ機能**: 過去のプレイリストを月別に表示
+
+## プロジェクト整理
+
+このプロジェクトは以下の整理を行いました：
+
+### 削除したファイル・ディレクトリ
+- 開発用スクリプト（`update-*.js`, `test-*.js`）
+- サンプルアプリ（`sampleapp/`）
+- 不要な画像ファイル（`public/`内の未使用ファイル）
+- 大量のサムネイル画像（`public/thumbnails/`）
+- ビルドファイル（`.next/`, `out/`, `build/`）
+- システムファイル（`.DS_Store`）
+
+### 保持したファイル
+- プロジェクトのソースコード（`src/`）
+- 設定ファイル（`package.json`, `next.config.ts`等）
+- ドキュメント（`README.md`）
+- 必要な静的ファイル（`public/`内の使用中ファイル）
+## ライセンス
+
+Copyright © 2025 - All rights reserved by ゆくえレコーズ.
