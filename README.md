@@ -114,20 +114,6 @@ src/data/
     └── videos_voca_winter.json
 ```
 
-#### データ形式
-```json
-[
-  {
-    "id": "sm44500976",
-    "title": "パヘル・マータの音と機微 / 夏色花梨・四国めたん・楚瓷・嗒啦啦",
-    "url": "https://www.nicovideo.jp/watch/sm44500976",
-    "artist": "いふみ",
-    "thumbnail": "/thumbnails/sm44500976.jpg",
-    "ogpThumbnailUrl": "https://img.cdn.nimg.jp/s/nicovideo/thumbnails/44500976/44500976.18380660.original/r1280x720l?key=..."
-  }
-]
-```
-
 #### フィールド説明
 - **id**: ニコニコ動画の動画ID（例: `sm44500976`）
 - **title**: 動画のタイトル
@@ -135,16 +121,6 @@ src/data/
 - **artist**: アーティスト名
 - **thumbnail**: ローカルサムネイル画像のパス（現在は使用されていない）
 - **ogpThumbnailUrl**: OGPから取得した高品質サムネイル画像のURL
-
-#### TypeScript型定義
-```typescript
-export type VideoItem = {
-  id: string;
-  title: string;
-  url: string;
-  artist: string;
-};
-```
 
 ## 機能
 
