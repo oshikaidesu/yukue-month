@@ -154,6 +154,3 @@ src/data/
 - 設定ファイル（`package.json`, `next.config.ts`等）
 - ドキュメント（`README.md`）
 - 必要な静的ファイル（`public/`内の使用中ファイル）
-## ライセンス
-
-Copyright © 2025 - All rights reserved by ゆくえレコーズ.
