@@ -36,8 +36,8 @@ npm run pages:deploy
 ```
 
 ### デプロイ先の選択理由
-- **Cloudflare Pages**: Node.js機能をサポート(商用利用可)
-- **Vercel**: 有料プランが必要な場合がある(商用利用不可)
+- **Cloudflare Pages**: 商用利用可
+- **Vercel**: 商用利用不可
 
 ## プロジェクト構造
 
