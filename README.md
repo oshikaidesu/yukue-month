@@ -22,7 +22,7 @@
 - **スタイリング**: Tailwind CSS + DaisyUI
 - **アニメーション**: Framer Motion
 - **デプロイ**: Cloudflare Pages
-- **開発ツール**: Claude Code + Cursor
+- **開発補助ツール**: Claude Code + Cursor
 
 ## 開発環境のセットアップ
 
@@ -55,12 +55,9 @@ npm run build
 npm run pages:deploy
 ```
 
-**注意**: このプロジェクトはNode.js機能（API Routes等）を使用しているため、GitHub Pages（静的サイトのみ）ではなく、Cloudflare Pagesでのデプロイを推奨しています。
-
 ### デプロイ先の選択理由
-- **Cloudflare Pages**: Node.js機能をサポート、API Routesが使用可能
-- **GitHub Pages**: 静的サイトのみ、Node.js機能は使用不可
-- **Vercel**: 有料プランが必要な場合がある
+- **Cloudflare Pages**: Node.js機能をサポート(商用利用可)
+- **Vercel**: 有料プランが必要な場合がある(商用利用不可)
 
 ## プロジェクト構造
 
@@ -126,7 +123,7 @@ src/data/
 - **title**: 動画のタイトル
 - **url**: 動画の完全URL
 - **artist**: アーティスト名
-- **thumbnail**: ローカルサムネイル画像のパス（現在は使用されていない）
+- **thumbnail**: ローカルサムネイル画像のパス（youtubeサムネ用）
 - **ogpThumbnailUrl**: OGPから取得した高品質サムネイル画像のURL
 
 ## 機能
