@@ -2,6 +2,28 @@
 
 リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト
 
+## プロジェクト概要
+
+ゆくえレコーズ マンスリープレイリストのサイト制作
+現状ニコニコのマイリスト機能 + kiite cafe を活用しているだけで告知がTwitterのみに止まっているため、サイトを制作することで掲載されることへの付加価値を上げる。=> 文化への貢献を狙う。
+アニメーションの味が強い、LPのようなビジュアルを重視したWebサイトの制作
+
+### コンセプト
+
+- できる限り楽曲との出会いを公平するため、数字に関する情報を掲載しない。
+- 並び順は順位といった曲の序列を意識させてしまうので、固定させるのではなく更新をかけるたびに順番を変更することで配慮する。
+- 総じて雑誌のような質感を意識、平成のHPのような実験的感覚 => HTMLパワーを彷彿とさせる手作り感を念頭に置く。（かなりポップになった）
+- 後々micro cmsにて管理をしやすいよう整えるつもりなので、Next.js、Daisy UIといった、モダンで整備されてる技術を採用。
+
+## 技術スタック
+
+- **フレームワーク**: Next.js 14 (App Router)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS + DaisyUI
+- **アニメーション**: Framer Motion
+- **デプロイ**: Cloudflare Pages
+- **開発ツール**: Claude Code + Cursor
+
 ## 開発環境のセットアップ
 
 ### 必要な環境
@@ -15,32 +37,15 @@ npm install
 
 ## 開発サーバーの起動
 
-### Next.js開発サーバー（通常の開発用）
 ```bash
 npm run dev
 ```
 - http://localhost:3000 でアクセス可能
 
-### Wrangler開発サーバー（Cloudflare Pages用）
-```bash
-# ビルド
-npm run build:pages
-
-# 開発サーバー起動
-npm run pages:dev
-```
-- http://localhost:8788 でアクセス可能
-
 ## ビルド
 
-### 通常のビルド
 ```bash
 npm run build
-```
-
-### Cloudflare Pages用ビルド
-```bash
-npm run build:pages
 ```
 
 ## デプロイ
@@ -50,75 +55,6 @@ npm run build:pages
 npm run pages:deploy
 ```
 
-## OGP API
-
-### 概要
-open-graph-scraperを使用して、URLからOGP（Open Graph Protocol）情報を取得するAPIです。
-
-### エンドポイント
-- `GET /api/ogp?url={URL}` - URLパラメータでOGP情報を取得
-- `POST /api/ogp` - リクエストボディでOGP情報を取得
-- `GET /api/ogp/nicovideo?url={URL}` - ニコニコ動画専用API
-- `POST /api/ogp/nicovideo` - ニコニコ動画専用API
-- `GET /api/ogp/test?url={URL}` - テスト用API（モックデータ）
-- `POST /api/ogp/test` - テスト用API（モックデータ）
-
-### レスポンス形式
-```json
-{
-  "success": true,
-  "data": {
-    "title": "ページタイトル",
-    "description": "ページの説明",
-    "image": "サムネイル画像URL",
-    "siteName": "サイト名",
-    "url": "ページURL",
-    "type": "コンテンツタイプ",
-    "videoId": "動画ID（ニコニコ動画専用）",
-    "length": "動画の長さ（ニコニコ動画専用）",
-    "viewCount": "再生回数（ニコニコ動画専用）",
-    "commentCount": "コメント数（ニコニコ動画専用）",
-    "mylistCount": "マイリスト数（ニコニコ動画専用）"
-  }
-}
-```
-
-### 使用例
-```javascript
-// 一般OGP API
-const response = await fetch('/api/ogp?url=https://example.com');
-const data = await response.json();
-
-// ニコニコ動画専用API
-const response = await fetch('/api/ogp/nicovideo?url=https://www.nicovideo.jp/watch/sm12345678');
-const data = await response.json();
-
-// POSTリクエスト
-const response = await fetch('/api/ogp', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ url: 'https://example.com' })
-});
-const data = await response.json();
-
-// テスト用API（モックデータ）
-const response = await fetch('/api/ogp/test?url=https://example.com');
-const data = await response.json();
-```
-
-### ニコニコ動画専用APIの特徴
-- ニコニコ動画の公式API（getthumbinfo）を使用
-- 動画の詳細情報（タイトル、説明、再生回数、コメント数など）を取得
-- 高品質なサムネイル画像を提供
-- フォールバック機能付き（API失敗時は基本的なサムネイルURLを返す）
-
-### テストページ
-- http://localhost:3008/test-api - OGP APIのテストページ
-  - 本番APIとテスト用APIの切り替えが可能
-  - 一般OGP APIとニコニコ動画専用APIの選択が可能
-  - サムネイル表示の比較テスト
-  - 各種URLのテスト例
-
 ## プロジェクト構造
 
 ```
@@ -127,23 +63,55 @@ src/
 │   ├── page.tsx        # ホームページ
 │   ├── about/          # Aboutページ
 │   ├── archive/        # アーカイブページ
-│   ├── test-api/       # OGP APIテストページ
-│   └── api/            # APIエンドポイント
-│       └── ogp/        # OGP API
+│   ├── layout.tsx      # レイアウト
+│   ├── globals.css     # グローバルスタイル
+│   └── favicon.ico     # ファビコン
 ├── components/         # Reactコンポーネント
+│   ├── Header.tsx      # ヘッダーコンポーネント
+│   ├── Footer.tsx      # フッターコンポーネント
+│   ├── Hero.tsx        # ヒーローセクション
+│   ├── VideoCards.tsx  # 動画カードコンポーネント
+│   ├── NicovideoThumbnail.tsx # ニコニコ動画サムネイル
+│   └── PickupBackground.tsx   # 背景アニメーション
 ├── data/              # 動画データ（JSON）
-└── types/             # TypeScript型定義
+│   ├── 2024/         # 2024年の動画データ
+│   ├── 2025/         # 2025年の動画データ
+│   └── getYearMonthFromPath.ts # パスから年月を取得するユーティリティ
+├── types/             # TypeScript型定義
+│   ├── video.d.ts     # 動画データの型定義
+│   ├── json.d.ts      # JSONデータの型定義
+│   └── ogp.d.ts       # OGPデータの型定義
+├── lib/               # ユーティリティ関数
+│   └── utils.ts       # 共通ユーティリティ
+└── icons/             # アイコンファイル
+    ├── yukue_Logo/    # ゆくえレコーズロゴ
+    └── nc296561__ニコニコ_シンボルマーク.png
 ```
 
-## 技術スタック
+## データ構造
 
-- **フレームワーク**: Next.js 15
-- **言語**: TypeScript
-- **スタイリング**: Tailwind CSS + DaisyUI
-- **アニメーション**: Framer Motion
-- **デプロイ**: Cloudflare Pages
-- **開発サーバー**: Wrangler
-- **OGP取得**: open-graph-scraper
+### 動画データ（JSON）
+各月の動画データは `src/data/YYYY/videos_MM.json` の形式で保存されています。
+
+```json
+[
+  {
+    "id": "sm12345678",
+    "title": "動画タイトル",
+    "artist": "アーティスト名",
+    "description": "動画の説明",
+    "ogpThumbnailUrl": "https://example.com/thumbnail.jpg"
+  }
+]
+```
+
+## 機能
+
+- **動画カード表示**: ニコニコ動画とYouTubeの動画をカード形式で表示
+- **サムネイル取得**: OGPを使用した動画サムネイルの自動取得
+- **レスポンシブデザイン**: モバイル・デスクトップ対応
+- **アニメーション**: Framer Motionを使用したスムーズなアニメーション
+- **アーカイブ機能**: 過去のプレイリストを月別に表示
 
 ## ライセンス
 
