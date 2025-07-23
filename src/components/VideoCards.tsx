@@ -30,6 +30,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const cardsRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   // SSR対策: マウント前は描画しない
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -134,7 +135,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
       // PC・タブレットでは全件表示
       return validVideos;
     } else {
-      // スマホでは10個区切りで表示
+      // スマホでは８個区切りで表示
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
       return validVideos.slice(startIndex, endIndex);
@@ -148,9 +149,9 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   // ページ変更ハンドラー
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // カードコンポーネントのトップへスクロール
-    if (cardsRef.current) {
-      cardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // MONTHLY PICKUP PLAYLISTタイトルが中央に来るようにスクロール
+    if (titleRef.current) {
+      titleRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'start' });
     }
   };
 
@@ -208,7 +209,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           {yearMonth && (
             <div className="text-lg font-semibold mb-2">{yearMonth}</div>
           )}
-          <h2 className="text-4xl font-bold text-base-content mb-4 relative z-50">
+          <h2 className="text-4xl font-bold text-base-content mb-4 relative z-50" ref={titleRef}>
             MONTHLY PICKUP PLAYLIST
           </h2>
         </div>
@@ -334,7 +335,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   />
                   {/* 渦巻き線 - 右方向に飛び出す */}
                   <motion.img
-                    src="/dashed-circle-svgrepo-com.svg"
+                    src="/CS_Ellipse_6.svg"
                     alt="dashed circle"
                     className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 3)} pointer-events-none`}
                     style={{
@@ -361,7 +362,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   />
                   {/* 渦巻き線2 - 左方向に飛び出す */}
                   <motion.img
-                    src="/dashed-circle-gray.svg"
+                    src="/CS_Star_13.svg"
                     // alt="dashed circle"
                     className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 4)} pointer-events-none`}
                     style={{
