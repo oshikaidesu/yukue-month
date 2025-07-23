@@ -24,29 +24,9 @@
 - **デプロイ**: Cloudflare Pages
 - **開発補助ツール**: Claude Code + Cursor
 
-## 開発環境のセットアップ
-
-### 必要な環境
+### 環境
 - Node.js 18以上
 - npm または yarn
-
-### インストール
-```bash
-npm install
-```
-
-## 開発サーバーの起動
-
-```bash
-npm run dev
-```
-- http://localhost:3000 でアクセス可能
-
-## ビルド
-
-```bash
-npm run build
-```
 
 ## デプロイ
 
