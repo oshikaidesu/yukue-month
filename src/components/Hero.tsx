@@ -225,9 +225,9 @@ export default function Hero() {
   return (
     <>
     {/* マージンとサイズを制御する外側のコンテナ */}
-    <div className="mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-2rem))]">
+    <div className="mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-2rem))] ">
       {/* ヒーローセクションの主要なスタイリング */}
-      <div className="min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px]">
+      <div className="min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px] border-1 border-[#EEEEEE]">
         {/* === グリッド背景（インラインSVG） === */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <svg width="100%" height="100%" className="w-full h-full rounded-3xl" style={{ position: 'absolute', inset: 0 }}>
