@@ -128,7 +128,7 @@ export default function Hero() {
 
   return (
     <>
-    <div className="hero min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-3xl mx-auto my-8 w-[min(1400px,calc(100vw-5rem))] ring-1 ring-black/10">
+    <div className="hero min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-3xl mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-5rem))] ring-1 ring-black/10">
       {/* === グリッド背景（インラインSVG） === */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <svg width="100%" height="100%" className="w-full h-full rounded-3xl" style={{ position: 'absolute', inset: 0 }}>
@@ -143,9 +143,31 @@ export default function Hero() {
       {/* === 背景のビデオカード乱雑配置 === */}
       <VideoCardScatter />
 
+      {/* === タイトル群（オーバーレイ） === */}
+      <div className="absolute top-4 right-4 text-right z-20">
+        <div className="text-right">
+          <h1 
+            className="text-5xl text-black font-bold text-base-content cursor-pointer bg-white tracking-tight inline-block w-fit"
+          >
+            ゆくえレコーズ
+          </h1>
 
+          <h1 
+            className="text-xl text-black font-bold text-base-content cursor-pointer bg-white tracking-tight inline-block w-fit"
+          >
+            MONTHLY PICKUP PLAYLIST
+          </h1>
+          
+          <div className="text-sm text-primary">yukue Records</div>
+        </div>
+      </div>
 
-
+      {/* === 説明文（オーバーレイ） === */}
+      <div className="absolute bottom-6 left-4 text-left z-20">
+        <p className="max-w-lg text-black/80 bg-white/90 tracking-tight p-3 rounded-md">
+          ゆくえレコーズ主宰の駱駝法師、およびレーベルの運営メンバーのぴちが是非リスナーにおすすめしたい良質なボカロ曲を毎月更新するマイリストです！
+        </p>
+      </div>
 
       <motion.div
         className="absolute bottom-20 right-1/3 w-3 h-3 bg-secondary/20 rounded-full"
@@ -199,50 +221,13 @@ export default function Hero() {
         }}
       />
 
-      <motion.div 
-        className="absolute top-0 right-8 text-right relative z-20 pt-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="max-w-md">
-          <h1 
-            className="text-5xl text-black font-bold text-base-content cursor-pointer bg-white tracking-tight inline-block w-fit"
-          >
-            ゆくえレコーズ
-          </h1>
 
-          <h1 
-            className="text-xl text-black font-bold text-base-content cursor-pointer bg-white tracking-tight inline-block w-fit"
-          >
-            MONTHLY PICKUP PLAYLIST
-          </h1>
-          
-          <div className="text-sm text-primary">yukue Records</div>
-        </div>
-      </motion.div>
 
-      {/* 説明文（左下） */}
-      <motion.div
-        className="absolute bottom-6 left-8 text-left relative z-20"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.1 }}
-      >
-        <motion.p 
-          className="max-w-lg text-black/80 bg-white/90 tracking-tight p-3 rounded-md"
-          whileHover={{ 
-            color: "black",
-            transition: { duration: 0.3 }
-          }}
-        >
-          ゆくえレコーズ主宰の駱駝法師、およびレーベルの運営メンバーのぴちが是非リスナーにおすすめしたい良質なボカロ曲を毎月更新するマイリストです！
-        </motion.p>
-      </motion.div>
+
     </div>
 
     {/* ボタン群（ヒーロー要素の下） */}
-    <div className="w-[min(1400px,calc(100vw-5rem))] mx-auto mt-4 flex gap-4 justify-end">
+    <div className="w-[min(1400px,calc(100vw-5rem))] mx-auto mt-4 flex gap-4 justify-center">
       <motion.button 
         className="btn btn-primary group relative overflow-hidden flex items-center"
         whileHover={{
