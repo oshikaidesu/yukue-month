@@ -128,7 +128,7 @@ export default function Hero() {
 
   return (
     <>
-    <div className="hero min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-3xl mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-5rem))] ring-1 ring-black/10">
+    <div className="hero min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-3xl mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-5rem))] ">
       {/* === グリッド背景（インラインSVG） === */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <svg width="100%" height="100%" className="w-full h-full rounded-3xl" style={{ position: 'absolute', inset: 0 }}>
@@ -147,25 +147,28 @@ export default function Hero() {
       <div className="absolute top-0 right-0 text-right z-20">
         <div className="flex flex-col items-end gap-1">
           <h1 
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black font-bold text-base-content cursor-pointer bg-[#EEEEEE] tracking-tight px-2 py-1 rounded transition-all duration-300"
+            className="text-[30px] sm:text-[40px] md:text-[50px] lg:text-[70px] xl:text-[90px] text-black font-bold text-base-content cursor-pointer bg-[#EEEEEE] tracking-tight px-2 py-1 rounded transition-all duration-300"
           >
             ゆくえレコーズ
           </h1>
 
           <h2 
-            className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-bold text-base-content cursor-pointer bg-[#EEEEEE] tracking-tight px-2 py-1 rounded transition-all duration-300"
+            className="text-[15px] sm:text-[20px] md:text-[30px] lg:text-[40px] xl:text-[50px] text-black font-bold text-base-content cursor-pointer bg-[#EEEEEE] tracking-tight px-2 py-1 rounded transition-all duration-300"
           >
             MONTHLY PICKUP PLAYLIST
           </h2>
           
-          <div className="text-xs sm:text-sm text-primary bg-[#EEEEEE] px-2 py-1 rounded">yukue Records</div>
+          <div className="text-[10px] sm:text-[12px] md:text-[15px] lg:text-[18px] xl:text-[20px] text-primary bg-[#EEEEEE] px-2 py-1 rounded">yukue Records</div>
         </div>
       </div>
 
       {/* === 説明文（オーバーレイ） === */}
-      <div className="absolute bottom-0 right-40 text-left z-20">
-        <p className="max-w-ms text-black/80 bg-[#EEEEEE] tracking-tight p-3 rounded-xl text-sm font-bold font-mono tracking-tighter">
-          ゆくえレコーズ主宰の駱駝法師、およびレーベルの運営メンバーのぴちが是非リスナーにおすすめしたい良質なボカロ曲を毎月更新するマイリストです！
+      <div className="absolute bottom-0 left-0 text-left z-20">
+        <p className="max-w-ms text-black/80 bg-[#EEEEEE] p-2 tracking-tight rounded-xl text-[15px] sm:text-[20px] md:text-[30px] lg:text-[40px] xl:text-[50px] font-bold font-mono tracking-tighter">
+          ゆくえレコーズ主宰の駱駝法師 <br />
+          およびレーベルの運営メンバーのぴちが <br />
+          是非リスナーにおすすめしたい <br />
+          良質なボカロ曲を毎月更新するマイリストです！
         </p> 
       </div>
 
