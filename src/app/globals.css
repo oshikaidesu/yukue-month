@@ -111,3 +111,38 @@ body {
 .yukue-spin {
   animation: yukue-spin 1.2s cubic-bezier(0.77,0,0.18,1) infinite;
 }
+
+/* Inverted corner bubble (反転コーナー吹き出し) スタイル */
+.inverted-corner-bubble {
+  position: relative;
+  border-radius: 0px 8px 0px 8px;
+}
+
+.inverted-corner-bubble::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  left: 0;
+  height: 40px;
+  width: 40px;
+  background: transparent;
+  border-bottom-left-radius: 50%;
+  box-shadow: 0 20px 0 0 #EEEEEE;
+}
+
+.inverted-corner-bubble-right {
+  position: relative;
+  border-radius: 8px 0px 8px 0px;
+}
+
+.inverted-corner-bubble-right::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: 0;
+  height: 40px;
+  width: 40px;
+  background: transparent;
+  border-bottom-right-radius: 50%;
+  box-shadow: 0 20px 0 0 #EEEEEE;
+}
