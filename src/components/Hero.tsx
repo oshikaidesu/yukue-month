@@ -145,26 +145,26 @@ export default function Hero() {
 
       {/* === タイトル群（オーバーレイ） === */}
       <div className="absolute top-4 right-4 text-right z-20">
-        <div className="text-right">
+        <div className="flex flex-col items-end gap-1">
           <h1 
-            className="text-5xl text-black font-bold text-base-content cursor-pointer bg-white tracking-tight inline-block w-fit"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black font-bold text-base-content cursor-pointer bg-[#EEEEEE] tracking-tight px-2 py-1 rounded transition-all duration-300"
           >
             ゆくえレコーズ
           </h1>
 
-          <h1 
-            className="text-xl text-black font-bold text-base-content cursor-pointer bg-white tracking-tight inline-block w-fit"
+          <h2 
+            className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-bold text-base-content cursor-pointer bg-[#EEEEEE] tracking-tight px-2 py-1 rounded transition-all duration-300"
           >
             MONTHLY PICKUP PLAYLIST
-          </h1>
+          </h2>
           
-          <div className="text-sm text-primary">yukue Records</div>
+          <div className="text-xs sm:text-sm text-primary bg-[#EEEEEE] px-2 py-1 rounded">yukue Records</div>
         </div>
       </div>
 
       {/* === 説明文（オーバーレイ） === */}
       <div className="absolute bottom-6 left-4 text-left z-20">
-        <p className="max-w-lg text-black/80 bg-white/90 tracking-tight p-3 rounded-md">
+        <p className="max-w-lg text-black/80 bg-[#EEEEEE] tracking-tight p-3 rounded-md">
           ゆくえレコーズ主宰の駱駝法師、およびレーベルの運営メンバーのぴちが是非リスナーにおすすめしたい良質なボカロ曲を毎月更新するマイリストです！
         </p>
       </div>
