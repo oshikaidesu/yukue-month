@@ -224,8 +224,11 @@ export default function Hero() {
 
   return (
     <>
-    <div className="hero min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[200px] mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-2rem))]">
-      {/* === グリッド背景（インラインSVG） === */}
+    {/* マージンとサイズを制御する外側のコンテナ */}
+    <div className="mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-2rem))]">
+      {/* ヒーローセクションの主要なスタイリング */}
+      <div className="min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px]">
+        {/* === グリッド背景（インラインSVG） === */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <svg width="100%" height="100%" className="w-full h-full rounded-3xl" style={{ position: 'absolute', inset: 0 }}>
           <defs>
@@ -238,57 +241,48 @@ export default function Hero() {
       </div>
       {/* === 背景のビデオカード乱雑配置 === */}
       <VideoCardScatter />
-
-      {/* === タイトル群（オーバーレイ） === */}
-      <div className="absolute top-0 right-0 text-right z-20">
-        <div className="flex items-start">
-          {/* 英語テキスト（左側） */}
-          <div className="flex flex-col items-end">
-            <h2 
-              className="text-[15px] sm:text-[20px] md:text-[30px] lg:text-[40px] xl:text-[50px] text-black font-bold bg-[#EEEEEE] tracking-tight px-4 py-0 inverted-corner-top-right z-10"
-            >
-              MONTHLY PICKUP PLAYLIST
-            </h2>
+        {/* === タイトル群（オーバーレイ） === */}
+        <div className="absolute top-0 right-0 text-right z-20">
+          <div className="flex items-start">
+            {/* 英語テキスト（左側） */}
+            <div className="flex flex-col items-end">
+              <h2 
+                className="text-[15px] sm:text-[20px] md:text-[30px] lg:text-[40px] xl:text-[50px] text-dark font-bold bg-[#EEEEEE] tracking-tight px-4 py-0 inverted-corner-top-right z-10"
+              >
+                MONTHLY PICKUP PLAYLIST
+              </h2>
+              
+              <div className="text-[10px] sm:text-[12px] md:text-[15px] lg:text-[18px] xl:text-[20px] text-primary font-bold bg-[#EEEEEE] px-4 py-0 inverted-corner-top-right">yukue Records</div>
+            </div>
             
-            <div className="text-[10px] sm:text-[12px] md:text-[15px] lg:text-[18px] xl:text-[20px] text-primary font-bold bg-[#EEEEEE] px-4 py-0 inverted-corner-top-right">yukue Records</div>
+            {/* 日本語テキスト（右側） */}
+            <div className="flex flex-col items-center bg-[#EEEEEE] px-3 py-6 rounded-r inverted-corner-top-right-bold z-10">
+              <h1 
+                className="text-[30px] sm:text-[45px] md:text-[50px] lg:text-[55px] xl:text-[60px] text-dark font-bold text-base-content "
+                style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
+              >
+                ゆくえレコーズ
+              </h1>
+            </div>
           </div>
-          
-          {/* 日本語テキスト（右側） */}
-          <div className="flex flex-col items-center bg-[#EEEEEE] px-3 py-5 rounded-r inverted-corner-top-right-bold z-10">
-            <h1 
-              className="text-[30px] sm:text-[45px] md:text-[50px] lg:text-[55px] xl:text-[80px] text-black font-bold text-base-content "
-              style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
-            >
-              ゆくえレコーズ
-            </h1>
-            <img
-              src="/Logo_Mark.svg"
-              alt="ゆくえレコーズロゴ"
-              className="w-7 h-7 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 mt-4"
-            />
+        </div>
+
+        {/* === 説明文（オーバーレイ） === */}
+        <div className="absolute bottom-0 left-0 text-left">
+          <div className="max-w-ms p-4 text-sm sm:text-sm md:text-base lg:text-lg font-mono bg-[#EEEEEE] inverted-corner-left-bottom">
+            <p className="text-dark relative z-10">
+              ゆくえレコーズ主宰の駱駝法師 <br />
+              レーベルの運営メンバーのぴちが <br />
+              リスナーにおすすめしたい <br />
+              ボカロ曲を毎月更新するマイリスト
+            </p> 
           </div>
         </div>
       </div>
-
-      {/* === 説明文（オーバーレイ） === */}
-      <div className="absolute bottom-0 left-0 text-left ">
-        <div className="max-w-ms p-4 text-sm sm:text-sm md:text-base lg:text-lg font-mono bg-[#EEEEEE] inverted-corner-left-bottom ">
-          <p className="text-black/80 relative z-10">
-            ゆくえレコーズ主宰の駱駝法師 <br />
-            レーベルの運営メンバーのぴちが <br />
-            リスナーにおすすめしたい <br />
-            ボカロ曲を毎月更新するマイリスト
-          </p> 
-        </div>
-      </div>
-
-
-
-
     </div>
 
     {/* ボタン群（ヒーロー要素の下） */}
-    <div className="w-[min(1400px,calc(100vw-5rem))] mx-auto mt-4 flex gap-4 justify-center">
+    <div className="w-[min(1400px,calc(100vw-2rem))] mx-auto mt-4 flex gap-4 justify-center">
       <motion.button 
         className="btn btn-primary group relative overflow-hidden flex items-center"
         whileHover={{
@@ -313,7 +307,7 @@ export default function Hero() {
       
       <Link href="/archive" className="h-full block ">
         <motion.button 
-          className="btn btn-outline text-black bg-white/90"
+          className="btn btn-outline text-dark bg-white/90"
           whileHover={{
             scale: 1.03,
             boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
@@ -329,4 +323,4 @@ export default function Hero() {
     </div>
     </>
   )
-} 
+}
