@@ -9,7 +9,7 @@ import videos_2025_06 from "@/data/2025/videos_06.json";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
 const VideoCardMini = ({ video, onLoad, onPrivateVideo }: { 
-  video: { id?: string, url?: string, thumbnail?: string, ogpThumbnailUrl?: string }, 
+  video: { id?: string, url?: string, thumbnail?: string, ogpThumbnailUrl?: string | null }, 
   onLoad?: () => void,
   onPrivateVideo?: (videoId: string) => void
 }) => {
@@ -30,7 +30,7 @@ const VideoCardMini = ({ video, onLoad, onPrivateVideo }: {
         videoId={video.id ?? ""}
         videoUrl={video.url}
         thumbnail={video.thumbnail}
-        ogpThumbnailUrl={video.ogpThumbnailUrl}
+        ogpThumbnailUrl={video.ogpThumbnailUrl ?? undefined}
         width={320}
         height={180}
         className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
@@ -127,28 +127,28 @@ export default function Hero() {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
-    <div className="hero min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
+    <>
+    <div className="hero min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-3xl mx-auto my-8 w-[min(1400px,calc(100vw-5rem))] ring-1 ring-black/10">
       {/* === グリッド背景（インラインSVG） === */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <svg width="100%" height="100%" className="w-full h-full" style={{ position: 'absolute', inset: 0 }}>
+        <svg width="100%" height="100%" className="w-full h-full rounded-3xl" style={{ position: 'absolute', inset: 0 }}>
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
               <rect x="0" y="0" width="40" height="40" fill="none" stroke="#333" strokeWidth="1" />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" opacity="0.2" />
+          <rect width="100%" height="100%" fill="url(#grid)" opacity="0.2" rx="24" ry="24" />
         </svg>
       </div>
       {/* === 背景のビデオカード乱雑配置 === */}
       <VideoCardScatter />
-      {/* 黒の半透明オーバーレイ */}
-      <div className="absolute inset-0 bg-gray-900/45 z-10 pointer-events-none" />
+
 
 
 
 
       <motion.div
-        className="absolute bottom-20 right-1/3 w-3 h-3 bg-secondary/20 rounded-sm"
+        className="absolute bottom-20 right-1/3 w-3 h-3 bg-secondary/20 rounded-full"
         animate={{
           scale: [1, 1.3, 1],
           opacity: [0.2, 0.6, 0.2],
@@ -161,7 +161,7 @@ export default function Hero() {
         }}
       />
       <motion.div
-        className="absolute top-1/2 left-10 w-5 h-5 bg-accent/20 rounded-sm"
+        className="absolute top-1/2 left-10 w-5 h-5 bg-accent/20 rounded-full"
         animate={{
           scale: [1, 1.1, 1],
           opacity: [0.2, 0.4, 0.2],
@@ -176,7 +176,7 @@ export default function Hero() {
 
       {/* 背景の線形要素 */}
       <motion.div
-        className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent"
+        className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent rounded-full"
         animate={{
           scaleX: [0, 1, 0],
         }}
@@ -187,7 +187,7 @@ export default function Hero() {
         }}
       />
       <motion.div
-        className="absolute bottom-0 right-0 w-1 h-full bg-gradient-to-b from-transparent via-secondary/20 to-transparent"
+        className="absolute bottom-0 right-0 w-1 h-full bg-gradient-to-b from-transparent via-secondary/20 to-transparent rounded-full"
         animate={{
           scaleY: [0, 1, 0],
         }}
@@ -200,118 +200,87 @@ export default function Hero() {
       />
 
       <motion.div 
-        className="hero-content text-left relative z-20"
+        className="absolute top-0 right-8 text-right relative z-20 pt-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
       >
         <div className="max-w-md">
-          <motion.h1 
-            className="text-5xl text-white font-bold text-base-content cursor-pointer"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            whileHover={{ 
-              scale: 1.02,
-              textShadow: "0 0 20px rgba(0,0,0,0.3)"
-            }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
+          <h1 
+            className="text-5xl text-black font-bold text-base-content cursor-pointer bg-white tracking-tight inline-block w-fit"
           >
             ゆくえレコーズ
-          </motion.h1>
+          </h1>
 
-          {/* ここにMarquee3Dを追加 */}
-          {/* Marquee3Dは背景に配置 */}
-
-          <motion.h1 
-            className="text-xl text-white font-bold text-base-content cursor-pointer"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            whileHover={{ 
-              scale: 1.02,
-              textShadow: "0 0 20px rgba(0,0,0,0.3)"
-            }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
+          <h1 
+            className="text-xl text-black font-bold text-base-content cursor-pointer bg-white tracking-tight inline-block w-fit"
           >
             MONTHLY PICKUP PLAYLIST
-          </motion.h1>
+          </h1>
           
-          <motion.div 
-            className="text-sm text-primary"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ 
-              y: 0, 
-              opacity: 1,
-              x: isHovered ? 10 : 0
-            }}
-            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-          >
-            yukue Records
-          </motion.div>
-          
-          <motion.p 
-            className="py-6 text-white/80"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
-            whileHover={{ 
-              color: "white",
-              transition: { duration: 0.3 }
-            }}
-          >
-            ゆくえレコーズ主宰の駱駝法師、およびレーベルの運営メンバーのぴちが是非リスナーにおすすめしたい良質なボカロ曲を毎月更新するマイリストです！
-          </motion.p>
-          
-          <motion.div 
-            className="flex gap-4"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-          >
-            <motion.button 
-              className="btn btn-primary group relative overflow-hidden flex items-center"
-              whileHover={{
-                scale: 1.03,
-                boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
-                transition: { duration: 0.2, ease: "easeOut" }
-              }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => window.open("https://www.nicovideo.jp/user/131010307/mylist/76687470", "_blank", "noopener noreferrer")}
-            >
-              <motion.div
-                className="absolute inset-0 bg-white/20"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "100%" }}
-                transition={{ duration: 0.6, ease: "easeInOut" }}
-              />
-              <svg className="w-5 h-5 relative z-10" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
-              </svg>
-              <span className="relative z-10 ml-2">ニコニコマイリスト</span>
-            </motion.button>
-            
-            <Link href="/archive" className="w-full h-full block">
-              <motion.button 
-                className="btn btn-outline text-white w-full"
-                whileHover={{
-                  scale: 1.03,
-                  boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
-                  borderColor: "hsl(var(--p))",
-                  color: "hsl(var(--p))",
-                  transition: { duration: 0.2, ease: "easeOut" }
-                }}
-                whileTap={{ scale: 0.98 }}
-              >
-                アーカイブ
-              </motion.button>
-            </Link>
-          
-          </motion.div>
+          <div className="text-sm text-primary">yukue Records</div>
         </div>
       </motion.div>
+
+      {/* 説明文（左下） */}
+      <motion.div
+        className="absolute bottom-6 left-8 text-left relative z-20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+      >
+        <motion.p 
+          className="max-w-lg text-black/80 bg-white/90 tracking-tight p-3 rounded-md"
+          whileHover={{ 
+            color: "black",
+            transition: { duration: 0.3 }
+          }}
+        >
+          ゆくえレコーズ主宰の駱駝法師、およびレーベルの運営メンバーのぴちが是非リスナーにおすすめしたい良質なボカロ曲を毎月更新するマイリストです！
+        </motion.p>
+      </motion.div>
     </div>
+
+    {/* ボタン群（ヒーロー要素の下） */}
+    <div className="w-[min(1400px,calc(100vw-5rem))] mx-auto mt-4 flex gap-4 justify-end">
+      <motion.button 
+        className="btn btn-primary group relative overflow-hidden flex items-center"
+        whileHover={{
+          scale: 1.03,
+          boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
+          transition: { duration: 0.2, ease: "easeOut" }
+        }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => window.open("https://www.nicovideo.jp/user/131010307/mylist/76687470", "_blank", "noopener noreferrer")}
+      >
+        <motion.div
+          className="absolute inset-0 bg-white/20"
+          initial={{ x: "-100%" }}
+          whileHover={{ x: "100%" }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+        />
+        <svg className="w-5 h-5 relative z-10" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path>
+        </svg>
+        <span className="relative z-10 ml-2">ニコニコマイリスト</span>
+      </motion.button>
+      
+      <Link href="/archive" className="h-full block ">
+        <motion.button 
+          className="btn btn-outline text-black bg-white/90"
+          whileHover={{
+            scale: 1.03,
+            boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
+            borderColor: "hsl(var(--p))",
+            color: "hsl(var(--p))",
+            transition: { duration: 0.2, ease: "easeOut" }
+          }}
+          whileTap={{ scale: 0.98 }}
+        >
+          アーカイブ
+        </motion.button>
+      </Link>
+    </div>
+    </>
   )
 } 
