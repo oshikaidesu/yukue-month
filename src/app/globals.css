@@ -113,36 +113,91 @@ body {
 }
 
 /* Inverted corner bubble (反転コーナー吹き出し) スタイル */
-.inverted-corner-bubble {
+.inverted-corner-left-bottom {
   position: relative;
-  border-radius: 0px 8px 0px 8px;
+  border-radius: 0px 60px 0px 0px;
 }
 
-.inverted-corner-bubble::before {
+.inverted-corner-left-bottom::before {
   content: "";
   position: absolute;
-  top: -40px;
+  top: -60px;
   left: 0;
-  height: 40px;
-  width: 40px;
+  height: 60px;
+  width: 60px;
   background: transparent;
   border-bottom-left-radius: 50%;
-  box-shadow: 0 20px 0 0 #EEEEEE;
+  box-shadow: 0 30px 0 0 #EEEEEE;
 }
 
-.inverted-corner-bubble-right {
-  position: relative;
-  border-radius: 8px 0px 8px 0px;
-}
-
-.inverted-corner-bubble-right::before {
+.inverted-corner-left-bottom::after {
   content: "";
   position: absolute;
-  top: -40px;
-  right: 0;
-  height: 40px;
-  width: 40px;
+  bottom: 0px;
+  right: -60px;
+  height: 60px;
+  width: 60px;
   background: transparent;
-  border-bottom-right-radius: 50%;
-  box-shadow: 0 20px 0 0 #EEEEEE;
+  border-bottom-left-radius: 50%;  /* 右上を円形に切り取る */
+  box-shadow: 0 30px 0 0 #EEEEEE;  /* 上に20pxの影を出す */
+}
+
+/* Inverted corner bubble (反転コーナー吹き出し) スタイル */
+.inverted-corner-top-right {
+  position: relative;
+  border-radius: 0px 0px 0px 10px;
+}
+
+.inverted-corner-top-right::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: -20px;
+  height: 20px;
+  width: 20px;
+  background: transparent;
+  border-top-right-radius: 50%;
+  box-shadow: 0 -10px 0 0 #EEEEEE;
+}
+
+.inverted-corner-top-right::after {
+  content: "";
+  position: absolute;
+  bottom: -20px;  /* 下に20px出す */
+  right: 0px;   /* 右に20px出す */
+  height: 20px;   /* 正方形は20x20px */
+  width: 15px;
+  background: transparent;
+  border-top-right-radius: 50%;  /* 左上を円形に切り取る */
+  box-shadow: 0px -10px 0 0 #EEEEEE;  /* 左上方向に10px（高さの半分）ずらす */
+}
+
+/* Inverted corner bubble (反転コーナー吹き出し) スタイル - 太め */
+.inverted-corner-top-right-bold {
+  position: relative;
+  border-radius: 0px 0px 0px 40px;
+}
+
+.inverted-corner-top-right-bold::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: -25px;
+  height: 25px;
+  width: 25px;
+  background: transparent;
+  border-top-right-radius: 50%;
+  box-shadow: 0 -13px 0 0 #EEEEEE;
+}
+
+.inverted-corner-top-right-bold::after {
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  right: 0px;
+  height: 30px;
+  width: 30px;
+  background: transparent;
+  border-top-right-radius: 50%;
+  box-shadow: 0px -15px 0 0 #EEEEEE;
 }
