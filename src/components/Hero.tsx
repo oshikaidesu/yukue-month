@@ -144,7 +144,7 @@ export default function Hero() {
       <VideoCardScatter />
 
       {/* === タイトル群（オーバーレイ） === */}
-      <div className="absolute top-4 right-4 text-right z-20">
+      <div className="absolute top-0 right-0 text-right z-20">
         <div className="flex flex-col items-end gap-1">
           <h1 
             className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-black font-bold text-base-content cursor-pointer bg-[#EEEEEE] tracking-tight px-2 py-1 rounded transition-all duration-300"
@@ -163,10 +163,10 @@ export default function Hero() {
       </div>
 
       {/* === 説明文（オーバーレイ） === */}
-      <div className="absolute bottom-6 left-4 text-left z-20">
-        <p className="max-w-lg text-black/80 bg-[#EEEEEE] tracking-tight p-3 rounded-md">
+      <div className="absolute bottom-0 right-40 text-left z-20">
+        <p className="max-w-ms text-black/80 bg-[#EEEEEE] tracking-tight p-3 rounded-xl text-sm font-bold font-mono tracking-tighter">
           ゆくえレコーズ主宰の駱駝法師、およびレーベルの運営メンバーのぴちが是非リスナーにおすすめしたい良質なボカロ曲を毎月更新するマイリストです！
-        </p>
+        </p> 
       </div>
 
       <motion.div
