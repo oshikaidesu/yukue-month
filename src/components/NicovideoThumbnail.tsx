@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from 'next/image';
 
 // サムネイル画像表示専用
@@ -62,7 +62,7 @@ type Props = {
   onError?: (error: { type: 'private' | 'error', videoId: string }) => void;
   onPrivateVideo?: (videoId: string) => void;
   thumbnail?: string; // ローカルサムネイルパス
-  ogpThumbnailUrl?: string; // OGPサムネイルURL
+  ogpThumbnailUrl?: string | null; // OGPサムネイルURL
 };
 
 // プラットフォームを判定する関数
@@ -97,16 +97,13 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
   const platform = useMemo(() => detectPlatform(videoId, videoUrl), [videoId, videoUrl]);
 
   // サムネイル取得のメイン処理
-  const fetchThumbnail = () => {
-    console.log(`[NicovideoThumbnail] Starting thumbnail fetch for ${videoId}, platform: ${platform}`);
-    
+  const fetchThumbnail = useCallback(() => {
     setError(false);
     setIsLoading(true);
     setThumbnailUrl(null);
 
     // OGPサムネイルURLが利用可能な場合は最優先使用
     if (ogpThumbnailUrl) {
-      console.log(`[NicovideoThumbnail] Using OGP thumbnail for ${videoId}: ${ogpThumbnailUrl.substring(0, 50)}...`);
       setThumbnailUrl(ogpThumbnailUrl);
       setIsLoading(false);
       return;
@@ -114,7 +111,6 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
 
     // YouTube動画でogpThumbnailUrlがnullの場合は、ローカルサムネイルを優先使用
     if (platform === 'youtube' && thumbnail) {
-      console.log(`[NicovideoThumbnail] Using local thumbnail for YouTube video ${videoId}: ${thumbnail}`);
       setThumbnailUrl(thumbnail);
       setIsLoading(false);
       return;
@@ -122,7 +118,6 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
 
     // その他のローカルサムネイルが利用可能な場合は次に優先使用
     if (thumbnail) {
-      console.log(`[NicovideoThumbnail] Using local thumbnail for ${videoId}: ${thumbnail}`);
       setThumbnailUrl(thumbnail);
       setIsLoading(false);
       return;
@@ -131,7 +126,6 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     // ニコニコ動画の場合
     if (platform === 'nicovideo') {
       const nicoThumbnailUrl = `https://tn.smilevideo.jp/smile?i=${videoId}`;
-      console.log(`[NicovideoThumbnail] Using nico thumbnail URL: ${nicoThumbnailUrl}`);
       setThumbnailUrl(nicoThumbnailUrl);
       setIsLoading(false);
       return;
@@ -140,7 +134,6 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     // YouTubeの場合
     if (platform === 'youtube') {
       const youtubeUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-      console.log(`[NicovideoThumbnail] Using YouTube thumbnail: ${youtubeUrl}`);
       setThumbnailUrl(youtubeUrl);
       setIsLoading(false);
       return;
@@ -148,18 +141,16 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
 
     // その他の場合
     const defaultUrl = `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`;
-    console.log(`[NicovideoThumbnail] Using default thumbnail: ${defaultUrl}`);
     setThumbnailUrl(defaultUrl);
     setIsLoading(false);
-  };
+  }, [videoId, platform, thumbnail, ogpThumbnailUrl]);
 
   useEffect(() => {
     fetchThumbnail();
-  }, [videoId, platform, thumbnail, ogpThumbnailUrl]);
+  }, [fetchThumbnail]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {
-    console.log(`[NicovideoThumbnail] Image load error for ${videoId}: ${thumbnailUrl}`);
     setError(true);
     onError?.({ type: 'error', videoId });
   };
@@ -209,4 +200,4 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
   );
 });
 
-export default NicovideoThumbnail; 
+export default NicovideoThumbnail;

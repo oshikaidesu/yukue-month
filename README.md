@@ -1,3 +1,48 @@
+# Yukue Records Website
+
+## 変更点（軽量化・最適化）
+
+- Header/ Footer をサーバーコンポーネント化（`'use client'` を削除）
+  - これにより共通ナビゲーション分のクライアント JS を削減
+- VideoCards から `react-device-detect` の依存を除去し、`window.innerWidth` ベースの分岐に統一
+  - 追加バンドルの削減、実行コストの低減
+- `console.log` を本番コードから削除（`Hero.tsx` / `VideoCards.tsx` / `NicovideoThumbnail.tsx`）
+  - JS サイズの縮小、メインスレッド処理の削減
+- `PickupBackground.tsx` のスクロールリスナーを `passive: true` 化
+  - スクロール時のメインスレッド負荷を低減
+
+これらはレイアウト・アニメーションの見た目を変えずに適用しています。
+
+## Lighthouse/計測の注意（bfcache など）
+
+開発サーバー（`next dev --turbopack`）では以下の理由でスコアが悪化しやすいです。
+
+- HMR 用 WebSocket により「バックフォワードキャッシュ（bfcache）」が無効化される
+- メインリソースに `Cache-Control: no-store` が付与される
+
+本番相当での計測を行ってください。
+
+```bash
+npm run build
+npm start
+# http://localhost:3000 を Lighthouse/Pagespeed で計測
+```
+
+これで WebSocket/`no-store` は外れ、bfcache の失敗理由は解消されます。
+
+## 期待される効果（目安）
+
+- クライアント JS の初期実行時間を共通ヘッダー/フッター分だけ低減
+- 依存削減とログ削除により JS バンドル縮小（数十 KB 規模）
+- スクロール時のメインスレッド処理を軽量化
+
+## 補足
+
+- CSS/JS の最小化は本番ビルドで自動適用されます（Next.js 15）。
+- 追加の削減候補（要検討）
+  - `Hero.tsx` の背景データ（JSON）を動的 import して初期 JS をさらに削減
+  - `framer-motion` を `LazyMotion` で読み分け（アニメーション仕様は据え置き）
+  - DaisyUI の利用範囲を絞る（必要コンポーネントのみ）
 # ゆくえレコーズ MONTHLY PICKUP PLAYLIST
 
 リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト

@@ -48,14 +48,6 @@ export default function About() {
   const text2 = "ゆくえレコーズのキュレーションはレーベルの前身となるコンピレーション【合成音声のゆくえ】から一貫して「広野に散らばった点と点を新しい視点と文脈で結び、文化圏の深みに在る先鋭的なボカロ音楽へとリスナーがアクセスするハードルを下げる」ことをモットーにしています。"
   const text3 = "PICKUP PLAYLISTでは作り手の知名度やコミュニティ、ジャンルなどを問わず幅広くセレクトして紹介することでリスナーのための導線の整理だけでなく作り手のモチベーションの向上を目的としておりボカロ文化の更なる発展と深化を目指しています。"
   
-  const charCount1 = text1.length
-  const charCount2 = text2.length
-  const charCount3 = text3.length
-  
-  // 統一された終了時間を設定（例：2秒）
-  const unifiedEndTime = 2.0
-  const charDuration = 0.01
-  
   // 各テキストの開始時間を計算
   const delay1 = 0.5 // h1の終了時間（黒いバーが消えるタイミング）
   const delay2 = 0.7
@@ -115,4 +107,4 @@ export default function About() {
       <Footer />
     </div>
   )
-} 
+}

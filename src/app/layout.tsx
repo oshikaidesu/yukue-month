@@ -16,6 +16,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" data-theme="light">
+      <head>
+        {/* LCP画像の可能性があるドメインへ preconnect */}
+        <link rel="preconnect" href="https://img.youtube.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://i.ytimg.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://tn.smilevideo.jp" crossOrigin="anonymous" />
+      </head>
       <body className={inter.className}>
         {children}
       </body>
