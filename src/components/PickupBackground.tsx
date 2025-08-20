@@ -25,7 +25,7 @@ const PickupBackground: React.FC = () => {
   // 背景テキストのパターンを配列で管理（textプロパティ追加）
   const patterns = [
     {
-      className: '-left-[20vw] top-0 -translate-y-1/2 text-[7vw] text-gray-100 mix-blend-darken',
+      className: '-left-[20vw] top-0 -translate-y-1/2 text-[7vw] text-gray-100',
       style: { transform: `rotate(-90deg) translateY(0%) translateX(${leftX}%)`, zIndex: 0 },
       text: 'PICKUP PLAYLIST',
     },

@@ -18,6 +18,7 @@
   --color-accent: oklch(77% 0.152 181.912);
   --color-accent-content: oklch(38% 0.063 188.416);
   --color-neutral: #222222;
+  --color-text-dark: #222222;
   --color-neutral-content: oklch(92% 0.004 286.32);
   --color-info: oklch(74% 0.16 232.661);
   --color-info-content: oklch(29% 0.066 243.157);
@@ -146,6 +147,7 @@ body {
 .inverted-corner-top-right {
   position: relative;
   border-radius: 0px 0px 0px 10px;
+  box-shadow: 0 0 0 0.1px #EEEEEE;
 }
 
 .inverted-corner-top-right::before {
