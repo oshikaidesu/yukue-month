@@ -7,15 +7,7 @@ import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
 import { isMobile as isMobileDevice } from 'react-device-detect';
 
 
-interface VideoItem {
-  id: string;
-  title: string;
-  artist: string;
-  url: string;
-  thumbnail?: string; // ローカルサムネイルパス
-  ogpThumbnailUrl?: string; // OGPサムネイルURL
-  // 必要に応じて他のプロパティもここに追加
-}
+import { VideoItem } from '@/types/video';
 // props型を追加
 interface VideoCardsProps {
   videoList?: VideoItem[];
