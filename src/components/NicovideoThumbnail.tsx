@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from 'next/image';
 
 // サムネイル画像表示専用
-function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading }: {
+function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading, quality, sizes }: {
   src: string,
   alt: string,
   width: number,
@@ -10,9 +10,11 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
   className?: string,
   onError?: () => void,
   onLoad?: () => void,
-  loading?: "lazy" | "eager"
+  loading?: "lazy" | "eager",
+  quality?: number,
+  sizes?: string
 }) {
-  return (
+      return (
     <Image
       src={src}
       alt={alt}
@@ -22,6 +24,8 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
       onError={onError}
       onLoad={onLoad}
       loading={loading}
+      quality={quality}
+      sizes={sizes}
     />
   );
 }
@@ -63,6 +67,8 @@ type Props = {
   onPrivateVideo?: (videoId: string) => void;
   thumbnail?: string; // ローカルサムネイルパス
   ogpThumbnailUrl?: string | null; // OGPサムネイルURL
+  quality?: number; // 画質設定（1-100）
+  sizes?: string; // レスポンシブサイズ設定
 };
 
 // プラットフォームを判定する関数
@@ -88,7 +94,18 @@ function detectPlatform(videoId: string, videoUrl?: string): 'nicovideo' | 'yout
 }
 
 const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) {
-  const { videoId, videoUrl, width = 312, height = 176, className = "", onError, thumbnail, ogpThumbnailUrl } = props;
+  const { 
+    videoId, 
+    videoUrl, 
+    width = 312, 
+    height = 176, 
+    className = "", 
+    onError, 
+    thumbnail, 
+    ogpThumbnailUrl,
+    quality = 75,
+    sizes
+  } = props;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -185,6 +202,8 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
         onError={handleImageError}
         onLoad={props.onLoad}
         loading={props.loading}
+        quality={quality}
+        sizes={sizes}
       />
     );
   }

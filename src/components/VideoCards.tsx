@@ -501,6 +501,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   onLoad={() => handleThumbnailLoad(index)}
                   onPrivateVideo={handlePrivateVideo}
                   loading="lazy"
+                  quality={75} // 画質を75%に設定
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // レスポンシブな画像サイズ
                 />
               </motion.figure>
               
@@ -521,6 +523,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     height={280}
                     className="w-full h-full object-cover"
                     loading="eager"
+                    quality={75}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 )}
                 {/* ホバー時の暗いオーバーレイ */}
