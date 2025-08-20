@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
+import { isMobile as isMobileDevice } from 'react-device-detect';
 
 
 interface VideoItem {
@@ -12,7 +13,7 @@ interface VideoItem {
   artist: string;
   url: string;
   thumbnail?: string; // ローカルサムネイルパス
-  ogpThumbnailUrl?: string | null; // OGPサムネイルURL
+  ogpThumbnailUrl?: string; // OGPサムネイルURL
   // 必要に応じて他のプロパティもここに追加
 }
 // props型を追加
@@ -32,12 +33,14 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   // SSR対策: マウント前は描画しない
   const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   // 2列以上かどうかを判定するstateを追加
   const [isMultiColumn, setIsMultiColumn] = useState(false);
   // 500エラーが継続する動画のIDを管理（非公開または問題のある動画）
   const [privateVideoIds, setPrivateVideoIds] = useState<Set<string>>(new Set());
   useEffect(() => { 
     setMounted(true);
+    setIsMobile(isMobileDevice);
     // 2列以上かどうかを判定（例: 640px以上で2列）
     const checkMultiColumn = () => {
       setIsMultiColumn(window.innerWidth >= 640); // sm: 640px以上で2列
@@ -119,6 +122,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
 
   // 500エラーが継続する動画を検出した時のハンドラー
   const handlePrivateVideo = useCallback((videoId: string) => {
+    console.log(`500エラーが継続する動画を除外: ${videoId}`);
     setPrivateVideoIds(prev => new Set(prev).add(videoId));
   }, []);
 
@@ -154,7 +158,6 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   // スクロール・リサイズ時に中央付近判定
   useEffect(() => {
     if (!mounted) return;
-    const isMobile = windowSize.width < 768;
     if (!isMobile) return;
     const handleCheckCenter = () => {
       const windowCenter = window.innerHeight / 2;
@@ -178,7 +181,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
       window.removeEventListener('scroll', handleCheckCenter);
       window.removeEventListener('resize', handleCheckCenter);
     };
-  }, [mounted, windowSize, currentPage, shuffledVideos, getDisplayVideos]);
+  }, [mounted, windowSize, currentPage, shuffledVideos, isMobile, getDisplayVideos]);
 
   // サムネイル読み込み状態を管理
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState<boolean[]>([]);
@@ -226,7 +229,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
             const isThumbnailLoaded = thumbnailsLoaded[index];
             // PCは常にホバー/タッチ、スマホ2列以上はタッチのみ、スマホ1列は中央判定
             const isActive = mounted && isThumbnailLoaded && (
-              (windowSize.width < 768)
+              isMobile
                 ? (
                   isMultiColumn
                     ? isTouched // スマホ2列以上はタッチのみ
@@ -235,7 +238,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 : (isHovered || isTouched) // PCは常にホバー/タッチ
             );
             // スマホ2列以上のときだけホバーイベントを無効化
-            const isTouchOnly = (windowSize.width < 768) && isMultiColumn;
+            const isTouchOnly = isMobile && isMultiColumn;
             return (
             <motion.div
               key={video.id}
@@ -257,8 +260,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
               }}
               >
                 {/* 装飾図形 - カード内に配置 */}
-                {isActive && (
-                <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-100`} style={{ willChange: 'opacity', transform: 'translateZ(0)' }}>
+                <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`} style={{ willChange: 'opacity', transform: 'translateZ(0)' }}>
                   {/* 丸 - 上方向に飛び出す */}
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 0)} ${getFixedColor(index, 0)} rounded-full pointer-events-none`}
@@ -486,7 +488,6 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     }}
                   />
                 </div>
-                )}
               {/* サムネイル（共通） */}
               <motion.figure className="relative z-20 overflow-hidden">
                 <NicovideoThumbnail
