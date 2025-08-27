@@ -268,8 +268,8 @@ export default function Hero() {
         </div>
 
         {/* === 説明文（オーバーレイ） === */}
-        <div className="absolute bottom-0 left-0 text-left">
-          <div className="max-w-ms p-4 text-sm sm:text-sm md:text-base lg:text-lg font-mono bg-[#EEEEEE] inverted-corner-left-bottom">
+        <div className="absolute bottom-0 left-0 text-left ">
+          <div className="max-w-ms px-8 py-5 text-sm sm:text-sm md:text-base lg:text-lg font-mono bg-[#EEEEEE] inverted-corner-left-bottom">
             <p className="text-dark relative z-10 text-mask-left">
               ゆくえレコーズ主宰の駱駝法師 <br />
               レーベルの運営メンバーのぴちが <br />
@@ -282,9 +282,9 @@ export default function Hero() {
     </div>
 
     {/* ボタン群（ヒーロー要素の下） */}
-    <div className="w-[min(1400px,calc(100vw-2rem))] mx-auto mt-4 flex gap-4 justify-center">
+    <div className="w-[min(1400px,calc(100vw-2rem))] mx-auto mt-4 flex items-center gap-4 justify-center">
       <motion.button 
-        className="btn btn-primary group relative overflow-hidden flex items-center"
+        className="btn btn-primary group relative overflow-hidden flex items-center justify-center w-[220px]"
         whileHover={{
           scale: 1.03,
           boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
@@ -305,9 +305,9 @@ export default function Hero() {
         <span className="relative z-10 ml-2">ニコニコマイリスト</span>
       </motion.button>
       
-      <Link href="/archive" className="h-full block ">
+      <Link href="/archive">
         <motion.button 
-          className="btn btn-outline text-dark bg-white/90"
+          className="btn btn-outline text-dark bg-white/90 flex items-center justify-center w-[220px]"
           whileHover={{
             scale: 1.03,
             boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
