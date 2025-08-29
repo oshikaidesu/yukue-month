@@ -463,7 +463,13 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   />
                 </div>
               {/* サムネイル（共通） */}
-              <motion.figure className="relative z-20 overflow-hidden">
+              <motion.figure 
+                className="relative z-20 overflow-hidden"
+                style={{
+                  willChange: 'transform',
+                  perspective: '1000px'
+                }}
+              >
                 <NicovideoThumbnail
                   videoId={video.id ?? ""}
                   videoUrl={video.url}
@@ -479,31 +485,33 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 />
               </motion.figure>
               
-              {/* ホバー時の全面画像表示 */}
+              {/* ホバー時の全面画像表示を削除し、トランスフォームアニメーションに置き換え */}
               <motion.div 
                 className="absolute inset-0 z-40 pointer-events-none overflow-hidden rounded-lg"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isActive ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ 
+                  opacity: 0,
+                  scale: 1,
+                  transformOrigin: 'center center'
+                }}
+                animate={{ 
+                  opacity: isActive ? 0.8 : 0,
+                  scale: isActive ? 1.1 : 1,
+                  transition: { 
+                    duration: 0.3, 
+                    ease: "easeOut" 
+                  }
+                }}
+                style={{
+                  willChange: 'transform, opacity',
+                  backdropFilter: 'brightness(0.8)',
+                  transformStyle: 'preserve-3d',
+                  backfaceVisibility: 'hidden'
+                }}
               >
-                {isThumbnailLoaded && (
-                  <NicovideoThumbnail
-                    videoId={video.id ?? ""}
-                    videoUrl={video.url}
-                    thumbnail={video.thumbnail}
-                    ogpThumbnailUrl={video.ogpThumbnailUrl}
-                    width={400}
-                    height={280}
-                    className="w-full h-full object-cover"
-                    loading="eager"
-                    quality={75}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                )}
-                {/* ホバー時の暗いオーバーレイ */}
+                {/* 暗いオーバーレイ */}
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-800/80 via-gray-800/20 to-transparent" />
                 
-                {/* ホバー時の動画情報 */}
+                {/* 動画情報 */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                   <h3 className="text-lg font-bold line-clamp-2 mb-1 drop-shadow-lg">
                     {video.title}
