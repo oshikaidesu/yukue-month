@@ -67,7 +67,7 @@ export default function ArchivePage() {
       <PickupBackground />
       <div className="relative z-10">
         <Header />
-        <div className="max-w-7xl mx-auto px-4 pt-30 pb-12">
+        <div className="max-w-7xl mx-auto pt-30 pb-12">
           <h1 className="text-3xl font-bold mb-6 text-center">アーカイブ</h1>
           <div className="flex flex-col items-center mb-8 gap-4">
             <div className="w-full flex justify-center">
