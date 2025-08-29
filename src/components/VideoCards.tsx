@@ -473,8 +473,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       perspective: '1000px'
                     }}
                     animate={{
-                      scale: isActive ? 1.6 : 1,
-                      y: isActive ? '30%' : '0%',
+                      scale: isActive ? 1.55 : 1,
+                      y: isActive ? '26.5%' : '0%',
                       transition: { duration: 0.2, ease: "easeOut" }
                     }}
                     initial={{
