@@ -223,8 +223,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
               onHoverEnd={isTouchOnly || !isMultiColumn ? undefined : () => setHoveredCard(null)}
               onTouchStart={() => setTouchedCard(video.id)}
               onTouchEnd={() => setTouchedCard(null)}
-              whileHover={!isMultiColumn ? undefined : { 
-                  scale: 1.05,
+              animate={{
+                  scale: isActive ? 1.1 : 1,
                   transition: { duration: 0.4, ease: "easeOut" }
                 }}
               style={{ 
@@ -538,10 +538,10 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   <motion.div 
                       className="absolute inset-0 top-40 bg-base-200 z-10 rounded-b-lg"
                     layout
-                    animate={{
-                      y: isActive ? 120 : 0,
-                      transition: { duration: 0.5, ease: "easeOut", delay: isActive ? 0.05 : 0 }
-                    }}
+                                          animate={{
+                        y: isActive ? 120 : 0,
+                        transition: { duration: 0.5, ease: "easeOut" }
+                      }}
                     />
                     
                     {/* カード情報の文字 */}
@@ -550,7 +550,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       layout
                       animate={{
                         y: isActive ? 140 : 0,
-                        transition: { duration: 0.5, ease: "easeOut", delay: isActive ? 0.1 : 0 }
+                        transition: { duration: 0.5, ease: "easeOut" }
                       }}
                     >
                   <motion.h3 
@@ -558,7 +558,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     layout
                     animate={{
                       y: isActive ? 160 : 0,
-                      transition: { duration: 0.5, ease: "easeOut", delay: isActive ? 0.15 : 0 }
+                      transition: { duration: 0.5, ease: "easeOut" }
                     }}
                     whileHover={!isMultiColumn ? undefined : { 
                       y: -2,
@@ -573,7 +573,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   layout
                     animate={{
                       y: isActive ? 180 : 0,
-                      transition: { duration: 0.5, ease: "easeOut", delay: isActive ? 0.2 : 0 }
+                      transition: { duration: 0.5, ease: "easeOut" }
                     }}
                     whileHover={!isMultiColumn ? undefined : { 
                       y: -1,
