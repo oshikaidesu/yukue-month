@@ -22,24 +22,53 @@ export default function CardDecorations({
     // return null;
   }
 
+  // 超超分散アニメーション用のヘルパー関数（0.005秒間隔）
+  const getUltraStaggeredTransition = (shapeIndex: number) => ({
+    // プロパティごとに極細かく遅延
+    x: { 
+      delay: shapeIndex * 0.01, // 0.01秒ずつ遅延
+      duration: 0.18, 
+      ease: "easeOut" 
+    },
+    y: { 
+      delay: shapeIndex * 0.01 + 0.005, // x より 0.005秒後
+      duration: 0.18, 
+      ease: "easeOut" 
+    },
+    scale: { 
+      delay: shapeIndex * 0.01 + 0.01, // y より 0.005秒後
+      duration: 0.18, 
+      ease: "easeOut" 
+    },
+    rotate: { 
+      delay: shapeIndex * 0.01 + 0.015, // scale より 0.005秒後
+      duration: 0.5, 
+      ease: "easeOut" 
+    }
+  });
+
+  // 動的will-changeスタイル
+  const getDynamicStyle = (baseTransform = 'translateZ(0)') => ({
+    transform: baseTransform,
+    willChange: isActive ? 'transform' : 'auto'
+  });
+
   return (
     <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`} style={{ willChange: 'opacity', transform: 'translateZ(0)' }}>
       {/* 丸 - 上方向に飛び出す */}
       <motion.div
         className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 0)} ${getFixedColor(index, 0)} rounded-full pointer-events-none`}
-        style={{ transform: 'translateZ(0)' }}
+        style={{ 
+          transform: 'translateZ(0)',
+          willChange: isActive ? 'transform' : 'auto' // 動的will-change
+        }}
         initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
         animate={isActive ? {
           x: 'calc(-50% + 80px)',
           y: 'calc(-50% - 150px)',
           scale: 1.2,
           rotate: 150,
-          transition: { 
-            x: { duration: 0.3, ease: "easeOut" },
-            y: { duration: 0.3, ease: "easeOut" },
-            scale: { duration: 0.3, ease: "easeOut" },
-            rotate: { duration: 1, ease: "easeOut" }
-          }
+          transition: getUltraStaggeredTransition(0) // 超分散アニメーション
         } : {
           x: '-50%',
           y: '-50%',
@@ -52,19 +81,17 @@ export default function CardDecorations({
       {/* 三角 - 左上方向に飛び出す */}
       <motion.div
         className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 1)} ${getFixedColor(index, 1)} pointer-events-none`}
-        style={{ clipPath: 'polygon(50% 0%, 0% 86.6%, 100% 86.6%)', transform: 'translateZ(0)' }}
+        style={{ 
+          clipPath: 'polygon(50% 0%, 0% 86.6%, 100% 86.6%)', 
+          ...getDynamicStyle()
+        }}
         initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
         animate={isActive ? {
           x: 'calc(-50% - 170px)',
           y: 'calc(-50% - 170px)',
           scale: 1.2,
           rotate: 150,
-          transition: { 
-            x: { duration: 0.3, ease: "easeOut" },
-            y: { duration: 0.3, ease: "easeOut" },
-            scale: { duration: 0.3, ease: "easeOut" },
-            rotate: { duration: 1, ease: "easeOut" }
-          }
+          transition: getUltraStaggeredTransition(1) // 超分散アニメーション
         } : {
           x: '-50%',
           y: '-50%',

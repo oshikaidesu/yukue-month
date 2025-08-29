@@ -257,8 +257,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     }}
                     animate={{
                       scale: isActive ? 1.55 : 1,
-                      y: isActive ? '26.5%' : '0%',
-                      transition: { duration: 0.2, ease: "easeOut" }
+                      y: isActive ? '27%' : '0%',
+                      transition: { duration: 0.15, ease: "easeOut" } // 0.2s→0.15sに高速化
                     }}
                     initial={{
                       transformOrigin: 'center center'

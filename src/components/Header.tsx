@@ -6,6 +6,7 @@
  */
 import Image from 'next/image';
 import Link from "next/link";
+
 export default function Header() {
   return (
     <div className="drawer">
@@ -45,31 +46,38 @@ export default function Header() {
           {/* デスクトップ用ナビゲーションメニュー（lg: 1024px以上で表示） */}
           <div className="hidden flex-none lg:block">
             <ul className="menu menu-horizontal">
-            <li>
-            <Link href="/archive" className="flex items-center gap-3">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.03v13m0-13c-2.819-.831-4.715-1.076-8.029-1.023A.99.99 0 0 0 3 6v11c0 .563.466 1.014 1.03 1.007 3.122-.043 5.018.212 7.97 1.023m0-13c2.819-.831 4.715-1.076 8.029-1.023A.99.99 0 0 1 21 6v11c0 .563-.466 1.014-1.03 1.007-3.122-.043-5.018.212-7.97 1.023"/>
-              </svg>
-              アーカイブ
-            </Link>
-          </li>
-          <li>
-            <Link href="/about" className="flex items-center gap-3">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              Concept
-            </Link>
-          </li>
-          <li>
-            <Link href="https://yukuerecords.studio.site/contact" className="flex items-center gap-3">
-            <Image src="/mail.svg" alt="contact" width={20} height={20} className="w-5 h-4" unoptimized />
-              お問い合わせ・デモ音源
-            </Link>
-          </li>
+              {/* 公式HPを一番上に配置 */}
+              <li>
+                <Link href="https://yukuerecords.studio.site/" className="flex items-center gap-3">
+                  <Image src="/Logo_Mark.svg" alt="Yukue Logo Mark" width={20} height={20} className="w-5 h-4" unoptimized />
+                  公式HP
+                </Link>
+              </li>
+              {/* Kiiteリンク */}
+              <li>
+                <Link href="https://kiite.jp/user/yukue_records" className="flex items-center gap-3">
+                  <Image src="/kiite_favicon.png" alt="Kiite" width={20} height={20} className="w-5 h-5 rounded-full" unoptimized />
+                  Kiite
+                </Link>
+              </li>
+              <li>
+                <Link href="/archive" className="flex items-center gap-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.03v13m0-13c-2.819-.831-4.715-1.076-8.029-1.023A.99.99 0 0 0 3 6v11c0 .563.466 1.014 1.03 1.007 3.122-.043 5.018.212 7.97 1.023m0-13c2.819-.831 4.715-1.076 8.029-1.023A.99.99 0 0 1 21 6v11c0 .563-.466 1.014-1.03 1.007-3.122-.043-5.018.212-7.97 1.023"/>
+                  </svg>
+                  アーカイブ
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="flex items-center gap-3">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Concept
+                </Link>
+              </li>
             </ul>
           </div>
-          
         </div>
       </div>
       
@@ -113,20 +121,16 @@ export default function Header() {
               Concept
             </Link>
           </li>
-          <li>
-            <Link href="https://yukuerecords.studio.site/contact" className="flex items-center gap-3">
-            <Image src="/mail.svg" alt="contact" width={20} height={20} className="w-5 h-4" unoptimized />
-              お問い合わせ・デモ音源
-            </Link>
-          </li>
+          {/* お問い合わせリンクを削除 */}
           
           {/* セパレーター */}
           <div className="divider"></div>
           
-          {/* カテゴリメニュー */}
+          {/* 外部リンクメニュー */}
           <li className="menu-title">
-            <span>各種リンク</span>
+            <span>外部リンク</span>
           </li>
+          {/* 公式HPを一番上に配置 */}
           <li>
             <Link href="https://yukuerecords.studio.site/" className="flex items-center gap-3">
               <Image src="/Logo_Mark.svg" alt="Yukue Logo Mark" width={20} height={20} className="w-5 h-4" unoptimized />
@@ -134,65 +138,24 @@ export default function Header() {
             </Link>
           </li>
 
+          {/* Kiiteのみ残す */}
           <li>
-            <Link href="https://twitter.com/YUKUE_RECORDS" className="flex items-center gap-3">
-              <Image src="/x.svg" alt="X (Twitter)" width={20} height={20} className="w-5 h-4" unoptimized />
-              X(Twitter)
-            </Link>
-          </li>
-          
-          <li>
-            <Link href="https://www.youtube.com/@YUKUE_RECORDS" className="flex items-center gap-3">
-              <Image src="/youtube.svg" alt="YouTube" width={20} height={20} className="w-5 h-4" unoptimized />
-              YouTube
+            <Link href="https://kiite.jp/user/yukue_records" className="flex items-center gap-3">
+              <Image src="/kiite_favicon.png" alt="Kiite" width={20} height={20} className="w-5 h-5 rounded-full" unoptimized />
+              Kiite
             </Link>
           </li>
 
-            <li>
-              <Link href="https://www.nicovideo.jp/user/131010307" className="flex items-center gap-3">
-                <Image src="/niconico.svg" alt="niconico" width={20} height={20} className="w-5 h-4" unoptimized />
-                niconico
-              </Link>
-            </li>
-
-            <li>
-              <Link href="https://yukuerecords.bandcamp.com/album/s" className="flex items-center gap-3">
-                <Image src="/bandcamp.svg" alt="bandcamp" width={20} height={20} className="w-5 h-4" unoptimized />
-                bandcamp
-              </Link>
-            </li>
-            
-            <li>
-              <Link href="https://www.instagram.com/yukue_records/" className="flex items-center gap-3">
-                <Image src="/instagram.svg" alt="Instagram" width={20} height={20} className="w-5 h-4" unoptimized />
-                Instagram
-              </Link>
-            </li>
-
-            <li>
-              <Link href="https://big-up.style/labels/649" className="flex items-center gap-3">
-                <Image src="/music-note.svg" alt="musicbrainz" width={20} height={20} className="w-5 h-4" unoptimized />
-                配信先(BIG UP!)
-              </Link>
-            </li>
-
-            <li>
-              <Link href="https://kiite.jp/user/yukue_records" className="flex items-center gap-3">
-                <Image src="/kiite_favicon.png" alt="musicbrainz" width={20} height={20} className="w-5 h-5 rounded-full" unoptimized />
-                Kiite
-              </Link>
-            </li>
-          
-          
-          
-
-          
-          {/* セパレーター */}
-          <div className="divider"></div>
-          
-          
+          {/* 削除されたリンク
+          - X(Twitter)
+          - YouTube  
+          - niconico
+          - bandcamp
+          - Instagram
+          - BIG UP!
+          */}
         </ul>
       </div>
     </div>
-  )
-} 
+  );
+}

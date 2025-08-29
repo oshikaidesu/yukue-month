@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  // Wrangler用の設定 - APIルートを有効にする
-  // output: 'export', // コメントアウト
+  // GitHub Pages用の設定
+  output: 'export',
   trailingSlash: true,
   experimental: {
     // 本番ビルドで console を除去（error/warn は維持）
