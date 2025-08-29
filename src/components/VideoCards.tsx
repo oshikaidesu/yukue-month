@@ -488,7 +488,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   ogpThumbnailUrl={video.ogpThumbnailUrl}
                   width={400}
                   height={225}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center"
                   onLoad={() => handleThumbnailLoad(index)}
                   loading="lazy"
                   quality={75} // 画質を75%に設定
@@ -506,7 +506,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 }}
                 animate={{ 
                   opacity: isActive ? 0.8 : 0,
-                  scale: isActive ? 1.1 : 1,
+                  scale: 1,
                   transition: { 
                     duration: 0.3, 
                     ease: "easeOut" 
@@ -520,11 +520,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 }}
               >
                 {/* 暗いオーバーレイ */}
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-800/80 via-gray-800/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-800/50 via-gray-800/10 to-transparent" />
                 
                 {/* 動画情報 */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                  <h3 className="text-lg font-bold line-clamp-2 mb-1 drop-shadow-lg">
+                  <h3 className="text-lg font-bold line-clamp-1 mb-1 drop-shadow-lg">
                     {video.title}
                   </h3>
                   <p className="text-sm opacity-90 truncate flex items-center justify-between drop-shadow-lg">
@@ -562,7 +562,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       }}
                     >
                   <motion.h3 
-                    className={`card-title text-base line-clamp-2 transition-all duration-500 ease-out ${isMultiColumn ? 'group-hover:text-white group-hover:drop-shadow-lg' : ''}`}
+                    className={`card-title text-base line-clamp-1 transition-all duration-500 ease-out ${isMultiColumn ? 'group-hover:text-white group-hover:drop-shadow-lg' : ''}`}
                     layout
                     animate={{
                       y: isActive ? 160 : 0,

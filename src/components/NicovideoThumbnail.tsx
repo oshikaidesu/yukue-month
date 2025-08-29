@@ -20,7 +20,7 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
       alt={alt}
       width={width}
       height={height}
-      className={`rounded-lg object-cover ${className ?? ''}`}
+      className={`rounded-lg object-cover object-center ${className ?? ''}`}
       onError={onError}
       onLoad={onLoad}
       loading={loading}
@@ -43,7 +43,11 @@ function NicovideoIframeFallback({ videoId, width, height, className }: {
       height={height} 
       src={`https://ext.nicovideo.jp/thumb/${videoId}`} 
       scrolling="no" 
-      style={{ border: 'none' }} 
+      style={{ 
+        border: 'none',
+        objectFit: 'cover',
+        objectPosition: 'center'
+      }} 
       frameBorder="0"
       className={`rounded-lg ${className ?? ''}`}
       title={`${videoId} のサムネイル`}
