@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
-import { isMobile as isMobileDevice } from 'react-device-detect';
+ 
 
 
 import { VideoItem } from '@/types/video';
@@ -21,18 +21,13 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const [windowSize, setWindowSize] = useState({ width: 1024, height: 768 });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const cardsRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   // SSR対策: マウント前は描画しない
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   // 2列以上かどうかを判定するstateを追加
   const [isMultiColumn, setIsMultiColumn] = useState(false);
-  // 500エラーが継続する動画のIDを管理（非公開または問題のある動画）
-  const [privateVideoIds, setPrivateVideoIds] = useState<Set<string>>(new Set());
   useEffect(() => { 
     setMounted(true);
-    setIsMobile(isMobileDevice);
     // 2列以上かどうかを判定（例: 640px以上で2列）
     const checkMultiColumn = () => {
       setIsMultiColumn(window.innerWidth >= 640); // sm: 640px以上で2列
@@ -47,8 +42,8 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   // カードごとのref配列
   const cardItemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // 図形の種類数（丸・三角・四角・渦巻き線・渦巻き線2・小丸・六角形・星型・ダイヤモンド）
-  const SHAPE_COUNT = 7;
+  // 図形の種類数（丸・三角・四角・渦巻き線・渦巻き線2・小丸・星型・ダイヤモンド）
+  const SHAPE_COUNT = 8;
 
   // useMemo で videos → videoList ?? videos に変更
   const fixedColorsAndSizes = useMemo(() => {
@@ -64,7 +59,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
       'bg-gradient-to-r from-blue-200 from-0% via-emerald-50 via-50% to-slate-300 to-100%',
       'bg-gradient-to-br from-green-300 from-0% to-red-300 to-100%'
     ];
-    const sizes = ['w-16 h-16', 'w-20 h-20', 'w-24 h-24', 'w-28 h-28', 'w-32 h-32', 'w-36 h-36', 'w-40 h-40'];
+    const sizes = ['w-16 h-16', 'w-20 h-20', 'w-24 h-24', 'w-28 h-28', 'w-32 h-32', 'w-36 h-36'];
     // 各動画ごとに図形ごとに色・サイズをランダムで決定
     return (videoList ?? []).map((_, videoIdx) =>
       Array.from({ length: SHAPE_COUNT }, (_, shapeIdx) => {
@@ -89,11 +84,12 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
 
   // 年月の表示
   const yearMonth = dataPath ? getYearMonthFromPath(dataPath) : null;
+  // 画面幅でモバイル判定
+  const isMobile = windowSize.width < 768;
 
   useEffect(() => {
-    // 全動画を取得してランダムに並び替え（500エラーが継続する動画を除外）
-    const validVideos = (videoList ?? []).filter(video => !privateVideoIds.has(video.id));
-    const shuffled = [...validVideos].sort(() => Math.random() - 0.5);
+    // 全動画を取得してランダムに並び替え
+    const shuffled = [...(videoList ?? [])].sort(() => Math.random() - 0.5);
     setShuffledVideos(shuffled);
 
     // ウィンドウサイズの取得
@@ -110,32 +106,23 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     // リサイズイベントリスナー
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [videoList, privateVideoIds]);
-
-  // 500エラーが継続する動画を検出した時のハンドラー
-  const handlePrivateVideo = useCallback((videoId: string) => {
-    console.log(`500エラーが継続する動画を除外: ${videoId}`);
-    setPrivateVideoIds(prev => new Set(prev).add(videoId));
-  }, []);
+  }, [videoList]);
 
   // 表示する動画を決定（PCでは全件、スマホではページネーション）
   const getDisplayVideos = useCallback(() => {
-    // 500エラーが継続する動画を除外
-    const validVideos = shuffledVideos.filter(video => !privateVideoIds.has(video.id));
-    
     if (windowSize.width >= 768) {
       // PC・タブレットでは全件表示
-      return validVideos;
+      return shuffledVideos;
     } else {
       // スマホでは８個区切りで表示
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
-      return validVideos.slice(startIndex, endIndex);
+      return shuffledVideos.slice(startIndex, endIndex);
     }
-  }, [windowSize.width, shuffledVideos, currentPage, itemsPerPage, privateVideoIds]);
+  }, [windowSize.width, shuffledVideos, currentPage, itemsPerPage]);
 
-  // 総ページ数を計算（500エラーが継続する動画を除外した数で計算）
-  const validVideosCount = shuffledVideos.filter(video => !privateVideoIds.has(video.id)).length;
+  // 総ページ数を計算
+  const validVideosCount = shuffledVideos.length;
   const totalPages = Math.ceil(validVideosCount / itemsPerPage);
 
   // ページ変更ハンドラー
@@ -207,14 +194,9 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
         </div>
 
         {/* 動画リスト */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10 relative" ref={cardsRef}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10 relative">
           
           {getDisplayVideos().map((video, index) => {
-            // 500エラーが継続する動画はスキップ
-            if (privateVideoIds.has(video.id)) {
-              return null;
-            }
-            
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
             // サムネイル読み込み済みかどうか
@@ -237,11 +219,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 className={`card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-xs mx-auto min-h-[240px] z-10 overflow-visible ${!isThumbnailLoaded ? 'opacity-50 pointer-events-none' : ''}`}
               ref={el => { cardItemRefs.current[index] = el; }}
               onClick={() => window.open(video.url, '_blank')}
-              onHoverStart={isTouchOnly ? undefined : () => setHoveredCard(video.id)}
-              onHoverEnd={isTouchOnly ? undefined : () => setHoveredCard(null)}
+              onHoverStart={isTouchOnly || !isMultiColumn ? undefined : () => setHoveredCard(video.id)}
+              onHoverEnd={isTouchOnly || !isMultiColumn ? undefined : () => setHoveredCard(null)}
               onTouchStart={() => setTouchedCard(video.id)}
               onTouchEnd={() => setTouchedCard(null)}
-              whileHover={{ 
+              whileHover={!isMultiColumn ? undefined : { 
                   scale: 1.05,
                   transition: { duration: 0.4, ease: "easeOut" }
                 }}
@@ -262,12 +244,12 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       x: 'calc(-50% + 80px)',
                       y: 'calc(-50% - 150px)',
                       scale: 1.2,
-                      rotate: 360,
+                      rotate: 150,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 8, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -280,18 +262,18 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   {/* 三角 - 左上方向に飛び出す */}
                   <motion.div
                     className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 1)} ${getFixedColor(index, 1)} pointer-events-none`}
-                    style={{ clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)', transform: 'translateZ(0)' }}
+                    style={{ clipPath: 'polygon(50% 0%, 0% 86.6%, 100% 86.6%)', transform: 'translateZ(0)' }}
                     initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
                     animate={isActive ? {
                       x: 'calc(-50% - 170px)',
                       y: 'calc(-50% - 170px)',
                       scale: 1.2,
-                      rotate: 360,
+                      rotate: 150,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 10, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -310,12 +292,12 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       x: 'calc(-50% + 180px)',
                       y: 'calc(-50% - 100px)',
                       scale: 1.2,
-                      rotate: 405,
+                      rotate: 195,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 7, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -338,11 +320,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       x: 'calc(-50% + 220px)',
                       y: '-50%',
                       scale: 1.2,
-                      rotate: 720,
+                      rotate: 150,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 12, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -365,12 +347,12 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       x: 'calc(-50% - 220px)',
                       y: 'calc(-50% + 100px)',
                       scale: 1.2,
-                      rotate: 720,
+                      rotate: 150,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 12, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -389,11 +371,11 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       x: '-50%',
                       y: 'calc(-50% + 120px)',
                       scale: 1.2,
-                      rotate: -360,
+                      rotate: -150,
                       transition: { 
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 6, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -412,12 +394,12 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       x: 'calc(-50% - 10px)',
                       y: 'calc(-50% - 20px)',
                       scale: 1.4,
-                      rotate: 240,
+                      rotate: 150,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 9, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -440,12 +422,12 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       x: 'calc(-50% + 200px)',
                       y: 'calc(-50% + 150px)',
                       scale: 1.2,
-                      rotate: 180,
+                      rotate: 150,
                       transition: {
                         x: { duration: 0.3, ease: "easeOut" },
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 5, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -464,12 +446,12 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                       x: 'calc(-50% - 150px)',
                       y: 'calc(-50% + 120px)',
                       scale: 1.2,
-                      rotate: 90,
+                      rotate: 150,
                       transition: { 
                         x: { duration: 0.3, ease: "easeOut" },
                         y: { duration: 0.3, ease: "easeOut" },
                         scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 4, ease: "linear", repeat: Infinity }
+                        rotate: { duration: 1, ease: "easeOut" }
                       }
                     } : {
                       x: '-50%',
@@ -491,7 +473,6 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   height={225}
                   className="w-full h-40 object-cover rounded-t-lg transition-all duration-500 ease-out"
                   onLoad={() => handleThumbnailLoad(index)}
-                  onPrivateVideo={handlePrivateVideo}
                   loading="lazy"
                   quality={75} // 画質を75%に設定
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // レスポンシブな画像サイズ
@@ -554,9 +535,9 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   layout
                 >
                   <motion.h3 
-                    className="card-title text-base line-clamp-2 transition-all duration-500 ease-out group-hover:text-white group-hover:drop-shadow-lg"
+                    className={`card-title text-base line-clamp-2 transition-all duration-500 ease-out ${isMultiColumn ? 'group-hover:text-white group-hover:drop-shadow-lg' : ''}`}
                     layout
-                    whileHover={{ 
+                    whileHover={!isMultiColumn ? undefined : { 
                       y: -2,
                       transition: { duration: 0.3, ease: "easeOut" }
                     }}
@@ -565,9 +546,9 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 </motion.h3>
                 
                 <motion.p 
-                    className="text-sm mt-1 truncate transition-all duration-500 ease-out group-hover:text-white/90 group-hover:drop-shadow-lg flex items-center justify-between"
+                    className={`text-sm mt-1 truncate transition-all duration-500 ease-out ${isMultiColumn ? 'group-hover:text-white/90 group-hover:drop-shadow-lg' : ''} flex items-center justify-between`}
                   layout
-                    whileHover={{ 
+                    whileHover={!isMultiColumn ? undefined : { 
                       y: -1,
                       transition: { duration: 0.3, ease: "easeOut", delay: 0.1 }
                     }}
@@ -580,7 +561,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
-                      whileHover={{ 
+                      whileHover={!isMultiColumn ? undefined : { 
                         x: 3,
                         y: -2,
                         scale: 1.2,
