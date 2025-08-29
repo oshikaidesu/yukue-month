@@ -227,16 +227,16 @@ export default function Hero() {
     {/* マージンとサイズを制御する外側のコンテナ */}
     <div className="mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-2rem))] ">
       {/* ヒーローセクションの主要なスタイリング */}
-      <div className="min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px] border-1 border-[#EEEEEE]">
+      <div className="min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px] rounded-tr-none rounded-bl-none border-1 border-[#EEEEEE]">
         {/* === グリッド背景（インラインSVG） === */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <svg width="100%" height="100%" className="w-full h-full rounded-3xl" style={{ position: 'absolute', inset: 0 }}>
+        <svg width="100%" height="100%" className="w-full h-full" style={{ position: 'absolute', inset: 0 }}>
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
               <rect x="0" y="0" width="40" height="40" fill="none" stroke="#333" strokeWidth="1" />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" opacity="0.2" rx="24" ry="24" />
+          <rect width="100%" height="100%" fill="url(#grid)" opacity="0.2" />
         </svg>
       </div>
       {/* === 背景のビデオカード乱雑配置（初回描画後にマウント） === */}
