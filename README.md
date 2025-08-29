@@ -43,6 +43,15 @@ npm start
   - `Hero.tsx` の背景データ（JSON）を動的 import して初期 JS をさらに削減
   - `framer-motion` を `LazyMotion` で読み分け（アニメーション仕様は据え置き）
   - DaisyUI の利用範囲を絞る（必要コンポーネントのみ）
+
+## パフォーマンス改善
+
+パフォーマンス改善に関する詳細な情報は [`PERFORMANCE_IMPROVEMENTS.md`](./PERFORMANCE_IMPROVEMENTS.md) を参照してください。
+
+### 主な改善内容
+- 基本的な軽量化（Header/Footer のサーバーコンポーネント化、依存削除等）
+- サムネイル処理軽量化（iframeフォールバック削除）
+- スマホでのアニメーション最適化（検討中）
 # ゆくえレコーズ MONTHLY PICKUP PLAYLIST
 
 リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト
@@ -66,6 +75,7 @@ npm start
 - **言語**: TypeScript
 - **スタイリング**: Tailwind CSS + DaisyUI
 - **アニメーション**: Framer Motion
+- **アイコン**: [Flowbite Icons](https://flowbite.com/icons/)
 - **デプロイ**: Cloudflare Pages
 - **開発補助ツール**: Claude Code + Cursor
 

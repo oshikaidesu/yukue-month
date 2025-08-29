@@ -26,38 +26,14 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
       loading={loading}
       quality={quality}
       sizes={sizes}
+      priority={loading === "eager"}
+      placeholder="blur"
+      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
     />
   );
 }
 
-// iframeフォールバック用
-function NicovideoIframeFallback({ videoId, width, height, className }: {
-  videoId: string,
-  width: number,
-  height: number,
-  className?: string
-}) {
-  return (
-    <iframe 
-      width={width} 
-      height={height} 
-      src={`https://ext.nicovideo.jp/thumb/${videoId}`} 
-      scrolling="no" 
-      style={{ 
-        border: 'none',
-        objectFit: 'cover',
-        objectPosition: 'center'
-      }} 
-      frameBorder="0"
-      className={`rounded-lg ${className ?? ''}`}
-      title={`${videoId} のサムネイル`}
-    >
-      <a href={`https://www.nicovideo.jp/watch/${videoId}`}>
-        ニコニコ動画: {videoId}
-      </a>
-    </iframe>
-  );
-}
+
 
 type Props = {
   videoId: string;
@@ -212,14 +188,23 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     );
   }
 
-  // それでもダメならiframeで表示
+  // エラー時はプレースホルダーを表示
   return (
-    <NicovideoIframeFallback
-      videoId={videoId}
-      width={width}
-      height={height}
-      className={className}
-    />
+    <div 
+      className={`flex items-center justify-center bg-[#EEEEEE] rounded-lg ${className}`}
+      style={{ width, height }}
+    >
+      <div className="text-center text-gray-500">
+        <Image
+          src="/Logo_Mark.svg"
+          alt="サムネイル読み込みエラー"
+          width={Math.min(width, 64)}
+          height={Math.min(height, 64)}
+          className="mx-auto mb-2 opacity-50"
+        />
+        <p className="text-xs">サムネイル読み込みエラー</p>
+      </div>
+    </div>
   );
 });
 

@@ -31,7 +31,12 @@ export default function ArchivePage() {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartXRef = useRef(0);
   const scrollStartLeftRef = useRef(0);
+  const [isShuffleAnimating, setIsShuffleAnimating] = useState(false);
   const handleShuffle = () => {
+    // アニメーション開始
+    setIsShuffleAnimating(true);
+    // 500ms後にアニメーション終了
+    setTimeout(() => setIsShuffleAnimating(false), 500);
     const years = Object.keys(availableMonthsMap) as YearType[];
     if (years.length === 0) return;
     const randomYear = years[Math.floor(Math.random() * years.length)];
@@ -143,7 +148,7 @@ export default function ArchivePage() {
       <PickupBackground />
       <div className="relative z-10">
         <Header />
-        <div className="max-w-7xl mx-auto pt-30 pb-12">
+        <div className="mx-auto pt-30 pb-12">
           <h1 className="text-3xl font-bold mb-6 text-center">アーカイブ</h1>
           {!isInitialized ? (
             <div className="text-center">読み込み中...</div>
@@ -165,10 +170,13 @@ export default function ArchivePage() {
                       type="button"
                       aria-label="シャッフル"
                       title="シャッフル"
-                      className="btn btn-lg btn-neutral btn-outline rounded-full shadow-md min-w-[100px] text-lg font-semibold tracking-wide"
+                      className="btn btn-lg btn-neutral btn-outline rounded-lg shadow-md min-w-[100px] flex items-center justify-center gap-2"
                       onClick={handleShuffle}
                     >
-                      シャッフル
+                      <svg className={`w-6 h-6 transition-transform duration-500 ease-in-out ${isShuffleAnimating ? 'rotate-360' : ''}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
+                      </svg>
+                      <span className="text-xs font-bold">シャッフル</span>
                     </button>
                   </div>
                 </div>

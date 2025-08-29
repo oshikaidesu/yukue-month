@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import NicovideoThumbnail from "./NicovideoThumbnail";
+import CardDecorations from "./CardDecorations";
 import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
  
 
@@ -28,13 +29,20 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const [isMultiColumn, setIsMultiColumn] = useState(false);
   useEffect(() => { 
     setMounted(true);
-    // 2列以上かどうかを判定（例: 640px以上で2列）
-    const checkMultiColumn = () => {
-      setIsMultiColumn(window.innerWidth >= 640); // sm: 640px以上で2列
+    // ウィンドウサイズの取得と2列以上かどうかの判定を統合
+    const handleResize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      setWindowSize({ width, height });
+      setIsMultiColumn(width >= 768); // md: 768px以上で2列
     };
-    checkMultiColumn();
-    window.addEventListener('resize', checkMultiColumn);
-    return () => window.removeEventListener('resize', checkMultiColumn);
+    
+    // 初期設定
+    handleResize();
+    
+    // リサイズイベントリスナー
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // スマホ用: 中央付近にあるカードIDを管理
@@ -84,33 +92,18 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
 
   // 年月の表示
   const yearMonth = dataPath ? getYearMonthFromPath(dataPath) : null;
-  // 画面幅でモバイル判定
+  // 画面幅でモバイル判定（md: 768px未満）
   const isMobile = windowSize.width < 768;
 
   useEffect(() => {
     // 全動画を取得してランダムに並び替え
     const shuffled = [...(videoList ?? [])].sort(() => Math.random() - 0.5);
     setShuffledVideos(shuffled);
-
-    // ウィンドウサイズの取得
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    // 初期サイズ設定
-    handleResize();
-
-    // リサイズイベントリスナー
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, [videoList]);
 
-  // 表示する動画を決定（PCでは全件、スマホではページネーション）
-  const getDisplayVideos = useCallback(() => {
-    if (windowSize.width >= 768) {
+  // 表示する動画を決定（PC・タブレットでは全件、スマホではページネーション）
+  const displayVideos = useMemo(() => {
+    if (isMultiColumn) { // md: 768px以上
       // PC・タブレットでは全件表示
       return shuffledVideos;
     } else {
@@ -119,7 +112,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
       const endIndex = startIndex + itemsPerPage;
       return shuffledVideos.slice(startIndex, endIndex);
     }
-  }, [windowSize.width, shuffledVideos, currentPage, itemsPerPage]);
+  }, [isMultiColumn, shuffledVideos, currentPage, itemsPerPage]);
 
   // 総ページ数を計算
   const validVideosCount = shuffledVideos.length;
@@ -134,14 +127,14 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     }
   };
 
-  // スクロール・リサイズ時に中央付近判定
+  // スクロール・リサイズ時に中央付近判定（スマホのみ）
   useEffect(() => {
-    if (!mounted) return;
-    if (!isMobile) return;
+    if (!mounted || !isMobile || isMultiColumn) return; // 1列レイアウトのスマホのみ
+    
     const handleCheckCenter = () => {
       const windowCenter = window.innerHeight / 2;
       let foundId: string | null = null;
-      getDisplayVideos().forEach((video, idx) => {
+      displayVideos.forEach((video, idx) => {
         const ref = cardItemRefs.current[idx];
         if (!ref) return;
         const rect = ref.getBoundingClientRect();
@@ -152,15 +145,14 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
       });
       setCenterActiveId(foundId);
     };
+    
     window.addEventListener('scroll', handleCheckCenter, { passive: true });
-    window.addEventListener('resize', handleCheckCenter);
     // 初回も実行
     handleCheckCenter();
     return () => {
       window.removeEventListener('scroll', handleCheckCenter);
-      window.removeEventListener('resize', handleCheckCenter);
     };
-  }, [mounted, windowSize, currentPage, shuffledVideos, isMobile, getDisplayVideos]);
+  }, [mounted, isMobile, isMultiColumn, displayVideos]);
 
   // サムネイル読み込み状態を管理
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState<boolean[]>([]);
@@ -182,7 +174,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
 
   return (
     <div className="py-16 bg-none overflow-hidden relative z-10">
-      <div className="w-full px-4 max-w-7xl mx-auto">
+      <div className="w-full px-4">
         {/* ヘッダー */}
         <div className="text-center mb-12">
           {yearMonth && (
@@ -194,33 +186,29 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
         </div>
 
         {/* 動画リスト */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 lg:gap-10 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 relative">
           
-          {getDisplayVideos().map((video, index) => {
+          {displayVideos.map((video, index) => {
             const isHovered = hoveredCard === video.id;
             const isTouched = touchedCard === video.id;
             // サムネイル読み込み済みかどうか
             const isThumbnailLoaded = thumbnailsLoaded[index];
-            // PCは常にホバー/タッチ、スマホ2列以上はタッチのみ、スマホ1列は中央判定
+            // md以上はホバー/タッチ、md未満は1列で中央判定
             const isActive = mounted && isThumbnailLoaded && (
-              isMobile
-                ? (
-                  isMultiColumn
-                    ? isTouched // スマホ2列以上はタッチのみ
-                    : centerActiveId === video.id // スマホ1列は中央判定
-                )
-                : (isHovered || isTouched) // PCは常にホバー/タッチ
+              isMultiColumn
+                ? (isHovered || isTouched) // md以上: 2列以上はホバー/タッチ
+                : centerActiveId === video.id // md未満: 1列は中央判定
             );
-            // スマホ2列以上のときだけホバーイベントを無効化
-            const isTouchOnly = isMobile && isMultiColumn;
+            // md未満（1列レイアウト）のときはホバーイベントを無効化
+            const isTouchOnly = !isMultiColumn;
             return (
             <motion.div
               key={video.id}
-                className={`card cursor-pointer group relative w-full max-w-xs mx-auto min-h-[240px] z-10 overflow-visible ${!isThumbnailLoaded ? 'opacity-50 pointer-events-none' : ''}`}
+                className={`card cursor-pointer w-full max-w-[300px] mx-auto z-10 overflow-visible ${!isThumbnailLoaded ? 'opacity-50 pointer-events-none' : ''}`}
               ref={el => { cardItemRefs.current[index] = el; }}
               onClick={() => window.open(video.url, '_blank')}
-              onHoverStart={isTouchOnly || !isMultiColumn ? undefined : () => setHoveredCard(video.id)}
-              onHoverEnd={isTouchOnly || !isMultiColumn ? undefined : () => setHoveredCard(null)}
+              onHoverStart={isTouchOnly ? undefined : () => setHoveredCard(video.id)}
+              onHoverEnd={isTouchOnly ? undefined : () => setHoveredCard(null)}
               onTouchStart={() => setTouchedCard(video.id)}
               onTouchEnd={() => setTouchedCard(null)}
               animate={{
@@ -233,235 +221,14 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 transform: 'translateZ(0)'
               }}
               >
-                {/* 装飾図形 - カードの裏に配置 */}
-                <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`} style={{ willChange: 'opacity', transform: 'translateZ(0)' }}>
-                  {/* 丸 - 上方向に飛び出す */}
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 0)} ${getFixedColor(index, 0)} rounded-full pointer-events-none`}
-                    style={{ transform: 'translateZ(0)' }}
-                    initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
-                    animate={isActive ? {
-                      x: 'calc(-50% + 80px)',
-                      y: 'calc(-50% - 150px)',
-                      scale: 1.2,
-                      rotate: 150,
-                      transition: { 
-                        x: { duration: 0.3, ease: "easeOut" },
-                        y: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 1,
-                      rotate: 0,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  />
-                  {/* 三角 - 左上方向に飛び出す */}
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 1)} ${getFixedColor(index, 1)} pointer-events-none`}
-                    style={{ clipPath: 'polygon(50% 0%, 0% 86.6%, 100% 86.6%)', transform: 'translateZ(0)' }}
-                    initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
-                    animate={isActive ? {
-                      x: 'calc(-50% - 170px)',
-                      y: 'calc(-50% - 170px)',
-                      scale: 1.2,
-                      rotate: 150,
-                      transition: { 
-                        x: { duration: 0.3, ease: "easeOut" },
-                        y: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 1,
-                      rotate: 0,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  />
-                  {/* 四角 - 右上方向に飛び出す */}
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 2)} ${getFixedColor(index, 2)} pointer-events-none`}
-                    style={{ transform: 'translateZ(0) rotate(45deg)' }}
-                    initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 45 }}
-                    animate={isActive ? {
-                      x: 'calc(-50% + 180px)',
-                      y: 'calc(-50% - 100px)',
-                      scale: 1.2,
-                      rotate: 195,
-                      transition: { 
-                        x: { duration: 0.3, ease: "easeOut" },
-                        y: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 1,
-                      rotate: 45,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  />
-                  {/* 渦巻き線 - 右方向に飛び出す */}
-                  <motion.img
-                    src="/CS_Ellipse_6.svg"
-                    alt="dashed circle"
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 3)} pointer-events-none`}
-                    style={{
-                      transform: 'translateZ(0)'
-                    }}
-                    initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
-                    animate={isActive ? {
-                      x: 'calc(-50% + 220px)',
-                      y: '-50%',
-                      scale: 1.2,
-                      rotate: 150,
-                      transition: { 
-                        x: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 1,
-                      rotate: 0,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  />
-                  {/* 渦巻き線2 - 左方向に飛び出す */}
-                  <motion.img
-                    src="/CS_Star_13.svg"
-                    // alt="dashed circle"
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 4)} pointer-events-none`}
-                    style={{
-                      transform: 'translateZ(0)'
-                    }}
-                    initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
-                    animate={isActive ? {
-                      x: 'calc(-50% - 220px)',
-                      y: 'calc(-50% + 100px)',
-                      scale: 1.2,
-                      rotate: 150,
-                      transition: { 
-                        x: { duration: 0.3, ease: "easeOut" },
-                        y: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 1,
-                      rotate: 0,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  />
-                  {/* 小さな丸 - 下方向に飛び出す */}
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 5)} ${getFixedColor(index, 5)} rounded-full pointer-events-none`}
-                    style={{ transform: 'translateZ(0)' }}
-                    initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
-                    animate={isActive ? {
-                      x: '-50%',
-                      y: 'calc(-50% + 120px)',
-                      scale: 1.2,
-                      rotate: -150,
-                      transition: { 
-                        y: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 1,
-                      rotate: 0,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  />
-                  {/* 六角形 - 左上方向に飛び出す
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 6)} ${getFixedColor(index, 6)} pointer-events-none`}
-                    style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)', transform: 'translateZ(0)' }}
-                    initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
-                    animate={isActive ? {
-                      x: 'calc(-50% - 10px)',
-                      y: 'calc(-50% - 20px)',
-                      scale: 1.4,
-                      rotate: 150,
-                      transition: { 
-                        x: { duration: 0.3, ease: "easeOut" },
-                        y: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 1,
-                      rotate: 0,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  /> */}
-                  {/* 星型（svg） - 右下方向に飛び出す */}
-                  <motion.img
-                    src="/point-star-1.svg"
-                    alt="star"
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 7)} pointer-events-none`}
-                    style={{
-                      transform: 'translateZ(0) scale(0.8)',
-                    }}
-                    initial={{ x: '-50%', y: '-50%', scale: 0.8, rotate: 0 }}
-                    animate={isActive ? {
-                      x: 'calc(-50% + 200px)',
-                      y: 'calc(-50% + 150px)',
-                      scale: 1.2,
-                      rotate: 150,
-                      transition: {
-                        x: { duration: 0.3, ease: "easeOut" },
-                        y: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 0.8,
-                      rotate: 0,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  />
-                  {/* ダイヤモンド - 左下方向に飛び出す */}
-                  <motion.div
-                    className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 0)} ${getFixedColor(index, 0)} pointer-events-none`}
-                    style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)', transform: 'translateZ(0)' }}
-                    initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
-                    animate={isActive ? {
-                      x: 'calc(-50% - 150px)',
-                      y: 'calc(-50% + 120px)',
-                      scale: 1.2,
-                      rotate: 150,
-                      transition: { 
-                        x: { duration: 0.3, ease: "easeOut" },
-                        y: { duration: 0.3, ease: "easeOut" },
-                        scale: { duration: 0.3, ease: "easeOut" },
-                        rotate: { duration: 1, ease: "easeOut" }
-                      }
-                    } : {
-                      x: '-50%',
-                      y: '-50%',
-                      scale: 1,
-                      rotate: 0,
-                      transition: { duration: 0.2, ease: "easeOut" }
-                    }}
-                  />
-                </div>
+                {/* 装飾図形コンポーネント */}
+                <CardDecorations
+                  isActive={isActive}
+                  index={index}
+                  isMobile={isMobile}
+                  getFixedSize={getFixedSize}
+                  getFixedColor={getFixedColor}
+                />
                 
                 {/* カード枠組み */}
                 <div className="bg-[#EEEEEE] shadow-lg transition-all duration-300 ease-out hover:shadow-2xl relative overflow-hidden rounded-lg">
@@ -514,7 +281,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 }}
                 style={{
                   willChange: 'transform, opacity',
-                  backdropFilter: 'brightness(0.8)',
+                  // backdropFilter: 'brightness(0.8)', // パフォーマンステスト用に無効化
                   transformStyle: 'preserve-3d',
                   backfaceVisibility: 'hidden'
                 }}
@@ -545,7 +312,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     {/* カード情報の背景 */}
                   <motion.div 
                       className="absolute inset-0 top-40 bg-base-200 z-10 rounded-b-lg"
-                    layout
+                    // layout  // パフォーマンステスト用に無効化
                                           animate={{
                         y: isActive ? 120 : 0,
                         transition: { duration: 0.5, ease: "easeOut" }
@@ -555,20 +322,20 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     {/* カード情報の文字 */}
                     <motion.div
                       className="card-body p-4 relative z-30 flex-1"
-                      layout
+                      // layout  // パフォーマンステスト用に無効化
                       animate={{
                         y: isActive ? 140 : 0,
                         transition: { duration: 0.5, ease: "easeOut" }
                       }}
                     >
                   <motion.h3 
-                    className={`card-title text-base line-clamp-1 transition-all duration-500 ease-out ${isMultiColumn ? 'group-hover:text-white group-hover:drop-shadow-lg' : ''}`}
-                    layout
+                    className={`card-title text-base line-clamp-1 transition-all duration-500 ease-out ${!isTouchOnly ? 'group-hover:text-white group-hover:drop-shadow-lg' : ''}`}
+                    // layout  // パフォーマンステスト用に無効化
                     animate={{
                       y: isActive ? 160 : 0,
                       transition: { duration: 0.5, ease: "easeOut" }
                     }}
-                    whileHover={!isMultiColumn ? undefined : { 
+                    whileHover={isTouchOnly ? undefined : { 
                       y: -2,
                       transition: { duration: 0.3, ease: "easeOut" }
                     }}
@@ -577,13 +344,13 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 </motion.h3>
                 
                 <motion.p 
-                    className={`text-sm mt-1 truncate transition-all duration-500 ease-out ${isMultiColumn ? 'group-hover:text-white/90 group-hover:drop-shadow-lg' : ''} flex items-center justify-between`}
-                  layout
+                    className={`text-sm mt-1 truncate transition-all duration-500 ease-out ${!isTouchOnly ? 'group-hover:text-white/90 group-hover:drop-shadow-lg' : ''} flex items-center justify-between`}
+                  // layout  // パフォーマンステスト用に無効化
                     animate={{
                       y: isActive ? 180 : 0,
                       transition: { duration: 0.5, ease: "easeOut" }
                     }}
-                    whileHover={!isMultiColumn ? undefined : { 
+                    whileHover={isTouchOnly ? undefined : { 
                       y: -1,
                       transition: { duration: 0.3, ease: "easeOut", delay: 0.1 }
                     }}
@@ -596,7 +363,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
-                      whileHover={!isMultiColumn ? undefined : { 
+                      whileHover={isTouchOnly ? undefined : { 
                         x: 3,
                         y: -2,
                         scale: 1.2,
@@ -616,7 +383,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
         
         {/* フッター */}
         <div className="text-center mt-12">
-          {/* スマホ用ページネーション */}
+          {/* スマホ用ページネーション（md: 768px未満） */}
           {windowSize.width < 768 && totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mb-6 relative z-50">
               <button
@@ -650,7 +417,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
           )}
           
           {/* ページ情報表示 */}
-          {/* {windowSize.width < 768 && (
+          {/* {windowSize.width < 768 && ( // md: 768px未満
             <p className="text-base-content/60 text-sm mb-4">
               {currentPage} / {totalPages} ページ ({validVideosCount}件中 {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, validVideosCount)}件)
             </p>
