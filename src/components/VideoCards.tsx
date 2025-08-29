@@ -127,23 +127,39 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     }
   };
 
-  // スクロール・リサイズ時に中央付近判定（スマホのみ）
+  // スクロール・リサイズ時に中央付近判定（スマホのみ）- パフォーマンス最適化版
   useEffect(() => {
     if (!mounted || !isMobile || isMultiColumn) return; // 1列レイアウトのスマホのみ
     
+    let ticking = false;
+    
     const handleCheckCenter = () => {
-      const windowCenter = window.innerHeight / 2;
-      let foundId: string | null = null;
-      displayVideos.forEach((video, idx) => {
-        const ref = cardItemRefs.current[idx];
-        if (!ref) return;
-        const rect = ref.getBoundingClientRect();
-        const cardCenter = rect.top + rect.height / 2;
-        if (Math.abs(cardCenter - windowCenter) < 200) {
-          foundId = video.id;
-        }
-      });
-      setCenterActiveId(foundId);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const windowCenter = window.innerHeight / 2;
+          let foundId: string | null = null;
+          
+          // 最適化: 全カードをチェックせず、画面に見える範囲のみチェック
+          displayVideos.forEach((video, idx) => {
+            const ref = cardItemRefs.current[idx];
+            if (!ref) return;
+            
+            const rect = ref.getBoundingClientRect();
+            // 画面外のカードはスキップ
+            if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+            
+            const cardCenter = rect.top + rect.height / 2;
+            // 判定範囲を200px→100pxに縮小
+            if (Math.abs(cardCenter - windowCenter) < 100) {
+              foundId = video.id;
+            }
+          });
+          
+          setCenterActiveId(foundId);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     
     window.addEventListener('scroll', handleCheckCenter, { passive: true });
