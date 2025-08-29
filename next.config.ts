@@ -38,6 +38,24 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/vi/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.cdn.nimg.jp',
+        port: '',
+        pathname: '/s/nicovideo/thumbnails/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'nicovideo.cdn.nimg.jp',
+        port: '',
+        pathname: '/thumbnails/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'tn.smilevideo.jp',
+        port: '',
+        pathname: '/smile**',
+      },
     ],
   },
 };

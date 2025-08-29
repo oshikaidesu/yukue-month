@@ -99,8 +99,8 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     setIsLoading(true);
     setThumbnailUrl(null);
 
-    // OGPサムネイルURLが利用可能な場合は最優先使用
-    if (ogpThumbnailUrl) {
+    // OGPサムネイルURLが利用可能な場合は最優先使用（空文字列は除く）
+    if (ogpThumbnailUrl && ogpThumbnailUrl.trim() !== '') {
       setThumbnailUrl(ogpThumbnailUrl);
       setIsLoading(false);
       return;
