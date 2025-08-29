@@ -216,7 +216,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
             return (
             <motion.div
               key={video.id}
-                className={`card bg-[#EEEEEE] shadow-lg cursor-pointer group relative transition-all duration-300 ease-out hover:shadow-2xl w-full max-w-xs mx-auto min-h-[240px] z-10 overflow-visible ${!isThumbnailLoaded ? 'opacity-50 pointer-events-none' : ''}`}
+                className={`card cursor-pointer group relative w-full max-w-xs mx-auto min-h-[240px] z-10 overflow-visible ${!isThumbnailLoaded ? 'opacity-50 pointer-events-none' : ''}`}
               ref={el => { cardItemRefs.current[index] = el; }}
               onClick={() => window.open(video.url, '_blank')}
               onHoverStart={isTouchOnly || !isMultiColumn ? undefined : () => setHoveredCard(video.id)}
@@ -233,7 +233,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 transform: 'translateZ(0)'
               }}
               >
-                {/* 装飾図形 - カード内に配置 */}
+                {/* 装飾図形 - カードの裏に配置 */}
                 <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`} style={{ willChange: 'opacity', transform: 'translateZ(0)' }}>
                   {/* 丸 - 上方向に飛び出す */}
                   <motion.div
@@ -462,14 +462,17 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                     }}
                   />
                 </div>
-              {/* サムネイル（共通） */}
-              <motion.figure 
-                className="relative z-20 overflow-hidden"
-                style={{
-                  willChange: 'transform',
-                  perspective: '1000px'
-                }}
-              >
+                
+                {/* カード枠組み */}
+                <div className="bg-[#EEEEEE] shadow-lg transition-all duration-300 ease-out hover:shadow-2xl relative overflow-hidden rounded-lg">
+                  {/* サムネイル（共通） */}
+                  <motion.figure 
+                    className="relative z-20 overflow-hidden h-40"
+                    style={{
+                      willChange: 'transform',
+                      perspective: '1000px'
+                    }}
+                  >
                 <NicovideoThumbnail
                   videoId={video.id ?? ""}
                   videoUrl={video.url}
@@ -477,17 +480,17 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   ogpThumbnailUrl={video.ogpThumbnailUrl}
                   width={400}
                   height={225}
-                  className="w-full h-40 object-cover rounded-t-lg transition-all duration-500 ease-out"
+                  className="w-full h-full object-cover"
                   onLoad={() => handleThumbnailLoad(index)}
                   loading="lazy"
                   quality={75} // 画質を75%に設定
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // レスポンシブな画像サイズ
                 />
-              </motion.figure>
+                  </motion.figure>
               
-              {/* ホバー時の全面画像表示を削除し、トランスフォームアニメーションに置き換え */}
-              <motion.div 
-                className="absolute inset-0 z-40 pointer-events-none overflow-hidden rounded-lg"
+                  {/* ホバー時の全面画像表示を削除し、トランスフォームアニメーションに置き換え */}
+                  <motion.div 
+                    className="absolute inset-0 z-40 pointer-events-none overflow-hidden rounded-lg"
                 initial={{ 
                   opacity: 0,
                   scale: 1,
@@ -530,21 +533,33 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 </div>
               </motion.div>
 
-              {/* 動画情報（常に表示） */}
-                {/* カード情報の背景 */}
-              <motion.div 
-                  className="absolute inset-0 top-40 bg-base-200 z-10 rounded-b-lg"
-                layout
-                />
-                
-                {/* カード情報の文字 */}
-                <motion.div
-                  className="card-body p-4 relative z-30 flex-1"
-                  layout
-                >
+                  {/* 動画情報（常に表示） */}
+                    {/* カード情報の背景 */}
+                  <motion.div 
+                      className="absolute inset-0 top-40 bg-base-200 z-10 rounded-b-lg"
+                    layout
+                    animate={{
+                      y: isActive ? 120 : 0,
+                      transition: { duration: 0.5, ease: "easeOut", delay: isActive ? 0.05 : 0 }
+                    }}
+                    />
+                    
+                    {/* カード情報の文字 */}
+                    <motion.div
+                      className="card-body p-4 relative z-30 flex-1"
+                      layout
+                      animate={{
+                        y: isActive ? 140 : 0,
+                        transition: { duration: 0.5, ease: "easeOut", delay: isActive ? 0.1 : 0 }
+                      }}
+                    >
                   <motion.h3 
                     className={`card-title text-base line-clamp-2 transition-all duration-500 ease-out ${isMultiColumn ? 'group-hover:text-white group-hover:drop-shadow-lg' : ''}`}
                     layout
+                    animate={{
+                      y: isActive ? 160 : 0,
+                      transition: { duration: 0.5, ease: "easeOut", delay: isActive ? 0.15 : 0 }
+                    }}
                     whileHover={!isMultiColumn ? undefined : { 
                       y: -2,
                       transition: { duration: 0.3, ease: "easeOut" }
@@ -556,6 +571,10 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                 <motion.p 
                     className={`text-sm mt-1 truncate transition-all duration-500 ease-out ${isMultiColumn ? 'group-hover:text-white/90 group-hover:drop-shadow-lg' : ''} flex items-center justify-between`}
                   layout
+                    animate={{
+                      y: isActive ? 180 : 0,
+                      transition: { duration: 0.5, ease: "easeOut", delay: isActive ? 0.2 : 0 }
+                    }}
                     whileHover={!isMultiColumn ? undefined : { 
                       y: -1,
                       transition: { duration: 0.3, ease: "easeOut", delay: 0.1 }
@@ -580,8 +599,9 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
                   </motion.svg>
                 </motion.p>
                 {/* 外部リンクインジケーターの元の位置は削除 */}
+                  </motion.div>
+                </div>
               </motion.div>
-            </motion.div>
             );
           })}
         </div>
