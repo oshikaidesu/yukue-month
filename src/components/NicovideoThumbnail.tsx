@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from 'next/image';
 
 // サムネイル画像表示専用
-function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading }: {
+function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading, quality, sizes }: {
   src: string,
   alt: string,
   width: number,
@@ -10,18 +10,22 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
   className?: string,
   onError?: () => void,
   onLoad?: () => void,
-  loading?: "lazy" | "eager"
+  loading?: "lazy" | "eager",
+  quality?: number,
+  sizes?: string
 }) {
-  return (
+      return (
     <Image
       src={src}
       alt={alt}
       width={width}
       height={height}
-      className={`rounded-lg object-cover ${className ?? ''}`}
+      className={`rounded-lg object-cover object-center ${className ?? ''}`}
       onError={onError}
       onLoad={onLoad}
       loading={loading}
+      quality={quality}
+      sizes={sizes}
     />
   );
 }
@@ -39,7 +43,11 @@ function NicovideoIframeFallback({ videoId, width, height, className }: {
       height={height} 
       src={`https://ext.nicovideo.jp/thumb/${videoId}`} 
       scrolling="no" 
-      style={{ border: 'none' }} 
+      style={{ 
+        border: 'none',
+        objectFit: 'cover',
+        objectPosition: 'center'
+      }} 
       frameBorder="0"
       className={`rounded-lg ${className ?? ''}`}
       title={`${videoId} のサムネイル`}
@@ -62,7 +70,9 @@ type Props = {
   onError?: (error: { type: 'private' | 'error', videoId: string }) => void;
   onPrivateVideo?: (videoId: string) => void;
   thumbnail?: string; // ローカルサムネイルパス
-  ogpThumbnailUrl?: string; // OGPサムネイルURL
+  ogpThumbnailUrl?: string | null; // OGPサムネイルURL
+  quality?: number; // 画質設定（1-100）
+  sizes?: string; // レスポンシブサイズ設定
 };
 
 // プラットフォームを判定する関数
@@ -88,7 +98,18 @@ function detectPlatform(videoId: string, videoUrl?: string): 'nicovideo' | 'yout
 }
 
 const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) {
-  const { videoId, videoUrl, width = 312, height = 176, className = "", onError, thumbnail, ogpThumbnailUrl } = props;
+  const { 
+    videoId, 
+    videoUrl, 
+    width = 312, 
+    height = 176, 
+    className = "", 
+    onError, 
+    thumbnail, 
+    ogpThumbnailUrl,
+    quality = 75,
+    sizes
+  } = props;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -97,16 +118,13 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
   const platform = useMemo(() => detectPlatform(videoId, videoUrl), [videoId, videoUrl]);
 
   // サムネイル取得のメイン処理
-  const fetchThumbnail = () => {
-    console.log(`[NicovideoThumbnail] Starting thumbnail fetch for ${videoId}, platform: ${platform}`);
-    
+  const fetchThumbnail = useCallback(() => {
     setError(false);
     setIsLoading(true);
     setThumbnailUrl(null);
 
     // OGPサムネイルURLが利用可能な場合は最優先使用
     if (ogpThumbnailUrl) {
-      console.log(`[NicovideoThumbnail] Using OGP thumbnail for ${videoId}: ${ogpThumbnailUrl.substring(0, 50)}...`);
       setThumbnailUrl(ogpThumbnailUrl);
       setIsLoading(false);
       return;
@@ -114,7 +132,6 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
 
     // YouTube動画でogpThumbnailUrlがnullの場合は、ローカルサムネイルを優先使用
     if (platform === 'youtube' && thumbnail) {
-      console.log(`[NicovideoThumbnail] Using local thumbnail for YouTube video ${videoId}: ${thumbnail}`);
       setThumbnailUrl(thumbnail);
       setIsLoading(false);
       return;
@@ -122,7 +139,6 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
 
     // その他のローカルサムネイルが利用可能な場合は次に優先使用
     if (thumbnail) {
-      console.log(`[NicovideoThumbnail] Using local thumbnail for ${videoId}: ${thumbnail}`);
       setThumbnailUrl(thumbnail);
       setIsLoading(false);
       return;
@@ -131,7 +147,6 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     // ニコニコ動画の場合
     if (platform === 'nicovideo') {
       const nicoThumbnailUrl = `https://tn.smilevideo.jp/smile?i=${videoId}`;
-      console.log(`[NicovideoThumbnail] Using nico thumbnail URL: ${nicoThumbnailUrl}`);
       setThumbnailUrl(nicoThumbnailUrl);
       setIsLoading(false);
       return;
@@ -140,7 +155,6 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     // YouTubeの場合
     if (platform === 'youtube') {
       const youtubeUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-      console.log(`[NicovideoThumbnail] Using YouTube thumbnail: ${youtubeUrl}`);
       setThumbnailUrl(youtubeUrl);
       setIsLoading(false);
       return;
@@ -148,18 +162,16 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
 
     // その他の場合
     const defaultUrl = `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`;
-    console.log(`[NicovideoThumbnail] Using default thumbnail: ${defaultUrl}`);
     setThumbnailUrl(defaultUrl);
     setIsLoading(false);
-  };
+  }, [videoId, platform, thumbnail, ogpThumbnailUrl]);
 
   useEffect(() => {
     fetchThumbnail();
-  }, [videoId, platform, thumbnail, ogpThumbnailUrl]);
+  }, [fetchThumbnail]);
 
   // 画像読み込みエラー時の処理
   const handleImageError = () => {
-    console.log(`[NicovideoThumbnail] Image load error for ${videoId}: ${thumbnailUrl}`);
     setError(true);
     onError?.({ type: 'error', videoId });
   };
@@ -194,6 +206,8 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
         onError={handleImageError}
         onLoad={props.onLoad}
         loading={props.loading}
+        quality={quality}
+        sizes={sizes}
       />
     );
   }
@@ -209,4 +223,4 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
   );
 });
 
-export default NicovideoThumbnail; 
+export default NicovideoThumbnail;

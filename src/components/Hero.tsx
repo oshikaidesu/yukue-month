@@ -4,10 +4,10 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import videos_2025_06 from "@/data/2025/videos_06.json";
 
-
 // ビデオカードのミニ版
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
+
 const VideoCardMini = ({ 
   video, 
   onLoad, 
@@ -43,7 +43,6 @@ const VideoCardMini = ({
           className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => {
             setIsLoaded(true);
-            console.log("onLoad fired", video.id);
             if (onLoad) onLoad();
           }}
           onPrivateVideo={(videoId) => {
@@ -81,7 +80,6 @@ function VideoCardScatter() {
   }[]>([]);
 
   const handlePrivateVideo = (videoId: string) => {
-    console.log(`Hero: 500エラーが継続する動画を除外: ${videoId}`);
     setPrivateVideoIds(prev => new Set(prev).add(videoId));
   };
 
@@ -135,8 +133,7 @@ function VideoCardScatter() {
     }));
 
     // 重なり具合を計算して z-index と overlayOpacity を設定
-    const overlaps = calculateOverlap(initialPositions);
-    console.log('Overlaps:', overlaps); // デバッグ用
+    calculateOverlap(initialPositions);
 
     // まずz-indexを割り当て
     const positionsWithZIndex = initialPositions.map((pos) => ({
@@ -154,8 +151,6 @@ function VideoCardScatter() {
       // それ以外は下にあるカードの数に応じて opacity を加算
       const overlayBase = sortedIndex * 0.015; // 1枚下がるごとに0.015ずつ増加
       const overlayOpacity = Math.min(overlayBase, 0.25); // 最大値は0.25に制限
-
-      console.log(`Card z-index=${pos.zIndex}, layer=${sortedIndex}, opacity=${overlayOpacity}`);
 
       return {
         ...pos,
@@ -177,7 +172,7 @@ function VideoCardScatter() {
           return null;
         }
         
-        const { top, left, rotate, scale, zIndex, overlayOpacity } = positions[i];
+        const { top, left, rotate, scale, overlayOpacity } = positions[i];
         const initialTop = top < 50 ? -20 : 120;
         const initialLeft = left < 50 ? -20 : 120;
         return (
@@ -209,7 +204,7 @@ function VideoCardScatter() {
             <VideoCardMini 
               video={video} 
               onPrivateVideo={handlePrivateVideo}
-              overlayOpacity={positions[i].overlayOpacity}
+              overlayOpacity={overlayOpacity}
             />
           </motion.div>
         );
@@ -218,29 +213,34 @@ function VideoCardScatter() {
   );
 }
 
-
 export default function Hero() {
-  const [isHovered, setIsHovered] = useState(false)
+  const [mountBg, setMountBg] = useState(false);
+
+  // 初回描画をブロックしないよう背景を遅延マウント
+  useEffect(() => {
+    const t = setTimeout(() => setMountBg(true), 0);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <>
     {/* マージンとサイズを制御する外側のコンテナ */}
     <div className="mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-2rem))] ">
       {/* ヒーローセクションの主要なスタイリング */}
-      <div className="min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px] border-1 border-[#EEEEEE]">
+      <div className="min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px] rounded-tr-none rounded-bl-none border-1 border-[#EEEEEE]">
         {/* === グリッド背景（インラインSVG） === */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <svg width="100%" height="100%" className="w-full h-full rounded-3xl" style={{ position: 'absolute', inset: 0 }}>
+        <svg width="100%" height="100%" className="w-full h-full" style={{ position: 'absolute', inset: 0 }}>
           <defs>
             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
               <rect x="0" y="0" width="40" height="40" fill="none" stroke="#333" strokeWidth="1" />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" opacity="0.2" rx="24" ry="24" />
+          <rect width="100%" height="100%" fill="url(#grid)" opacity="0.2" />
         </svg>
       </div>
-      {/* === 背景のビデオカード乱雑配置 === */}
-      <VideoCardScatter />
+      {/* === 背景のビデオカード乱雑配置（初回描画後にマウント） === */}
+      {mountBg && <VideoCardScatter />}
         {/* === タイトル群（オーバーレイ） === */}
         <div className="absolute top-0 right-0 text-right z-20">
           <div className="flex items-start">
@@ -256,9 +256,9 @@ export default function Hero() {
             </div>
             
             {/* 日本語テキスト（右側） */}
-            <div className="flex flex-col items-center bg-[#EEEEEE] px-3 py-6 rounded-r inverted-corner-top-right-bold z-10">
+            <div className="flex flex-col items-center bg-[#EEEEEE] px-7 py-10 rounded-r inverted-corner-top-right-bold z-10">
               <h1 
-                className="text-[30px] sm:text-[45px] md:text-[50px] lg:text-[55px] xl:text-[60px] text-dark font-bold text-base-content "
+                className="text-[25px] sm:text-[45px] md:text-[50px] lg:text-[55px] xl:text-[60px] text-dark font-bold text-base-content text-mask-top"
                 style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
               >
                 ゆくえレコーズ
@@ -268,9 +268,9 @@ export default function Hero() {
         </div>
 
         {/* === 説明文（オーバーレイ） === */}
-        <div className="absolute bottom-0 left-0 text-left">
-          <div className="max-w-ms p-4 text-sm sm:text-sm md:text-base lg:text-lg font-mono bg-[#EEEEEE] inverted-corner-left-bottom">
-            <p className="text-dark relative z-10">
+        <div className="absolute bottom-0 left-0 text-left ">
+          <div className="max-w-ms px-8 py-5 text-sm sm:text-sm md:text-base lg:text-lg font-mono bg-[#EEEEEE] inverted-corner-left-bottom">
+            <p className="text-dark relative z-10 text-mask-left">
               ゆくえレコーズ主宰の駱駝法師 <br />
               レーベルの運営メンバーのぴちが <br />
               リスナーにおすすめしたい <br />
@@ -282,9 +282,9 @@ export default function Hero() {
     </div>
 
     {/* ボタン群（ヒーロー要素の下） */}
-    <div className="w-[min(1400px,calc(100vw-2rem))] mx-auto mt-4 flex gap-4 justify-center">
+    <div className="w-[min(1400px,calc(100vw-2rem))] mx-auto mt-4 flex items-center gap-4 justify-center">
       <motion.button 
-        className="btn btn-primary group relative overflow-hidden flex items-center"
+        className="btn btn-primary group relative overflow-hidden flex items-center justify-center w-[220px]"
         whileHover={{
           scale: 1.03,
           boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
@@ -305,9 +305,9 @@ export default function Hero() {
         <span className="relative z-10 ml-2">ニコニコマイリスト</span>
       </motion.button>
       
-      <Link href="/archive" className="h-full block ">
+      <Link href="/archive">
         <motion.button 
-          className="btn btn-outline text-dark bg-white/90"
+          className="btn btn-outline text-dark bg-white/90 flex items-center justify-center w-[220px]"
           whileHover={{
             scale: 1.03,
             boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",

@@ -5,6 +5,16 @@ const nextConfig: NextConfig = {
   // Wrangler用の設定 - APIルートを有効にする
   // output: 'export', // コメントアウト
   trailingSlash: true,
+  experimental: {
+    // 本番ビルドで console を除去（error/warn は維持）
+    optimizePackageImports: [],
+  },
+  compiler: {
+    // React 19 + Next 15: 本番 minify 時に console を除去
+    removeConsole: {
+      exclude: ["error", "warn"],
+    },
+  },
   images: {
     unoptimized: true,
     domains: [

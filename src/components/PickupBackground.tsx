@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 
 const PickupBackground: React.FC = () => {
@@ -14,7 +16,7 @@ const PickupBackground: React.FC = () => {
         ticking = true;
       }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -82,4 +84,4 @@ const PickupBackground: React.FC = () => {
   );
 };
 
-export default PickupBackground; 
+export default PickupBackground;
