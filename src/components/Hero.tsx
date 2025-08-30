@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import videos_2025_07 from "@/data/2025/videos_07.json";
 
 // ビデオカードのミニ版
@@ -38,8 +38,8 @@ const VideoCardMini = ({
           videoUrl={video.url}
           thumbnail={video.thumbnail}
           ogpThumbnailUrl={video.ogpThumbnailUrl ?? undefined}
-          width={320}
-          height={180}
+          width={160}
+          height={90}
           className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => {
             setIsLoaded(true);
@@ -50,6 +50,8 @@ const VideoCardMini = ({
             onPrivateVideo?.(videoId);
           }}
           loading="lazy"
+          quality={50}
+          sizes="(max-width: 768px) 80px, 160px"
         />
         {/* オーバーレイ */}
         {overlayOpacity > 0 && (
@@ -69,7 +71,11 @@ const VideoCardMini = ({
 // 乱雑配置用のビデオカード背景
 function VideoCardScatter() {
   const [privateVideoIds, setPrivateVideoIds] = useState<Set<string>>(new Set());
-  const scatteredVideos = videos_2025_07.slice(0, 20); // ← 20個に減らす
+  // ランダムに15個の動画を選択
+  const scatteredVideos = useMemo(() => {
+    const shuffled = [...videos_2025_07].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 15);
+  }, []);
   const [positions, setPositions] = useState<{
     top: number;
     left: number;
@@ -83,74 +89,65 @@ function VideoCardScatter() {
     setPrivateVideoIds(prev => new Set(prev).add(videoId));
   };
 
-  // 重なり具合を計算する関数
-  const calculateOverlap = (positions: { top: number; left: number; scale: number }[]) => {
-    return positions.map((pos1, index1) => {
-      let overlappingCount = 0;
-      positions.forEach((pos2, index2) => {
-        if (index1 !== index2) {
-          // カードの実際のサイズを計算（スケールを考慮）
-          const baseWidth = 320;
-          const baseHeight = 180;
-          
-          // カード1の領域
-          const card1Left = pos1.left - (baseWidth * pos1.scale) / 2;
-          const card1Right = pos1.left + (baseWidth * pos1.scale) / 2;
-          const card1Top = pos1.top - (baseHeight * pos1.scale) / 2;
-          const card1Bottom = pos1.top + (baseHeight * pos1.scale) / 2;
-          
-          // カード2の領域
-          const card2Left = pos2.left - (baseWidth * pos2.scale) / 2;
-          const card2Right = pos2.left + (baseWidth * pos2.scale) / 2;
-          const card2Top = pos2.top - (baseHeight * pos2.scale) / 2;
-          const card2Bottom = pos2.top + (baseHeight * pos2.scale) / 2;
-          
-          // 重なり判定（矩形の交差判定）
-          const xOverlap = !(card1Right < card2Left || card1Left > card2Right);
-          const yOverlap = !(card1Bottom < card2Top || card1Top > card2Bottom);
 
-          if (xOverlap && yOverlap) {
-            overlappingCount++;
-          }
-        }
-      });
-      return overlappingCount;
-    });
-  };
 
   useEffect(() => {
     function random(min: number, max: number) {
       return Math.random() * (max - min) + min;
     }
-    // 初期位置を生成
-    const initialPositions = scatteredVideos.map(() => ({
-      top: random(-10, 110),
-      left: random(-10, 110),
-      rotate: random(-30, 30),
-      scale: random(1.5, 3.0),
-      zIndex: 0,
-      overlayOpacity: 0
-    }));
 
-    // 重なり具合を計算して z-index と overlayOpacity を設定
-    calculateOverlap(initialPositions);
+    // グリッドベースの配置で重なりを軽減
+    const gridSize = 4; // 4x4のグリッド
+    const cellWidth = 100 / gridSize;
+    const cellHeight = 100 / gridSize;
+    
+    // グリッドセルをシャッフル
+    const gridCells: { row: number; col: number }[] = [];
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        gridCells.push({ row, col });
+      }
+    }
+    
+    // Fisher-Yates シャッフル（軽量）
+    for (let i = gridCells.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [gridCells[i], gridCells[j]] = [gridCells[j], gridCells[i]];
+    }
 
-    // まずz-indexを割り当て
-    const positionsWithZIndex = initialPositions.map((pos) => ({
+    // 初期位置を生成（グリッドベース）
+    const initialPositions = scatteredVideos.map((_: any, index: number) => {
+      const cell = gridCells[index % gridCells.length];
+      
+      // セル内でランダムな位置を生成
+      const cellTop = cell.row * cellHeight;
+      const cellLeft = cell.col * cellWidth;
+      
+      return {
+        top: cellTop + random(5, cellHeight - 5), // セル内で少し余白を取る
+        left: cellLeft + random(5, cellWidth - 5),
+        rotate: random(-30, 30),
+        scale: random(1.2, 2.5),
+        zIndex: 0,
+        overlayOpacity: 0
+      };
+    });
+
+    // z-indexを割り当て
+    const positionsWithZIndex = initialPositions.map((pos: any) => ({
       ...pos,
-      zIndex: Math.floor(random(1, 20)), // より広い範囲のz-indexを使用
+      zIndex: Math.floor(random(1, 20)),
       overlayOpacity: 0
     }));
 
     // z-indexの降順（大きい順）にソート
     const sortedPositions = [...positionsWithZIndex].sort((a, b) => b.zIndex - a.zIndex);
 
-    // 上から順にオーバーレイを加算
+    // 上から順にオーバーレイを加算（軽減）
     const positionsWithDepth = sortedPositions.map((pos, sortedIndex) => {
-      // 一番上（sortedIndex === 0）は opacity 0
-      // それ以外は下にあるカードの数に応じて opacity を加算
-      const overlayBase = sortedIndex * 0.015; // 1枚下がるごとに0.015ずつ増加
-      const overlayOpacity = Math.min(overlayBase, 0.25); // 最大値は0.25に制限
+      // グリッド配置により重なりが軽減されているので、オーバーレイを減らす
+      const overlayBase = sortedIndex * 0.008; // 0.015 → 0.008に削減
+      const overlayOpacity = Math.min(overlayBase, 0.15); // 0.25 → 0.15に削減
 
       return {
         ...pos,
@@ -166,7 +163,7 @@ function VideoCardScatter() {
 
   return (
     <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-      {scatteredVideos.map((video, i) => {
+      {scatteredVideos.map((video: any, i: number) => {
         // 500エラーが継続する動画はスキップ
         if (privateVideoIds.has(video.id)) {
           return null;
