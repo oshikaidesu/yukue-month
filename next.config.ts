@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  // GitHub Pages用の設定
-  output: 'export',
+  // Cloudflare Pages用の設定
+  // output: 'export', // コメントアウト（OpenNextが処理する）
   trailingSlash: true,
   experimental: {
     // 本番ビルドで console を除去（error/warn は維持）

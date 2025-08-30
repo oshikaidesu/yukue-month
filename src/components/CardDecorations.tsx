@@ -28,22 +28,22 @@ export default function CardDecorations({
     x: { 
       delay: shapeIndex * 0.01, // 0.01秒ずつ遅延
       duration: 0.18, 
-      ease: "easeOut" 
+      ease: "easeOut" as const
     },
     y: { 
       delay: shapeIndex * 0.01 + 0.005, // x より 0.005秒後
       duration: 0.18, 
-      ease: "easeOut" 
+      ease: "easeOut" as const
     },
     scale: { 
       delay: shapeIndex * 0.01 + 0.01, // y より 0.005秒後
       duration: 0.18, 
-      ease: "easeOut" 
+      ease: "easeOut" as const
     },
     rotate: { 
       delay: shapeIndex * 0.01 + 0.015, // scale より 0.005秒後
       duration: 0.5, 
-      ease: "easeOut" 
+      ease: "easeOut" as const
     }
   });
 
@@ -74,7 +74,7 @@ export default function CardDecorations({
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" }
+          transition: { duration: 0.2, ease: "easeOut" as const }
         }}
       />
       
@@ -97,7 +97,7 @@ export default function CardDecorations({
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" }
+          transition: { duration: 0.2, ease: "easeOut" as const }
         }}
       />
       
@@ -112,10 +112,10 @@ export default function CardDecorations({
           scale: 1.2,
           rotate: 195,
           transition: { 
-            x: { duration: 0.3, ease: "easeOut" },
-            y: { duration: 0.3, ease: "easeOut" },
-            scale: { duration: 0.3, ease: "easeOut" },
-            rotate: { duration: 1, ease: "easeOut" }
+            x: { duration: 0.3, ease: "easeOut" as const },
+            y: { duration: 0.3, ease: "easeOut" as const },
+            scale: { duration: 0.3, ease: "easeOut" as const },
+            rotate: { duration: 1, ease: "easeOut" as const }
           }
         } : {
           x: '-50%',
@@ -141,16 +141,16 @@ export default function CardDecorations({
           scale: 1.2,
           rotate: 150,
           transition: { 
-            x: { duration: 0.3, ease: "easeOut" },
-            scale: { duration: 0.3, ease: "easeOut" },
-            rotate: { duration: 1, ease: "easeOut" }
+            x: { duration: 0.3, ease: "easeOut" as const },
+            scale: { duration: 0.3, ease: "easeOut" as const },
+            rotate: { duration: 1, ease: "easeOut" as const }
           }
         } : {
           x: '-50%',
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" }
+          transition: { duration: 0.2, ease: "easeOut" as const }
         }}
       />
       
