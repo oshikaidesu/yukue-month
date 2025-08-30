@@ -149,7 +149,8 @@ export default function ArchivePage() {
       <div className="relative z-10">
         <Header />
         <div className="mx-auto pt-30 pb-12">
-          <h1 className="text-3xl font-bold mb-6 text-center">アーカイブ</h1>
+          <h1 className="text-3xl font-bold mb-2 text-center">アーカイブ</h1>
+          <p className="text-sm text-gray-600 mb-6 text-center">-archives-</p>
           {!isInitialized ? (
             <div className="text-center">読み込み中...</div>
           ) : (
@@ -160,7 +161,7 @@ export default function ArchivePage() {
                     {yearOptions.map((y: { label: string; value: YearType }) => (
                       <button
                         key={y.value}
-                        className={`btn btn-lg btn-neutral btn-outline rounded-full shadow-md transition-opacity duration-200 min-w-[100px] text-lg font-semibold tracking-wide ${selectedYear === y.value ? 'opacity-100 border-primary text-primary bg-[#EEEEEE]' : 'opacity-70 hover:opacity-100'}`}
+                        className={`btn btn-md btn-neutral btn-outline rounded-full shadow-md transition-opacity duration-200 min-w-[80px] text-base font-semibold tracking-wide ${selectedYear === y.value ? 'opacity-100 border-primary text-primary bg-[#EEEEEE]' : 'opacity-70 hover:opacity-100'}`}
                         onClick={() => handleYearChange(y.value)}
                       >
                         {y.label}
@@ -170,7 +171,7 @@ export default function ArchivePage() {
                       type="button"
                       aria-label="シャッフル"
                       title="シャッフル"
-                      className="btn btn-lg btn-neutral btn-outline rounded-lg shadow-md min-w-[100px] flex items-center justify-center gap-2"
+                      className="btn btn-md btn-neutral btn-outline rounded-lg shadow-md min-w-[80px] flex items-center justify-center gap-2"
                       onClick={handleShuffle}
                     >
                       <svg className={`w-6 h-6 transition-transform duration-500 ease-in-out ${isShuffleAnimating ? 'rotate-360' : ''}`} aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -180,7 +181,7 @@ export default function ArchivePage() {
                     </button>
                   </div>
                 </div>
-                <div className="w-full max-w-md mx-auto">
+                <div className="w-full max-w-md mx-auto px-4">
                   <div
                     ref={monthsContainerRef}
                     className={`flex flex-nowrap overflow-x-auto gap-2 py-1 px-1 scrollbar-thin scrollbar-thumb-base-300 scroll-smooth select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}

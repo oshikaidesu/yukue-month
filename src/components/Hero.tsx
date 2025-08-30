@@ -4,6 +4,23 @@ import { motion } from 'framer-motion'
 import { useEffect, useState, useMemo } from 'react'
 import videos_2025_07 from "@/data/2025/videos_07.json";
 
+// 型定義
+interface Video {
+  id?: string;
+  url?: string;
+  thumbnail?: string;
+  ogpThumbnailUrl?: string | null;
+}
+
+interface Position {
+  top: number;
+  left: number;
+  rotate: number;
+  scale: number;
+  zIndex: number;
+  overlayOpacity: number;
+}
+
 // ビデオカードのミニ版
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import Link from "next/link";
@@ -76,14 +93,7 @@ function VideoCardScatter() {
     const shuffled = [...videos_2025_07].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 15);
   }, []);
-  const [positions, setPositions] = useState<{
-    top: number;
-    left: number;
-    rotate: number;
-    scale: number;
-    zIndex: number;
-    overlayOpacity: number;
-  }[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]);
 
   const handlePrivateVideo = (videoId: string) => {
     setPrivateVideoIds(prev => new Set(prev).add(videoId));
@@ -116,7 +126,7 @@ function VideoCardScatter() {
     }
 
     // 初期位置を生成（グリッドベース）
-    const initialPositions = scatteredVideos.map((_: any, index: number) => {
+    const initialPositions = scatteredVideos.map((_: Video, index: number) => {
       const cell = gridCells[index % gridCells.length];
       
       // セル内でランダムな位置を生成
@@ -134,7 +144,7 @@ function VideoCardScatter() {
     });
 
     // z-indexを割り当て
-    const positionsWithZIndex = initialPositions.map((pos: any) => ({
+    const positionsWithZIndex = initialPositions.map((pos: Position) => ({
       ...pos,
       zIndex: Math.floor(random(1, 20)),
       overlayOpacity: 0
@@ -163,9 +173,9 @@ function VideoCardScatter() {
 
   return (
     <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-      {scatteredVideos.map((video: any, i: number) => {
+      {scatteredVideos.map((video: Video, i: number) => {
         // 500エラーが継続する動画はスキップ
-        if (privateVideoIds.has(video.id)) {
+        if (video.id && privateVideoIds.has(video.id)) {
           return null;
         }
         
@@ -174,7 +184,7 @@ function VideoCardScatter() {
         const initialLeft = left < 50 ? -20 : 120;
         return (
           <motion.div
-            key={video.id + i}
+            key={(video.id || 'unknown') + i}
             className="absolute"
             initial={{
               top: `${initialTop}%`,
@@ -281,7 +291,7 @@ export default function Hero() {
     {/* ボタン群（ヒーロー要素の下） */}
     <div className="w-[min(1400px,calc(100vw-2rem))] mx-auto mt-4 flex items-center gap-4 justify-center">
       <motion.button 
-        className="btn btn-primary group relative overflow-hidden flex items-center justify-center w-[180px]"
+        className="btn btn-primary group relative overflow-hidden flex flex-col items-center justify-center w-[180px] py-4"
         whileHover={{
           scale: 1.03,
           boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
@@ -296,16 +306,17 @@ export default function Hero() {
           whileHover={{ x: "100%" }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
         />
-                <svg className="w-4 h-4 relative z-10" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                {/* fillが使いたいのでインラインsvgに変更。 */}
-          <path d="M.4787 7.534v12.1279A2.0213 2.0213 0 0 0 2.5 21.6832h2.3888l1.323 2.0948a.4778.4778 0 0 0 .4043.2205.4778.4778 0 0 0 .441-.2205l1.323-2.0948h6.9828l1.323 2.0948a.4778.4778 0 0 0 .441.2205c.1838 0 .3308-.0735.4043-.2205l1.323-2.0948h2.6462a2.0213 2.0213 0 0 0 2.0213-2.0213V7.5339a2.0213 2.0213 0 0 0-2.0213-1.9845h-7.681l4.4468-4.4469L17.1637 0l-5.1452 5.1452L6.8 0 5.6973 1.1025l4.4102 4.4102H2.5367a2.0213 2.0213 0 0 0-2.058 2.058z"/>
-        </svg>
-        <span className="relative z-10 ml-2">マイリスト</span>
+        <div className="flex items-center justify-center relative z-10">
+          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'translateY(-2px)' }}>
+            <path d="M.4787 7.534v12.1279A2.0213 2.0213 0 0 0 2.5 21.6832h2.3888l1.323 2.0948a.4778.4778 0 0 0 .4043.2205.4778.4778 0 0 0 .441-.2205l1.323-2.0948h6.9828l1.323 2.0948a.4778.4778 0 0 0 .441.2205c.1838 0 .3308-.0735.4043-.2205l1.323-2.0948h2.6462a2.0213 2.0213 0 0 0 2.0213-2.0213V7.5339a2.0213 2.0213 0 0 0-2.0213-1.9845h-7.681l4.4468-4.4469L17.1637 0l-5.1452 5.1452L6.8 0 5.6973 1.1025l4.4102 4.4102H2.5367a2.0213 2.0213 0 0 0-2.058 2.058z"/>
+          </svg>
+          <span className="ml-1">マイリスト</span>
+        </div>
       </motion.button>
       
       <Link href="/archive">
         <motion.button 
-          className="btn btn-outline text-dark bg-white/90 flex items-center justify-center w-[180px]"
+          className="btn btn-outline text-dark bg-white/90 flex flex-col items-center justify-center w-[180px] py-4"
           whileHover={{
             scale: 1.03,
             boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
@@ -315,10 +326,12 @@ export default function Hero() {
           }}
           whileTap={{ scale: 0.98 }}
         >
-          <svg className="w-5 h-5 relative z-10" fill="currentColor" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
-            <path d="M260-320q47 0 91.5 10.5T440-278v-394q-41-24-87-36t-93-12q-36 0-71.5 7T120-692v396q35-12 69.5-18t70.5-6Zm260 42q44-21 88.5-31.5T700-320q36 0 70.5 6t69.5 18v-396q-33-14-68.5-21t-71.5-7q-47 0-93 12t-87 36v394Zm-40 118q-48-38-104-59t-116-21q-42 0-82.5 11T100-198q-21 11-40.5-1T40-234v-482q0-11 5.5-21T62-752q46-24 96-36t102-12q58 0 113.5 15T480-740q51-30 106.5-45T700-800q52 0 102 12t96 36q11 5 16.5 15t5.5 21v482q0 23-19.5 35t-40.5 1q-37-20-77.5-31T700-240q-60 0-116 21t-104 59ZM280-494Z"/>
-          </svg>
-          <span className="relative z-10 ml-2">アーカイブ</span>
+          <div className="flex items-center justify-center relative z-10">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'translateY(-0px)' }}>
+              <path d="M260-320q47 0 91.5 10.5T440-278v-394q-41-24-87-36t-93-12q-36 0-71.5 7T120-692v396q35-12 69.5-18t70.5-6Zm260 42q44-21 88.5-31.5T700-320q36 0 70.5 6t69.5 18v-396q-33-14-68.5-21t-71.5-7q-47 0-93 12t-87 36v394Zm-40 118q-48-38-104-59t-116-21q-42 0-82.5 11T100-198q-21 11-40.5-1T40-234v-482q0-11 5.5-21T62-752q46-24 96-36t102-12q58 0 113.5 15T480-740q51-30 106.5-45T700-800q52 0 102 12t96 36q11 5 16.5 15t5.5 21v482q0 23-19.5 35t-40.5 1q-37-20-77.5-31T700-240q-60 0-116 21t-104 59ZM280-494Z"/>
+            </svg>
+            <span className="ml-1">アーカイブ</span>
+          </div>
         </motion.button>
       </Link>
     </div>
