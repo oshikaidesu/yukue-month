@@ -4,7 +4,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Cloudflare Pages用の設定
   // output: 'export', // コメントアウト（OpenNextが処理する）
-  trailingSlash: true,
+  trailingSlash: false,
   experimental: {
     // 本番ビルドで console を除去（error/warn は維持）
     optimizePackageImports: [],
