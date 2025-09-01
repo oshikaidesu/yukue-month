@@ -8,14 +8,13 @@ export const metadata: Metadata = {
     description: 'ゆくえレコーズ主宰の駱駝法師とレーベルの運営メンバーのぴちがリスナーにおすすめしたいボカロ曲を毎月更新するマイリスト',
     images: [
       {
-        url: 'https://b971e1bf.yukue-month-exy.pages.dev/opg_pic.jpg',
+        url: '/opg_pic.jpg',
         width: 1200,
         height: 630,
         type: 'image/jpeg',
         alt: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
       },
     ],
-    url: 'https://b971e1bf.yukue-month-exy.pages.dev/concept',
     type: 'website',
     siteName: 'ゆくえレコーズ',
   },
@@ -23,7 +22,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
     description: 'ゆくえレコーズ主宰の駱駝法師とレーベルの運営メンバーのぴちがリスナーにおすすめしたいボカロ曲を毎月更新するマイリスト',
-    images: ['https://b971e1bf.yukue-month-exy.pages.dev/opg_pic.jpg'],
+    images: ['/opg_pic.jpg'],
   },
 }
 

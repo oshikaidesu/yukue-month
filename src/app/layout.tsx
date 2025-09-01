@@ -7,6 +7,27 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
   description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
+  openGraph: {
+    title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
+    description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
+    images: [
+      {
+        url: '/opg_pic.jpg',
+        width: 1200,
+        height: 630,
+        type: 'image/jpeg',
+        alt: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
+      },
+    ],
+    type: 'website',
+    siteName: 'ゆくえレコーズ',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
+    description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
+    images: ['/opg_pic.jpg'],
+  },
 }
 
 export default function RootLayout({
