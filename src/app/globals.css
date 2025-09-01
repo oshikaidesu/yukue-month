@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Old+Mincho&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
 
 @import "tailwindcss";
 @plugin "daisyui";
@@ -7,6 +8,7 @@
 @theme {
   --font-zen-old-mincho: "Zen Old Mincho", serif;
   --font-dotgothic16: "DotGothic16", monospace;
+  --font-montserrat: "Montserrat", sans-serif;
 }
 
 @plugin "daisyui/theme"
@@ -48,9 +50,26 @@
 
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Zen Kaku Gothic New', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   background-color: #EEEEEE;
+}
+
+/* 英語テキスト用のフォント設定 */
+.font-english {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* 英語テキストを自動的に検出してMontserratフォントを適用 */
+:lang(en),
+[lang="en"],
+:not(:lang(ja)) {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* より強力な英語フォント設定 */
+*:not(:lang(ja)) {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 /* 基本的なフォーカススタイル */

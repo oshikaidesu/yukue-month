@@ -15,7 +15,7 @@ export default function Concept() {
       {/* 2. タイトルセクション */}
       <section className="w-full max-w-7xl mx-auto px-8 lg:px-16 xl:px-24 pt-32 z-20 relative">
         <div className="relative text-center mb-16">
-          <h1 className="text-5xl lg:text-6xl font-bold border-b-2 border-black pb-2 relative z-10 inline-block">
+          <h1 className="text-5xl lg:text-6xl font-bold font-english tracking-wider border-b-2 border-black pb-2 relative z-10 inline-block ">
             Concept
           </h1>
           <motion.div

@@ -196,8 +196,8 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
           {yearMonth && (
             <div className="text-lg font-semibold mb-2">{yearMonth}</div>
           )}
-          <h2 className="text-4xl font-bold text-base-content mb-4 relative z-50" ref={titleRef}>
-            MONTHLY PICKUP PLAYLIST
+          <h2 className="text-4xl font-bold text-base-content mb-4 relative z-50 font-english tracking-wider" ref={titleRef}>
+          Monthly Pickup Playlist
           </h2>
         </div>
 

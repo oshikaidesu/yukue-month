@@ -2,6 +2,8 @@
 
 ## 変更点（軽量化・最適化）
 
+npm run deploy
+
 - Header/ Footer をサーバーコンポーネント化（`'use client'` を削除）
   - これにより共通ナビゲーション分のクライアント JS を削減
 - VideoCards から `react-device-detect` の依存を除去し、`window.innerWidth` ベースの分岐に統一

@@ -6,8 +6,11 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <>
-      <footer className="footer footer-horizontal footer-center bg-[#EEEEEE] text-base-content rounded p-10">
-        <div className="flex items-center gap-2">
+      <footer className="footer footer-horizontal footer-center bg-[#EEEEEE] text-base-content rounded p-0">
+        <div className="flex flex-col items-center gap-0">
+          <Link href="/" className="  btn btn-sm btn-outline m-10">
+            ホームへ戻る
+          </Link>
           <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={28} className="h-7" unoptimized />
         </div>
         <nav className="grid grid-flow-col gap-4">

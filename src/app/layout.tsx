@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Zen_Kaku_Gothic_New } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const zenKakuGothicNew = Zen_Kaku_Gothic_New({ 
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700', '900']
+})
 
 export const metadata: Metadata = {
   title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
@@ -42,8 +45,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://img.youtube.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://i.ytimg.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://tn.smilevideo.jp" crossOrigin="anonymous" />
+        {/* Google Fonts preconnect */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={inter.className}>
+      <body className={zenKakuGothicNew.className}>
         {children}
       </body>
     </html>

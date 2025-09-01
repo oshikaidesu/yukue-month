@@ -1,3 +1,0 @@
-# Cloudflare Pages SPA リダイレクト設定
-# すべてのルートを index.html にリダイレクト（Next.js が処理）
-/*    /index.html   200
