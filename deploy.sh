@@ -14,13 +14,13 @@ git commit -m "自動デプロイ: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "📤 リモートにプッシュ中..."
 git push origin main
 
-# 3. OpenNextでビルド
-echo "🔨 OpenNextでビルド中..."
-open-next build
+# 3. Next.jsで静的ビルド
+echo "🔨 Next.jsで静的ビルド中..."
+npm run build
 
 # 4. Cloudflare Pagesにデプロイ
 echo "☁️ Cloudflare Pagesにデプロイ中..."
-npx wrangler pages deploy .open-next/assets --project-name=yukue-month --commit-dirty=true
+npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true
 
 echo "✅ デプロイ完了！"
 echo "🌐 URL: https://aec165ca.yukue-month-exy.pages.dev"
