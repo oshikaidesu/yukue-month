@@ -15,13 +15,18 @@ export default function Concept() {
         <meta name="description" content="ゆくえレコーズ主宰の駱駝法師とレーベルの運営メンバーのぴちがリスナーにおすすめしたいボカロ曲を毎月更新するマイリスト" />
         <meta property="og:title" content="ゆくえレコーズ MONTHLY PICKUP PLAYLIST" />
         <meta property="og:description" content="ゆくえレコーズ主宰の駱駝法師とレーベルの運営メンバーのぴちがリスナーにおすすめしたいボカロ曲を毎月更新するマイリスト" />
-        <meta property="og:image" content="https://b5456efc.yukue-month-exy.pages.dev/opg_pic.jpg" />
-        <meta property="og:url" content="https://b5456efc.yukue-month-exy.pages.dev/concept" />
+        <meta property="og:image" content="https://1f190dc2.yukue-month-exy.pages.dev/opg_pic.jpg" />
+        <meta property="og:image:width" content="1280" />
+        <meta property="og:image:height" content="720" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:url" content="https://1f190dc2.yukue-month-exy.pages.dev/concept" />
         <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="ゆくえレコーズ" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="ゆくえレコーズ MONTHLY PICKUP PLAYLIST" />
         <meta name="twitter:description" content="ゆくえレコーズ主宰の駱駝法師とレーベルの運営メンバーのぴちがリスナーにおすすめしたいボカロ曲を毎月更新するマイリスト" />
-        <meta name="twitter:image" content="https://b5456efc.yukue-month-exy.pages.dev/opg_pic.jpg" />
+        <meta name="twitter:image" content="https://1f190dc2.yukue-month-exy.pages.dev/opg_pic.jpg" />
+        <meta name="twitter:image:alt" content="ゆくえレコーズ MONTHLY PICKUP PLAYLIST" />
       </Head>
       <div className="min-h-screen bg-[#EEEEEE] relative overflow-hidden" data-theme="light">
         {/* 1. ヘッダー */}
