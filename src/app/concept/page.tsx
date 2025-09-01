@@ -11,16 +11,16 @@ export default function Concept() {
   return (
     <>
       <Head>
-        <title>Concept - 合成音声のゆくえ</title>
-        <meta name="description" content="合成音声のゆくえのコンセプトページ。ボカロPとしての活動理念と作品への想いを紹介します。" />
-        <meta property="og:title" content="Concept - 合成音声のゆくえ" />
-        <meta property="og:description" content="合成音声のゆくえのコンセプトページ。ボカロPとしての活動理念と作品への想いを紹介します。" />
+        <title>ゆくえレコーズ MONTHLY PICKUP PLAYLIST</title>
+        <meta name="description" content="ゆくえレコーズ主宰の駱駝法師とレーベルの運営メンバーのぴちがリスナーにおすすめしたいボカロ曲を毎月更新するマイリスト" />
+        <meta property="og:title" content="ゆくえレコーズ MONTHLY PICKUP PLAYLIST" />
+        <meta property="og:description" content="ゆくえレコーズ主宰の駱駝法師とレーベルの運営メンバーのぴちがリスナーにおすすめしたいボカロ曲を毎月更新するマイリスト" />
         <meta property="og:image" content="/opg_pic.jpg" />
-        <meta property="og:url" content="https://6c7a56d2.yukue-month-exy.pages.dev/concept" />
+        <meta property="og:url" content="https://807f0acb.yukue-month-exy.pages.dev/concept" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Concept - 合成音声のゆくえ" />
-        <meta name="twitter:description" content="合成音声のゆくえのコンセプトページ。ボカロPとしての活動理念と作品への想いを紹介します。" />
+        <meta name="twitter:title" content="ゆくえレコーズ MONTHLY PICKUP PLAYLIST" />
+        <meta name="twitter:description" content="ゆくえレコーズ主宰の駱駝法師とレーベルの運営メンバーのぴちがリスナーにおすすめしたいボカロ曲を毎月更新するマイリスト" />
         <meta name="twitter:image" content="/opg_pic.jpg" />
       </Head>
       <div className="min-h-screen bg-[#EEEEEE] relative overflow-hidden" data-theme="light">
