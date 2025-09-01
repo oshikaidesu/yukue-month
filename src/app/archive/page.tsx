@@ -209,7 +209,10 @@ export default function ArchivePage() {
               ) : loading ? (
                 <div className="text-center">読み込み中...</div>
               ) : (
-                <VideoCards videoList={videoList} />
+                <VideoCards 
+                  videoList={videoList} 
+                  yearMonth={`${selectedYear}.${selectedMonth === "voca_winter" ? "voca_winter" : selectedMonth.padStart(2, '0')}`}
+                />
               )}
             </>
           )}
