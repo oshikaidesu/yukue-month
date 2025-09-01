@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState, useMemo } from 'react'
-import videos_2025_07 from "@/data/2025/videos_07.json";
 
 // 型定義
 interface Video {
@@ -38,6 +37,7 @@ const VideoCardMini = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
+  const [hasError, setHasError] = useState(false);
   
   // 500エラーが継続する動画の場合は表示しない
   if (isPrivate) {
@@ -46,30 +46,44 @@ const VideoCardMini = ({
   
   return (
     <div className="aspect-[16/9] w-50 rounded-xl shadow flex items-center justify-center p-2 cursor-pointer hover:scale-105 transition-transform duration-200" onClick={() => window.open(video.url, '_blank')}>
-      {!isLoaded && (
+      {!isLoaded && !hasError && (
         <div className="w-full h-full bg-white/0 animate-pulse rounded object-cover absolute" style={{ aspectRatio: '16/9' }} />
       )}
       <div className="relative w-full h-full">
-        <NicovideoThumbnail
-          videoId={video.id ?? ""}
-          videoUrl={video.url}
-          thumbnail={video.thumbnail}
-          ogpThumbnailUrl={video.ogpThumbnailUrl ?? undefined}
-          width={160}
-          height={90}
-          className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => {
-            setIsLoaded(true);
-            if (onLoad) onLoad();
-          }}
-          onPrivateVideo={(videoId) => {
-            setIsPrivate(true);
-            onPrivateVideo?.(videoId);
-          }}
-          loading="lazy"
-          quality={50}
-          sizes="(max-width: 768px) 80px, 160px"
-        />
+        {!hasError ? (
+          <NicovideoThumbnail
+            videoId={video.id ?? ""}
+            videoUrl={video.url}
+            thumbnail={video.thumbnail}
+            ogpThumbnailUrl={video.ogpThumbnailUrl ?? undefined}
+            width={160}
+            height={90}
+            className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => {
+              setIsLoaded(true);
+              if (onLoad) onLoad();
+            }}
+            onError={() => {
+              setHasError(true);
+            }}
+            onPrivateVideo={(videoId) => {
+              setIsPrivate(true);
+              onPrivateVideo?.(videoId);
+            }}
+            loading="lazy"
+            quality={50}
+            sizes="(max-width: 768px) 80px, 160px"
+          />
+        ) : (
+          // エラー時はロゴアイコンのみ表示
+          <div className="w-full h-full bg-[#EEEEEE] rounded flex items-center justify-center">
+            <img
+              src="/Logo_Mark.svg"
+              alt="ロゴ"
+              className="w-8 h-8 opacity-50"
+            />
+          </div>
+        )}
         {/* オーバーレイ */}
         {overlayOpacity > 0 && (
           <div 
@@ -86,13 +100,14 @@ const VideoCardMini = ({
 };
 
 // 乱雑配置用のビデオカード背景
-function VideoCardScatter() {
+function VideoCardScatter({ videoList }: { videoList: Video[] }) {
   const [privateVideoIds, setPrivateVideoIds] = useState<Set<string>>(new Set());
+  
   // ランダムに15個の動画を選択
   const scatteredVideos = useMemo(() => {
-    const shuffled = [...videos_2025_07].sort(() => Math.random() - 0.5);
+    const shuffled = [...videoList].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 15);
-  }, []);
+  }, [videoList]);
   const [positions, setPositions] = useState<Position[]>([]);
 
   const handlePrivateVideo = (videoId: string) => {
@@ -220,7 +235,7 @@ function VideoCardScatter() {
   );
 }
 
-export default function Hero() {
+export default function Hero({ videoList }: { videoList: Video[] }) {
   const [mountBg, setMountBg] = useState(false);
 
   // 初回描画をブロックしないよう背景を遅延マウント
@@ -247,7 +262,7 @@ export default function Hero() {
         </svg>
       </div>
       {/* === 背景のビデオカード乱雑配置（初回描画後にマウント） === */}
-      {mountBg && <VideoCardScatter />}
+      {mountBg && <VideoCardScatter videoList={videoList} />}
         {/* === タイトル群（オーバーレイ） === */}
         <div className="absolute top-0 right-0 text-right z-20">
           <div className="flex items-start">

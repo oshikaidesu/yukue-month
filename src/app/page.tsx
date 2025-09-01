@@ -7,15 +7,16 @@ import videos_2025_07 from "@/data/2025/videos_07.json";
 
 export default function Home() {
   const videoList = videos_2025_07;
-  const dataPath = "src/data/2025/videos_07.json";
+  const yearMonth = "2025.07";
+  
   return (
     <div className="min-h-screen bg-[#EEEEEE]" data-theme="light">
       <Header />
       <main>
-        <Hero />
+        <Hero videoList={videoList} />
         <PickupBackground />
 
-        <VideoCards videoList={videoList} dataPath={dataPath} />
+        <VideoCards videoList={videoList} yearMonth={yearMonth} />
       </main>
       <Footer />
     </div>

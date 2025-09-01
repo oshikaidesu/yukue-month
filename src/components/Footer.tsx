@@ -11,9 +11,7 @@ export default function Footer() {
           <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={28} className="h-7" unoptimized />
         </div>
         <nav className="grid grid-flow-col gap-4">
-          <Link href="/about" className="link link-hover">Concept</Link>
-          <Link href="https://yukuerecords.studio.site/contact" className="link link-hover">お問い合わせ</Link>
-          {/* <Link href="#playlist" className="link link-hover">プレイリスト</Link> */}
+          <Link href="/concept" className="link link-hover">Concept</Link>
           <Link href="/archive" className="link link-hover">アーカイブ</Link>
         </nav>
         <nav>

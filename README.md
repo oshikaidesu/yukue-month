@@ -100,7 +100,7 @@ npm run pages:deploy
 src/
 ├── app/                 # Next.js App Router
 │   ├── page.tsx        # ホームページ
-│   ├── about/          # Aboutページ
+│   ├── concept/        # Conceptページ
 │   ├── archive/        # アーカイブページ
 │   ├── layout.tsx      # レイアウト
 │   ├── globals.css     # グローバルスタイル

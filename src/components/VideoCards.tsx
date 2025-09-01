@@ -4,18 +4,18 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import CardDecorations from "./CardDecorations";
-import { getYearMonthFromPath } from "@/data/getYearMonthFromPath";
+
  
 
 
 import { VideoItem } from '@/types/video';
 // props型を追加
 interface VideoCardsProps {
-  videoList?: VideoItem[];
-  dataPath?: string; // 追加
+  videoList: VideoItem[]; // videoListを必須に変更
+  yearMonth?: string; // yearMonthを追加
 }
 
-export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
+export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
   const [shuffledVideos, setShuffledVideos] = useState<VideoItem[]>([]);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [touchedCard, setTouchedCard] = useState<string | null>(null);
@@ -27,6 +27,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
   const [mounted, setMounted] = useState(false);
   // 2列以上かどうかを判定するstateを追加
   const [isMultiColumn, setIsMultiColumn] = useState(false);
+  
   useEffect(() => { 
     setMounted(true);
     // ウィンドウサイズの取得と2列以上かどうかの判定を統合
@@ -90,8 +91,7 @@ export default function VideoCards({ videoList, dataPath }: VideoCardsProps) {
     return fixedColorsAndSizes[videoIdx]?.[shapeIdx]?.size || fixedColorsAndSizes[0][0].size;
   };
 
-  // 年月の表示
-  const yearMonth = dataPath ? getYearMonthFromPath(dataPath) : null;
+  // 年月の表示（propsから直接使用）
   // 画面幅でモバイル判定（md: 768px未満）
   const isMobile = windowSize.width < 768;
 

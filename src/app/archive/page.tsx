@@ -141,7 +141,7 @@ export default function ArchivePage() {
   }, [selectedYear, selectedMonth, isInitialized]);
 
   const availableMonths = selectedYear ? availableMonthsMap[selectedYear] ?? [] : [];
-  const dataPath = selectedYear ? `src/data/${selectedYear}/videos_${selectedMonth}.json` : "";
+
 
   return (
     <div className="relative min-h-screen bg-[#EEEEEE]">
@@ -209,7 +209,7 @@ export default function ArchivePage() {
               ) : loading ? (
                 <div className="text-center">読み込み中...</div>
               ) : (
-                <VideoCards videoList={videoList} dataPath={dataPath} />
+                <VideoCards videoList={videoList} />
               )}
             </>
           )}

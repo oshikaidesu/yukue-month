@@ -15,14 +15,9 @@ export default function Concept() {
       {/* 2. タイトルセクション */}
       <section className="w-full max-w-7xl mx-auto px-8 lg:px-16 xl:px-24 pt-32 z-20 relative">
         <div className="relative text-center mb-16">
-          <motion.h1 
-            className="text-5xl lg:text-6xl font-bold border-b-2 border-black pb-2 relative z-10 inline-block"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
+          <h1 className="text-5xl lg:text-6xl font-bold border-b-2 border-black pb-2 relative z-10 inline-block">
             Concept
-          </motion.h1>
+          </h1>
           <motion.div
             className="absolute inset-0 bg-[#EEEEEE] z-20"
             initial={{ scaleX: 1 }}
@@ -50,7 +45,13 @@ export default function Concept() {
         />
         <div className="max-w-7xl mx-auto px-8 lg:px-16 xl:px-24 grid grid-cols-2 gap-10 items-center relative z-10">
           {/* 3-1. 左側：PCモックアップ画像 */}
-          <div className="w-full h-auto rounded-ms relative">
+          <motion.div 
+            className="w-full h-auto rounded-ms relative"
+            initial={{ opacity: 0, x: -80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
             {/* PC裏の装飾 */}
             <Image
               src="/bg/browser.webp"
@@ -59,11 +60,28 @@ export default function Concept() {
               height={533}
               className="relative z-10 w-full h-auto"
             />
-          </div>
+          </motion.div>
           {/* 3-2. 右側：テキスト1 */}
-          <div>
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold pb-3 md:pb-5">
-              <span className="text-[30px] sm:text-[40px] md:text-[50px]">ゆ</span>くえレコーズ<br />
+          <motion.div
+            initial={{ opacity: 0, x: 80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <motion.h2 
+              className="text-lg sm:text-xl md:text-2xl font-bold pb-3 md:pb-5"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              <motion.span 
+                className="text-[30px] sm:text-[40px] md:text-[50px]"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+                viewport={{ once: true }}
+              >ゆ</motion.span>くえレコーズ<br />
               <span className="hidden md:inline">
                 PICKUP PLAYLIST シリーズ<span className="text-[13px] sm:text-[10px] md:text-[20px]">は</span>
               </span>
@@ -71,13 +89,19 @@ export default function Concept() {
                 PICKUP PLAYLIST<br />
                 シリーズ<span className="text-[13px] sm:text-[10px] md:text-[20px]">は</span>
               </span>
-            </h2>
-            <p className="leading-relaxed text-xs sm:text-sm md:text-base lg:text-lg">
+            </motion.h2>
+            <motion.p 
+              className="leading-relaxed text-xs sm:text-sm md:text-base lg:text-lg"
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
               レーベル主宰の「駱駝法師」と運営スタッフの「ぴち」が<br className="hidden lg:block" />
               ニコニコ動画上に投稿された<span className="bg-[#13DA99] text-white px-1">おすすめのボカロ音楽</span>を<br className="hidden lg:block" />
               紹介するプレイリスト企画です。
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         </div>
       </section>
 
@@ -171,23 +195,72 @@ export default function Concept() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           {/* 左側：テキスト */}
-          <div className="text-center md:text-right leading-relaxed text-sm sm:text-sm md:text-base lg:text-lg">
-            ゆくえレコーズのキュレーションは<br />
-            レーベルの前身となるコンピレーション<br />
-            <span className="text-[20px] sm:text-[20px] md:text-[30px]"> 【<span className="font-zen-old-mincho">合成音声</span><span className="align-middle text-[10px] sm:text-[10px] md:text-[20px]">の</span><span className="align-middle text-[15px] sm:text-[15px] md:text-[25px]">ゆくえ</span>】</span><br />
-            から一貫して
-          </div>
+          <motion.div 
+            className="text-center md:text-right leading-relaxed text-sm sm:text-sm md:text-base lg:text-lg"
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              ゆくえレコーズのキュレーションは<br />
+              レーベルの前身となるコンピレーション<br />
+            </motion.div>
+            <motion.span 
+              className="text-[20px] sm:text-[20px] md:text-[30px]"
+              initial={{ opacity: 0, scale: 0.3 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              【<span className="font-zen-old-mincho">合成音声</span><span className="align-middle text-[10px] sm:text-[10px] md:text-[20px]">の</span><span className="align-middle text-[15px] sm:text-[15px] md:text-[25px]">ゆくえ</span>】
+            </motion.span><br />
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              から一貫して
+            </motion.div>
+          </motion.div>
           
           {/* 右側：画像 */}
-          <div className="flex justify-center md:justify-start">
-            <Image
-              src="/bg/VocaYukuCDTorikomiJacket.jpg"
-              alt="VocaYukuCDTorikomiJacket"
-              width={200}
-              height={200}
-              className="w-48 h-48 md:w-56 md:h-56 object-cover rounded-lg"
-            />
-          </div>
+          <motion.div 
+            className="flex justify-center md:justify-start"
+            initial={{ opacity: 0, y: 60, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              <a 
+                href="https://www.youtube.com/watch?v=f-ultemZGEw" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block"
+              >
+                <Image
+                  src="/bg/VocaYukuCDTorikomiJacket.jpg"
+                  alt="VocaYukuCDTorikomiJacket"
+                  width={200}
+                  height={200}
+                  className="w-48 h-48 md:w-56 md:h-56 object-cover rounded-lg shadow-lg"
+                />
+              </a>
+              <p className="text-[10px] text-gray-600 mt-2 text-center">
+              Compilation Album「合成音声のゆくえ」
+              </p>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -198,45 +271,112 @@ export default function Concept() {
           {/* 中央配置画像 */}
           <div className="flex justify-center items-center z-0 relative">
             {/* 画像の裏側の円形装飾 */}
-            <svg 
+            <motion.svg 
               width="500"
               height="500"
               viewBox="0 0 500 500" 
               className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none"
+              initial={{ opacity: 0, scale: 0.3 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              animate={{ rotate: 360 }}
+              transition={{ 
+                opacity: { duration: 0.8, ease: "easeOut" },
+                scale: { duration: 0.8, ease: "easeOut" },
+                rotate: { duration: 20, ease: "linear", repeat: Infinity }
+              }}
+              viewport={{ once: true, margin: "-100px" }}
             >
               <circle cx="250" cy="250" r="200" fill="none" stroke="#none" strokeWidth="none"/>
               <defs>
                 <path id="genreCircle" d="M250,50 a200,200 0 1,1 0,400 a200,200 0 1,1 0,-400" />
               </defs>
-              <text fontSize="37" fill="#13DA99" fontWeight="thin">
+              <motion.text 
+                fontSize="37" 
+                fill="#13DA99" 
+                fontWeight="thin"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+                viewport={{ once: true }}
+              >
                 <textPath href="#genreCircle" startOffset="0">
                   Rock・Pop・Electronic・Jazz・Ambient・Classical・Alternative・Indie
                 </textPath>
-              </text>
-            </svg>
+              </motion.text>
+            </motion.svg>
             
-            <Image
-              src="/bg/pc_mock.webp"
-              alt="PC Mockup"
-              width={400}
-              height={267}
-              className="w-64 sm:w-80 md:w-96 lg:w-[400px] h-auto rounded-lg relative z-10"
-            />
+            <div>
+              <Image
+                src="/bg/pc_mock.webp"
+                alt="PC Mockup"
+                width={400}
+                height={267}
+                className="w-64 sm:w-80 md:w-96 lg:w-[400px] h-auto rounded-lg relative z-10"
+              />
+            </div>
           </div>
           
                     {/* 左上のテキスト */}
-          <div className="absolute top-16 left-16 text-left text-lg sm:text-xl md:text-xl lg:text-2xl max-w-xs font-bold">
-            <span className='bg-white inline-block px-1'>広野に散らばった</span><br />
-            <span className="bg-white inline-block px-1 text-[32px] sm:text-[36px] md:text-[44px]">点と点を</span><br />
-            <span className='bg-white inline-block px-1'>新しい視点と文脈で結び</span>
-          </div>
+          <motion.div 
+            className="absolute top-16 left-16 text-left text-lg sm:text-xl md:text-xl lg:text-2xl max-w-xs font-bold"
+            initial={{ opacity: 0, x: -80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <motion.span 
+              className='bg-white inline-block px-1'
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >広野に散らばった</motion.span><br />
+            <motion.span 
+              className="bg-white inline-block px-1 text-[32px] sm:text-[36px] md:text-[44px]"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >点と点を</motion.span><br />
+            <motion.span 
+              className='bg-white inline-block px-1'
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >新しい視点と文脈で結び</motion.span>
+          </motion.div>
           
           {/* 右下のテキスト */}
-          <div className="absolute bottom-16 right-16 text-right text-lg sm:text-xl md:text-xl lg:text-2xl max-w-xs font-bold">
-            <span className='bg-white inline-block px-1'>文化圏の深みに在る</span><br />
-            <span className="bg-white inline-block px-1 text-[32px] sm:text-[36px] md:text-[44px]">先鋭的なボカロ</span><br />
-            <span className='bg-white inline-block px-1'>音楽へと</span><br />
-          </div>
+          <motion.div 
+            className="absolute bottom-16 right-16 text-right text-lg sm:text-xl md:text-xl lg:text-2xl max-w-xs font-bold"
+            initial={{ opacity: 0, x: 80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            <motion.span 
+              className='bg-white inline-block px-1'
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >文化圏の深みに在る</motion.span><br />
+            <motion.span 
+              className="bg-white inline-block px-1 text-[32px] sm:text-[36px] md:text-[44px]"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >先鋭的なボカロ</motion.span><br />
+            <motion.span 
+              className='bg-white inline-block px-1'
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >音楽へと</motion.span><br />
+          </motion.div>
           
           {/* 右上のSVG装飾 */}
           <div className="absolute top-0 right-10 translate-x-1/4">
@@ -263,31 +403,157 @@ export default function Concept() {
 
       </section>
                   {/* 下中央のテキスト */}
-                  <div className="flex justify-center items-center pb-20 relative">
+                  <motion.div 
+                    className="flex justify-center items-center pb-20 relative"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.05, ease: "easeOut" }}
+                    viewport={{ once: true, margin: "-100px" }}
+                  >
                     <div className="text-center text-black font-bold leading-tight">
                       <div className="mb-2">
-                        <span className="text-3xl md:text-4xl">容</span>
-                        <span className="text-3xl md:text-4xl">易</span>
-                        <span className="text-lg md:text-xl">に</span>
-                        <span className="text-3xl md:text-4xl">ア</span>
-                        <span className="text-3xl md:text-4xl">ク</span>
-                        <span className="text-3xl md:text-4xl">セ</span>
-                        <span className="text-3xl md:text-4xl">ス</span>
-                        <span className="text-lg md:text-xl">で</span>
-                        <span className="text-lg md:text-xl">き</span>
-                        <span className="text-lg md:text-xl">る</span>
-                        <span className="text-lg md:text-xl">よ</span>
-                        <span className="text-lg md:text-xl">う</span>
+                        <motion.span 
+                          className="text-3xl md:text-4xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >容</motion.span>
+                        <motion.span 
+                          className="text-3xl md:text-4xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, delay: 0.6, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >易</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2, delay: 0.15, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >に</motion.span>
+                        <motion.span 
+                          className="text-3xl md:text-4xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.2, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >ア</motion.span>
+                        <motion.span 
+                          className="text-3xl md:text-4xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.25, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >ク</motion.span>
+                        <motion.span 
+                          className="text-3xl md:text-4xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >セ</motion.span>
+                        <motion.span 
+                          className="text-3xl md:text-4xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.25, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >ス</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.7, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >で</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.8, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >き</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 0.9, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >る</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 1.0, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >よ</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 1.1, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >う</motion.span>
                       </div>
                       <div>
-                        <span className="text-3xl md:text-4xl">取</span>
-                        <span className="text-lg md:text-xl">り</span>
-                        <span className="text-3xl md:text-4xl">組</span>
-                        <span className="text-lg md:text-xl">ん</span>
-                        <span className="text-lg md:text-xl">で</span>
-                        <span className="text-lg md:text-xl">い</span>
-                        <span className="text-lg md:text-xl">ま</span>
-                        <span className="text-lg md:text-xl">す</span>
+                        <motion.span 
+                          className="text-3xl md:text-4xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 1.2, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >取</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 1.3, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >り</motion.span>
+                        <motion.span 
+                          className="text-3xl md:text-4xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.6, delay: 1 }}
+                          viewport={{ once: true }}
+                        >組</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 1.4, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >ん</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 1.5, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >で</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 1.6, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >い</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 1.7, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >ま</motion.span>
+                        <motion.span 
+                          className="text-lg md:text-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, delay: 1.8, ease: "easeOut" }}
+                          viewport={{ once: true }}
+                        >す</motion.span>
                       </div>
                     </div>
                     
@@ -311,7 +577,7 @@ export default function Concept() {
                         </svg>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
 
       {/* 5. 段落3：テキスト中心レイアウト */}
       <section className="w-screen relative left-1/2 right-1/2 -translate-x-1/2 max-w-none bg-gray-200 py-18 overflow-hidden z-10">
@@ -327,24 +593,89 @@ export default function Concept() {
         <div className="max-w-7xl mx-auto px-8 lg:px-16 xl:px-24 relative">
           <div className="text-center">
             {/* タイトル部分 */}
-            <div className="mb-12">
+            <motion.div 
+              className="mb-12"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+            >
               <div className="inline-block">
-                <span className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-[#13DA99] to-[#191970] bg-clip-text text-transparent">
+                <motion.span 
+                  className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-[#13DA99] to-[#191970] bg-clip-text text-transparent"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+                  viewport={{ once: true }}
+                >
                   PICKUP PLAYLIST
-                </span>
-                <span className="text-xl md:text-2xl lg:text-3xl text-gray-700 ml-2">では</span>
+                </motion.span>
+                <motion.span 
+                  className="text-xl md:text-2xl lg:text-3xl text-gray-700 ml-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+                  viewport={{ once: true }}
+                >では</motion.span>
               </div>
-            </div>
+            </motion.div>
 
             {/* メインテキスト */}
-            <div className="max-w-5xl mx-auto">
-              <p className="leading-relaxed text-base md:text-lg lg:text-xl text-gray-800 text-center">
-                作り手の<span className="font-semibold text-[#13DA99]">知名度</span>や<span className="font-semibold text-[#13DA99]">コミュニティ</span>、<span className="font-semibold text-[#13DA99]">ジャンル</span>などを問わず<br />
-                幅広くセレクトすることで<span className="font-semibold text-[#191970]">リスナーのための導線の整理</span>だけでなく、<br />
-                <span className="font-semibold text-[#191970]">作り手のモチベーションの向上</span>を目的としており、<br />
-                <span className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#13DA99] to-[#191970] bg-clip-text text-transparent">ボカロ文化の更なる発展と深化</span>を目指しています。
-              </p>
-            </div>
+            <motion.div 
+              className="max-w-5xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+              viewport={{ once: true, margin: "-100px" }}
+            >
+              <motion.p 
+                className="leading-relaxed text-base md:text-lg lg:text-xl text-gray-800 text-center"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+                viewport={{ once: true }}
+              >
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+                  viewport={{ once: true }}
+                >
+                  作り手の<span className="font-semibold text-[#13DA99]">知名度</span>や<span className="font-semibold text-[#13DA99]">コミュニティ</span>、<span className="font-semibold text-[#13DA99]">ジャンル</span>などを問わず<br />
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3, ease: "easeOut" }}
+                  viewport={{ once: true }}
+                >
+                  幅広くセレクトすることで<span className="font-semibold text-[#191970]">リスナーのための導線の整理</span>だけでなく、<br />
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.5, ease: "easeOut" }}
+                  viewport={{ once: true }}
+                >
+                  <span className="font-semibold text-[#191970]">作り手のモチベーションの向上</span>を目的としており、<br />
+                </motion.span>
+                <motion.span 
+                  className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#13DA99] to-[#191970] bg-clip-text text-transparent"
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+                  viewport={{ once: true }}
+                >
+                  ボカロ文化の更なる発展と深化
+                </motion.span>
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+                  viewport={{ once: true }}
+                >を目指しています。</motion.span>
+              </motion.p>
+            </motion.div>
           </div>
         </div>
       </section>
