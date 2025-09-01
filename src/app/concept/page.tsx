@@ -2,15 +2,30 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
+import Head from 'next/head'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import PickupBackground from '@/components/PickupBackground'
 
 export default function Concept() {
   return (
-    <div className="min-h-screen bg-[#EEEEEE] relative overflow-hidden" data-theme="light">
-      {/* 1. ヘッダー */}
-      <Header />
+    <>
+      <Head>
+        <title>Concept - 合成音声のゆくえ</title>
+        <meta name="description" content="合成音声のゆくえのコンセプトページ。ボカロPとしての活動理念と作品への想いを紹介します。" />
+        <meta property="og:title" content="Concept - 合成音声のゆくえ" />
+        <meta property="og:description" content="合成音声のゆくえのコンセプトページ。ボカロPとしての活動理念と作品への想いを紹介します。" />
+        <meta property="og:image" content="/opg_pic.jpg" />
+        <meta property="og:url" content="https://6c7a56d2.yukue-month-exy.pages.dev/concept" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Concept - 合成音声のゆくえ" />
+        <meta name="twitter:description" content="合成音声のゆくえのコンセプトページ。ボカロPとしての活動理念と作品への想いを紹介します。" />
+        <meta name="twitter:image" content="/opg_pic.jpg" />
+      </Head>
+      <div className="min-h-screen bg-[#EEEEEE] relative overflow-hidden" data-theme="light">
+        {/* 1. ヘッダー */}
+        <Header />
 
       {/* 2. タイトルセクション */}
       <section className="w-full max-w-7xl mx-auto px-8 lg:px-16 xl:px-24 pt-32 z-20 relative">
@@ -685,6 +700,7 @@ export default function Concept() {
 
       {/* 7. フッター */}
       <Footer />
-    </div>
+      </div>
+    </>
   )
 }
