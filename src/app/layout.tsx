@@ -10,8 +10,8 @@ const zenKakuGothicNew = Zen_Kaku_Gothic_New({
 // 環境に応じたベースURLの設定
 const getBaseUrl = () => {
   if (process.env.NODE_ENV === 'production') {
-    // 本番環境では環境変数から取得、なければデフォルト値
-    return process.env.NEXT_PUBLIC_BASE_URL || 'https://yukue-month.pages.dev'
+    // 本番環境では現在のデプロイURLを使用
+    return 'https://c2f9ee14.yukue-month-exy.pages.dev'
   }
   return 'http://localhost:3000'
 }
@@ -72,6 +72,21 @@ export default function RootLayout({
   return (
     <html lang="ja" data-theme="light">
       <head>
+        {/* 静的OGPメタタグ（SNSクローラー対応） */}
+        <meta property="og:title" content="ゆくえレコーズ MONTHLY PICKUP PLAYLIST" />
+        <meta property="og:description" content="リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト" />
+        <meta property="og:image" content="https://c2f9ee14.yukue-month-exy.pages.dev/opg_pic.jpg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="ゆくえレコーズ" />
+        <meta property="og:locale" content="ja_JP" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="ゆくえレコーズ MONTHLY PICKUP PLAYLIST" />
+        <meta name="twitter:description" content="リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト" />
+        <meta name="twitter:image" content="https://c2f9ee14.yukue-month-exy.pages.dev/opg_pic.jpg" />
+        
         {/* LCP画像の可能性があるドメインへ preconnect */}
         <link rel="preconnect" href="https://img.youtube.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://i.ytimg.com" crossOrigin="anonymous" />

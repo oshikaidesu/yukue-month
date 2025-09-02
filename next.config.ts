@@ -20,7 +20,6 @@ const nextConfig: NextConfig = {
   },
   
   // Cloudflare Pagesでの最適化
-  swcMinify: true,
   compress: true,
   images: {
     unoptimized: true,
