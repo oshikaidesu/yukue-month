@@ -5,16 +5,27 @@ const nextConfig: NextConfig = {
   // Cloudflare Pages用の設定
   output: 'export', // 静的エクスポートを有効化
   trailingSlash: false,
+  
+  // Next.js 15での最適化設定
   experimental: {
     // 本番ビルドで console を除去（error/warn は維持）
     optimizePackageImports: [],
+    // 静的生成の最適化
+    optimizeCss: true,
+    // バンドル分析の有効化（開発時のみ）
+    bundlePagesRouterDependencies: true,
   },
+  
   compiler: {
     // React 19 + Next 15: 本番 minify 時に console を除去
     removeConsole: {
       exclude: ["error", "warn"],
     },
   },
+  
+  // Cloudflare Pagesでの最適化
+  swcMinify: true,
+  compress: true,
   images: {
     unoptimized: true,
     domains: [

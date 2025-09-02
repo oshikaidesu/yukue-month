@@ -1,13 +1,15 @@
-name = "next-website-yukue"
-compatibility_date = "2025-07-17"
+name = "yukue-month"
+compatibility_date = "2025-09-02"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".vercel/output/static"
 
-# アカウントIDが必要な場合はここに追加
-# account_id = "your-account-id"
+# Cloudflare Pages用の設定
+[pages]
+# 静的ファイルの出力ディレクトリ
+build_output_dir = "out"
 
-[env.production]
-name = "next-website-yukue-production"
+# パフォーマンス最適化
+[pages.env.production]
+name = "yukue-month-production"
 
-[env.preview]
-name = "next-website-yukue-preview"
+[pages.env.preview]
+name = "yukue-month-preview"

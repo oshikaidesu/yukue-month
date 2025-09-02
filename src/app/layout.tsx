@@ -7,8 +7,17 @@ const zenKakuGothicNew = Zen_Kaku_Gothic_New({
   weight: ['300', '400', '500', '700', '900']
 })
 
+// 環境に応じたベースURLの設定
+const getBaseUrl = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // 本番環境では環境変数から取得、なければデフォルト値
+    return process.env.NEXT_PUBLIC_BASE_URL || 'https://yukue-month.pages.dev'
+  }
+  return 'http://localhost:3000'
+}
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://aec165ca.yukue-month-exy.pages.dev'),
+  metadataBase: new URL(getBaseUrl()),
   title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
   description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
   keywords: ['ボカロ', 'VOCALOID', '音楽', 'プレイリスト', 'ゆくえレコーズ'],
@@ -28,7 +37,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/opg_pic.jpg',
+        url: `${getBaseUrl()}/opg_pic.jpg`,
         width: 1200,
         height: 630,
         type: 'image/jpeg',
@@ -40,7 +49,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
     description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
-    images: ['/opg_pic.jpg'],
+    images: [`${getBaseUrl()}/opg_pic.jpg`],
   },
   robots: {
     index: true,

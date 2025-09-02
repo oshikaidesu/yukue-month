@@ -20,7 +20,16 @@ npm run build
 
 # 4. Cloudflare Pagesにデプロイ
 echo "☁️ Cloudflare Pagesにデプロイ中..."
-npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true
+DEPLOY_OUTPUT=$(npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true)
 
 echo "✅ デプロイ完了！"
-echo "🌐 URL: https://aec165ca.yukue-month-exy.pages.dev"
+
+# デプロイ出力からURLを抽出
+if echo "$DEPLOY_OUTPUT" | grep -q "https://.*\.yukue-month-exy\.pages\.dev"; then
+  ACTUAL_URL=$(echo "$DEPLOY_OUTPUT" | grep -o "https://[a-zA-Z0-9]*\.yukue-month-exy\.pages\.dev" | head -1)
+  echo "🌐 実際のデプロイ先URL: $ACTUAL_URL"
+else
+  echo "⚠️  デプロイ先URLの取得に失敗しました"
+  echo "📋 デプロイ出力:"
+  echo "$DEPLOY_OUTPUT"
+fi
