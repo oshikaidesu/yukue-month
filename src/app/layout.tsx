@@ -23,7 +23,6 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
     description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
-    url: 'https://aec165ca.yukue-month-exy.pages.dev',
     siteName: 'ゆくえレコーズ',
     locale: 'ja_JP',
     type: 'website',
@@ -42,8 +41,6 @@ export const metadata: Metadata = {
     title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
     description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
     images: ['/opg_pic.jpg'],
-    creator: '@yukue_records',
-    site: '@yukue_records',
   },
   robots: {
     index: true,
@@ -55,9 +52,6 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-  },
-  verification: {
-    google: 'your-google-verification-code',
   },
 }
 
