@@ -10,8 +10,8 @@ const zenKakuGothicNew = Zen_Kaku_Gothic_New({
 // 環境に応じたベースURLの設定
 const getBaseUrl = () => {
   if (process.env.NODE_ENV === 'production') {
-    // 本番環境では環境変数から取得、なければデフォルト値
-    return process.env.NEXT_PUBLIC_BASE_URL || 'https://yukue-month.pages.dev'
+    // 本番環境では環境変数から取得、なければカスタムドメイン
+    return process.env.NEXT_PUBLIC_BASE_URL || 'https://yukue-monthly.com'
   }
   return 'http://localhost:3000'
 }
