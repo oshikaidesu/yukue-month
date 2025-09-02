@@ -313,3 +313,89 @@ body {
   transform: translateY(100%);
 }
 
+/* アーカイブシャッフルボタンのスキュー効果アニメーション */
+.btn-shuffle-skew {
+  position: relative !important;
+  overflow: hidden !important;
+  --hover-bg-color: #222;
+  --hover-text-color: #fff;
+}
+
+.btn-shuffle-skew::before {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  z-index: 0 !important;
+  display: block !important;
+  content: "" !important;
+  width: 120% !important;
+  height: 100% !important;
+  transform: skew(-25deg) scale(0, 1) !important;
+  transform-origin: right top !important;
+  background-color: var(--hover-bg-color) !important;
+  transition: transform 0.2s ease !important;
+}
+
+.btn-shuffle-skew span {
+  position: relative !important;
+  z-index: 2 !important;
+  transition: color 0.2s ease !important;
+}
+
+.btn-shuffle-skew svg {
+  position: relative !important;
+  z-index: 2 !important;
+  transition: stroke 0.2s ease !important;
+}
+
+.btn-shuffle-skew:hover span {
+  color: var(--hover-text-color) !important;
+}
+
+.btn-shuffle-skew:hover svg {
+  stroke: var(--hover-text-color) !important;
+}
+
+.btn-shuffle-skew:hover::before {
+  transform: skew(-25deg) scale(1, 1) !important;
+  transform-origin: left top !important;
+}
+
+/* フッターホームボタンのスキュー効果アニメーション */
+.btn-footer-home {
+  position: relative !important;
+  overflow: hidden !important;
+  --hover-bg-color: #222;
+  --hover-text-color: #fff;
+}
+
+.btn-footer-home::before {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  z-index: 0 !important;
+  display: block !important;
+  content: "" !important;
+  width: 120% !important;
+  height: 100% !important;
+  transform: skew(-25deg) scale(0, 1) !important;
+  transform-origin: right top !important;
+  background-color: var(--hover-bg-color) !important;
+  transition: transform 0.2s ease !important;
+}
+
+.btn-footer-home span {
+  position: relative !important;
+  z-index: 2 !important;
+  transition: color 0.2s ease !important;
+}
+
+.btn-footer-home:hover span {
+  color: var(--hover-text-color) !important;
+}
+
+.btn-footer-home:hover::before {
+  transform: skew(-25deg) scale(1, 1) !important;
+  transform-origin: left top !important;
+}
+

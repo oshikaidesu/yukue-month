@@ -8,8 +8,8 @@ export default function Footer() {
     <>
       <footer className="footer footer-horizontal footer-center bg-[#EEEEEE] text-base-content rounded p-0">
         <div className="flex flex-col items-center gap-0">
-          <Link href="/" className="  btn btn-sm btn-outline m-10">
-            ホームへ戻る
+          <Link href="/" className="btn btn-sm btn-outline btn-shuffle-skew m-10">
+            <span>ホームへ戻る</span>
           </Link>
           <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={28} className="h-7" unoptimized />
         </div>

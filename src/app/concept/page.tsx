@@ -47,7 +47,7 @@ export default function Concept() {
           className="absolute inset-0 w-full h-full object-cover opacity-80 scale-110 pointer-events-none"
           priority
         />
-        <div className="max-w-7xl mx-auto px-8 lg:px-16 xl:px-24 grid grid-cols-2 gap-10 items-center relative z-10">
+        <div className="max-w-7xl mx-auto px-8 lg:px-16 xl:px-24 grid grid-cols-2 gap-10 items-center relative z-20">
           {/* 3-1. 左側：PCモックアップ画像 */}
           <motion.div 
             className="w-full h-auto rounded-ms relative"
@@ -110,7 +110,7 @@ export default function Concept() {
       </section>
 
       {/* 3.1. ブランド説明 - グリッドレイアウト */}
-      <section className="w-full max-w-7xl mx-auto mx-160 py-20 relative ring-2 ring-gray-300">
+      <section className="w-full max-w-7xl mx-auto mx-160 py-20 relative ">
         {/* 背景SVGマスク */}
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
           <svg width="100%" height="100%" viewBox="0 0 229 229" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
@@ -132,7 +132,7 @@ export default function Concept() {
           </svg>
         </div>
         {/* SVG装飾 - 四隅 */}
-        <span className="absolute top-0 left-0 w-10 h-10 z-10">
+        <span className="absolute top-0 left-0 w-10 h-10 z-0">
           <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_1_127_1)">
               <mask id="mask0_1_127_1" style={{maskType:'luminance'}} maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
@@ -153,7 +153,7 @@ export default function Concept() {
             </defs>
           </svg>
         </span>
-        <span className="absolute top-0 right-0 w-10 h-10 z-10">
+        <span className="absolute top-0 right-0 w-10 h-10 z-0">
           <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_1_127_2)">
               <mask id="mask0_1_127_2" style={{maskType:'luminance'}} maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
@@ -174,7 +174,7 @@ export default function Concept() {
             </defs>
           </svg>
         </span>
-        <span className="absolute bottom-0 left-0 w-10 h-10 z-10">
+        <span className="absolute bottom-0 left-0 w-10 h-10 z-0">
           <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_1_127_3)">
               <mask id="mask0_1_127_3" style={{maskType:'luminance'}} maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
@@ -195,7 +195,7 @@ export default function Concept() {
             </defs>
           </svg>
         </span>
-        <span className="absolute bottom-0 right-0 w-10 h-10 z-10">
+        <span className="absolute bottom-0 right-0 w-10 h-10 z-0">
           <svg width="40" height="40" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clipPath="url(#clip0_1_127_4)">
               <mask id="mask0_1_127_4" style={{maskType:'luminance'}} maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
@@ -609,7 +609,7 @@ export default function Concept() {
                   </motion.div>
 
       {/* 5. 段落3：テキスト中心レイアウト */}
-      <section className="w-screen relative left-1/2 right-1/2 -translate-x-1/2 max-w-none bg-gray-200 py-18 overflow-hidden z-10">
+      <section className="w-screen relative left-1/2 right-1/2 -translate-x-1/2 max-w-none bg-gray-200 py-18 overflow-hidden z-0">
         {/* 背景装飾 - 幾何学パターン */}
         <Image
           src="/bg/bg_patten.svg"
