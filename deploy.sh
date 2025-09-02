@@ -20,7 +20,7 @@ npm run build
 
 # 4. Cloudflare Pagesにデプロイ
 echo "☁️ Cloudflare Pagesにデプロイ中..."
-npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true
+npx wrangler pages deploy dist --project-name=yukue-month --commit-dirty=true
 
 echo "✅ デプロイ完了！"
 echo "🌐 URL: https://aec165ca.yukue-month-exy.pages.dev"
