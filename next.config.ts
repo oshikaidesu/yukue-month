@@ -10,8 +10,6 @@ const nextConfig: NextConfig = {
   experimental: {
     // 本番ビルドで console を除去（error/warn は維持）
     optimizePackageImports: [],
-    // 静的生成の最適化
-    optimizeCss: true,
   },
   
   compiler: {
