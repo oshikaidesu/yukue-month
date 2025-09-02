@@ -8,6 +8,7 @@ const zenKakuGothicNew = Zen_Kaku_Gothic_New({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://aec165ca.yukue-month-exy.pages.dev'),
   title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
   description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
   openGraph: {
