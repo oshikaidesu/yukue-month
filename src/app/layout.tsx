@@ -11,9 +11,22 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://aec165ca.yukue-month-exy.pages.dev'),
   title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
   description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
+  keywords: ['ボカロ', 'VOCALOID', '音楽', 'プレイリスト', 'ゆくえレコーズ'],
+  authors: [{ name: 'ゆくえレコーズ' }],
+  creator: 'ゆくえレコーズ',
+  publisher: 'ゆくえレコーズ',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
     description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
+    url: 'https://aec165ca.yukue-month-exy.pages.dev',
+    siteName: 'ゆくえレコーズ',
+    locale: 'ja_JP',
+    type: 'website',
     images: [
       {
         url: '/opg_pic.jpg',
@@ -23,14 +36,28 @@ export const metadata: Metadata = {
         alt: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
       },
     ],
-    type: 'website',
-    siteName: 'ゆくえレコーズ',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ゆくえレコーズ MONTHLY PICKUP PLAYLIST',
     description: 'リスナーにおすすめしたい良質なボカロ曲を毎月更新するサイト',
     images: ['/opg_pic.jpg'],
+    creator: '@yukue_records',
+    site: '@yukue_records',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
   },
 }
 
