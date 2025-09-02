@@ -73,8 +73,8 @@ export default function RootLayout({
     <html lang="ja" data-theme="light">
       <head>
         {/* Favicon */}
-        <link rel="icon" href="/kiite_favicon.png" type="image/png" />
-        <link rel="shortcut icon" href="/kiite_favicon.png" type="image/png" />
+        <link rel="icon" href="/Logo_Mark.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/Logo_Mark.svg" type="image/svg+xml" />
         
         {/* LCP画像の可能性があるドメインへ preconnect */}
         <link rel="preconnect" href="https://img.youtube.com" crossOrigin="anonymous" />
