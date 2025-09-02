@@ -3,13 +3,4 @@ compatibility_date = "2025-09-02"
 compatibility_flags = ["nodejs_compat"]
 
 # Cloudflare Pages用の設定
-[pages]
-# 静的ファイルの出力ディレクトリ
-build_output_dir = "out"
-
-# パフォーマンス最適化
-[pages.env.production]
-name = "yukue-month-production"
-
-[pages.env.preview]
-name = "yukue-month-preview"
+pages_build_output_dir = "out"

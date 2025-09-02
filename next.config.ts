@@ -12,8 +12,6 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [],
     // 静的生成の最適化
     optimizeCss: true,
-    // バンドル分析の有効化（開発時のみ）
-    bundlePagesRouterDependencies: true,
   },
   
   compiler: {
