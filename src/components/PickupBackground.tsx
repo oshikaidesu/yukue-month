@@ -27,42 +27,42 @@ const PickupBackground: React.FC = () => {
   // 背景テキストのパターンを配列で管理（textプロパティ追加）
   const patterns = [
     {
-      className: '-left-[20vw] top-0 -translate-y-1/2 text-[7vw] text-gray-100',
+      className: '-left-[20vw] top-0 -translate-y-1/2 text-[7vw] text-gray-100 font-english',
       style: { transform: `rotate(-90deg) translateY(0%) translateX(${leftX}%)`, zIndex: 0 },
       text: 'PICKUP PLAYLIST',
     },
     {
-      className: 'left-[10vw] top-full -translate-x-full text-[8vw] text-gray-100 opacity-20',
+      className: 'left-[10vw] top-full -translate-x-full text-[8vw] text-gray-100 opacity-20 font-english',
       style: { transform: `rotate(-90deg) translateY(0%) translateX(${leftX * 0.8}%)`, zIndex: 0 },
       text: 'OukueRecords',
     },
     {
-      className: '-left-[15vw] bottom-0 translate-y-1/2 text-[6vw] text-[#CCCCCC] opacity-10',
+      className: '-left-[15vw] bottom-0 translate-y-1/2 text-[6vw] text-[#CCCCCC] opacity-10 font-english',
       style: { transform: `rotate(-90deg) translateY(0%) translateX(${leftX * 0.5}%)`, zIndex: 0 },
       text: 'PICKUP PLAYLIST',
     },
     {
-      className: 'right-[110vw] top-0 -translate-y-1/2 text-[7vw] text-[#12DA99] opacity-30',
+      className: 'right-[110vw] top-0 -translate-y-1/2 text-[7vw] text-[#12DA99] opacity-30 font-english',
       style: { transform: `rotate(-90deg) scaleX(-1) scaleY(-1) translateY(0%) translateX(${rightX}%)`, zIndex: 0 },
       text: 'yukueRecords',
     },
     {
-      className: 'right-[120vw] top-full -translate-y-full text-[9vw] text-[#CCCCCC] opacity-20',
+      className: 'right-[120vw] top-full -translate-y-full text-[9vw] text-[#CCCCCC] opacity-20 font-english',
       style: { transform: `rotate(-90deg) scaleX(-1) scaleY(-1) translateY(0%) translateX(${rightX * 0.7}%)`, zIndex: 0 },
       text: 'PICKUP PLAYLIST',
     },
     {
-      className: 'right-[115vw] bottom-0 translate-y-1/2 text-[10vw] text-[#12DA99] opacity-10',
+      className: 'right-[115vw] bottom-0 translate-y-1/2 text-[10vw] text-[#12DA99] opacity-10 font-english',
       style: { transform: `rotate(-90deg) scaleX(-1) scaleY(-1) translateY(0%) translateX(${rightX * 0.4}%)`, zIndex: 0 },
       text: 'yukueRecords',
     },
     {
-      className: '-left-[22vw] bottom-full translate-y-full text-[6vw] text-[#12DA99]',
+      className: '-left-[22vw] bottom-full translate-y-full text-[6vw] text-[#12DA99] font-english',
       style: { transform: `rotate(-90deg) translateY(0%) translateX(${leftX * 0.3}%)`, zIndex: 0 },
       text: 'PICKUP PLAYLIST',
     },
     {
-      className: 'right-[125vw] bottom-full translate-y-full text-[8vw] text-[#CCCCCC] opacity-20',
+      className: 'right-[125vw] bottom-full translate-y-full text-[8vw] text-[#CCCCCC] opacity-20 font-english',
       style: { transform: `rotate(-90deg) scaleX(-1) scaleY(-1) translateY(0%) translateX(${rightX * 0.2}%)`, zIndex: 0 },
       text: 'yukueRecords',
     },

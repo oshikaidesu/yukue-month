@@ -247,7 +247,7 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
                 />
                 
                 {/* カード枠組み */}
-                <div className="bg-[#EEEEEE] shadow-lg transition-all duration-300 ease-out hover:shadow-2xl relative overflow-hidden rounded-lg">
+                <div className="bg-[#F8F8F8] shadow-lg transition-all duration-300 ease-out hover:shadow-2xl relative overflow-hidden rounded-lg">
                   {/* サムネイル（共通） */}
                   <motion.figure 
                     className="relative z-20 overflow-hidden h-40"

@@ -49,7 +49,7 @@ export default function Header() {
               {/* 公式HPを一番上に配置 */}
               <li>
                 <Link href="https://yukuerecords.studio.site/" className="flex items-center gap-3">
-                  <Image src="/Logo_Mark.svg" alt="Yukue Logo Mark" width={20} height={20} className="w-5 h-4" unoptimized />
+                  <Image src="/Logo_Mark.svg" alt="Yukue Logo Mark" width={20} height={20} className="w-5 h-5" unoptimized />
                   公式HP
                 </Link>
               </li>

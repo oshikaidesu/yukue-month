@@ -278,7 +278,7 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
             </div>
             
             {/* 日本語テキスト（右側） */}
-            <div className="flex flex-col items-center bg-[#EEEEEE] px-7 py-10 rounded-r inverted-corner-top-right-bold z-10">
+            <div className="flex flex-col items-center bg-[#EEEEEE] px-7 pb-10 pt-5 rounded-r inverted-corner-top-right-bold z-10">
               <h1 
                 className="text-[25px] sm:text-[45px] md:text-[50px] lg:text-[55px] xl:text-[60px] text-dark font-bold text-base-content text-mask-top"
                 style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}

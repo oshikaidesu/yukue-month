@@ -157,7 +157,7 @@ export default function ArchivePage() {
             <>
               <div className="flex flex-col items-center mb-8 gap-4">
                 <div className="w-full flex justify-center">
-                  <div className="flex gap-10 py-2 px-2">
+                  <div className="flex gap-10 py-2 px-2 font-english">
                     {yearOptions.map((y: { label: string; value: YearType }) => (
                       <button
                         key={y.value}
@@ -193,7 +193,7 @@ export default function ArchivePage() {
                     {availableMonths.map((value: string) => (
                       <button
                         key={value}
-                        className={`btn btn-sm min-w-[56px] ${
+                        className={`btn btn-sm min-w-[56px] font-english ${
                           selectedMonth === value ? "btn-primary" : "btn-ghost"
                         }`}
                         onClick={() => handleMonthChange(value)}
