@@ -148,7 +148,7 @@ export default function ArchivePage() {
       <PickupBackground />
       <div className="relative z-10">
         <Header />
-        <div className="mx-auto pt-30 pb-12">
+        <div className="mx-auto pt-30">
           <h1 className="text-3xl font-bold mb-2 text-center">アーカイブ</h1>
           <p className="text-sm text-gray-600 mb-6 text-center">-archives-</p>
           {!isInitialized ? (

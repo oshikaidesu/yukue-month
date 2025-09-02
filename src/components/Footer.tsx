@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <>
-      <footer className="footer footer-horizontal footer-center bg-[#EEEEEE] text-base-content rounded p-0">
+      <footer className="footer footer-horizontal footer-center bg-[#EEEEEE] text-base-content rounded pb-10">
         <div className="flex flex-col items-center gap-0">
           <Link href="/" className="btn btn-sm btn-outline btn-shuffle-skew m-10">
             <span>ホームへ戻る</span>

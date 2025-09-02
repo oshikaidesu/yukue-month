@@ -5,9 +5,6 @@ import { motion } from "framer-motion";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import CardDecorations from "./CardDecorations";
 
- 
-
-
 import { VideoItem } from '@/types/video';
 // props型を追加
 interface VideoCardsProps {
@@ -189,7 +186,7 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
   }
 
   return (
-    <div className="py-16 bg-none overflow-hidden relative z-10">
+    <div className="pt-16 bg-none overflow-hidden relative z-10">
       <div className="w-full px-4">
         {/* ヘッダー */}
         <div className="text-center mb-12">

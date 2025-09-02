@@ -85,7 +85,7 @@ html {
 
 body {
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: none;
+  /* overscroll-behavior: none; を削除してプルダウンリフレッシュを有効化 */
 }
 
 /* カスタムスクロールバー */
