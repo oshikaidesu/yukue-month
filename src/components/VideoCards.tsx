@@ -48,8 +48,6 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
   // カードごとのref配列
   const cardItemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // 図形の種類数（丸・三角・四角・渦巻き線・渦巻き線2・小丸・星型・ダイヤモンド）
-  const SHAPE_COUNT = 8;
 
   // 色とサイズの配列を定数として定義
   const colors = [
