@@ -22,36 +22,8 @@ export default function CardDecorations({
     // return null;
   }
 
-  // 超超分散アニメーション用のヘルパー関数（0.005秒間隔）
-  const getUltraStaggeredTransition = (shapeIndex: number) => ({
-    // プロパティごとに極細かく遅延
-    x: { 
-      delay: shapeIndex * 0.01, // 0.01秒ずつ遅延
-      duration: 0.18, 
-      ease: "easeOut" as const
-    },
-    y: { 
-      delay: shapeIndex * 0.01 + 0.005, // x より 0.005秒後
-      duration: 0.18, 
-      ease: "easeOut" as const
-    },
-    scale: { 
-      delay: shapeIndex * 0.01 + 0.01, // y より 0.005秒後
-      duration: 0.18, 
-      ease: "easeOut" as const
-    },
-    rotate: { 
-      delay: shapeIndex * 0.01 + 0.015, // scale より 0.005秒後
-      duration: 0.5, 
-      ease: "easeOut" as const
-    }
-  });
-
-  // 動的will-changeスタイル
-  const getDynamicStyle = (baseTransform = 'translateZ(0)') => ({
-    transform: baseTransform,
-    willChange: isActive ? 'transform' : 'auto'
-  });
+  // 共通のアニメーション設定
+  const baseTransition = { duration: 0.2, ease: "easeOut" as const };
 
   return (
     <div className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`} style={{ willChange: 'opacity', transform: 'translateZ(0)' }}>
@@ -60,7 +32,7 @@ export default function CardDecorations({
         className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 0)} ${getFixedColor(index, 0)} rounded-full pointer-events-none`}
         style={{ 
           transform: 'translateZ(0)',
-          willChange: isActive ? 'transform' : 'auto' // 動的will-change
+          willChange: isActive ? 'transform' : 'auto'
         }}
         initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
         animate={isActive ? {
@@ -68,13 +40,13 @@ export default function CardDecorations({
           y: 'calc(-50% - 150px)',
           scale: 1.2,
           rotate: 150,
-          transition: getUltraStaggeredTransition(0) // 超分散アニメーション
+          transition: baseTransition
         } : {
           x: '-50%',
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" as const }
+          transition: baseTransition
         }}
       />
       
@@ -83,7 +55,8 @@ export default function CardDecorations({
         className={`absolute top-1/2 left-1/2 ${getFixedSize(index, 1)} ${getFixedColor(index, 1)} pointer-events-none`}
         style={{ 
           clipPath: 'polygon(50% 0%, 0% 86.6%, 100% 86.6%)', 
-          ...getDynamicStyle()
+          transform: 'translateZ(0)',
+          willChange: isActive ? 'transform' : 'auto'
         }}
         initial={{ x: '-50%', y: '-50%', scale: 1, rotate: 0 }}
         animate={isActive ? {
@@ -91,13 +64,13 @@ export default function CardDecorations({
           y: 'calc(-50% - 170px)',
           scale: 1.2,
           rotate: 150,
-          transition: getUltraStaggeredTransition(1) // 超分散アニメーション
+          transition: baseTransition
         } : {
           x: '-50%',
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" as const }
+          transition: baseTransition
         }}
       />
       
@@ -111,18 +84,13 @@ export default function CardDecorations({
           y: 'calc(-50% - 100px)',
           scale: 1.2,
           rotate: 195,
-          transition: { 
-            x: { duration: 0.3, ease: "easeOut" as const },
-            y: { duration: 0.3, ease: "easeOut" as const },
-            scale: { duration: 0.3, ease: "easeOut" as const },
-            rotate: { duration: 1, ease: "easeOut" as const }
-          }
+          transition: baseTransition
         } : {
           x: '-50%',
           y: '-50%',
           scale: 1,
           rotate: 45,
-          transition: { duration: 0.2, ease: "easeOut" }
+          transition: baseTransition
         }}
       />
       
@@ -140,17 +108,13 @@ export default function CardDecorations({
           y: '-50%',
           scale: 1.2,
           rotate: 150,
-          transition: { 
-            x: { duration: 0.3, ease: "easeOut" as const },
-            scale: { duration: 0.3, ease: "easeOut" as const },
-            rotate: { duration: 1, ease: "easeOut" as const }
-          }
+          transition: baseTransition
         } : {
           x: '-50%',
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" as const }
+          transition: baseTransition
         }}
       />
       
@@ -167,18 +131,13 @@ export default function CardDecorations({
           y: 'calc(-50% + 100px)',
           scale: 1.2,
           rotate: 150,
-          transition: { 
-            x: { duration: 0.3, ease: "easeOut" },
-            y: { duration: 0.3, ease: "easeOut" },
-            scale: { duration: 0.3, ease: "easeOut" },
-            rotate: { duration: 1, ease: "easeOut" }
-          }
+          transition: baseTransition
         } : {
           x: '-50%',
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" }
+          transition: baseTransition
         }}
       />
       
@@ -192,17 +151,13 @@ export default function CardDecorations({
           y: 'calc(-50% + 120px)',
           scale: 1.2,
           rotate: -150,
-          transition: { 
-            y: { duration: 0.3, ease: "easeOut" },
-            scale: { duration: 0.3, ease: "easeOut" },
-            rotate: { duration: 1, ease: "easeOut" }
-          }
+          transition: baseTransition
         } : {
           x: '-50%',
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" }
+          transition: baseTransition
         }}
       />
       
@@ -220,18 +175,13 @@ export default function CardDecorations({
           y: 'calc(-50% + 150px)',
           scale: 1.2,
           rotate: 150,
-          transition: {
-            x: { duration: 0.3, ease: "easeOut" },
-            y: { duration: 0.3, ease: "easeOut" },
-            scale: { duration: 0.3, ease: "easeOut" },
-            rotate: { duration: 1, ease: "easeOut" }
-          }
+          transition: baseTransition
         } : {
           x: '-50%',
           y: '-50%',
           scale: 0.8,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" }
+          transition: baseTransition
         }}
       />
       
@@ -245,18 +195,13 @@ export default function CardDecorations({
           y: 'calc(-50% + 120px)',
           scale: 1.2,
           rotate: 150,
-          transition: { 
-            x: { duration: 0.3, ease: "easeOut" },
-            y: { duration: 0.3, ease: "easeOut" },
-            scale: { duration: 0.3, ease: "easeOut" },
-            rotate: { duration: 1, ease: "easeOut" }
-          }
+          transition: baseTransition
         } : {
           x: '-50%',
           y: '-50%',
           scale: 1,
           rotate: 0,
-          transition: { duration: 0.2, ease: "easeOut" }
+          transition: baseTransition
         }}
       />
     </div>

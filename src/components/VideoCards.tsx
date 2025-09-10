@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import NicovideoThumbnail from "./NicovideoThumbnail";
 import CardDecorations from "./CardDecorations";
@@ -51,41 +51,29 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
   // 図形の種類数（丸・三角・四角・渦巻き線・渦巻き線2・小丸・星型・ダイヤモンド）
   const SHAPE_COUNT = 8;
 
-  // useMemo で videos → videoList ?? videos に変更
-  const fixedColorsAndSizes = useMemo(() => {
-    const colors = [
-      'bg-gradient-to-bl from-indigo-500 from-0% via-lime-100 via-50% to-fuchsia-500 to-100%',
-      'bg-gradient-to-t from-emerald-100 from-0% via-red-500 via-50% to-cyan-600 to-100%',
-      'bg-gradient-to-b from-pink-100 from-0% via-teal-300 via-50% to-green-500 to-100%',
-      'bg-gradient-to-t from-cyan-300 from-0% via-purple-400 via-50% to-zinc-100 to-100%',
-      'bg-gradient-to-b from-gray-600 from-0% via-rose-400 via-50% to-orange-500 to-100%',
-      'bg-gradient-to-t from-orange-300 from-0% to-sky-500 to-100%',
-      'bg-gradient-to-tl from-stone-500 from-0% via-rose-200 via-50% to-green-300 to-100%',
-      'bg-gradient-to-tr from-yellow-700 from-0% to-blue-600 to-100%',
-      'bg-gradient-to-r from-blue-200 from-0% via-emerald-50 via-50% to-slate-300 to-100%',
-      'bg-gradient-to-br from-green-300 from-0% to-red-300 to-100%'
-    ];
-    const sizes = ['w-16 h-16', 'w-20 h-20', 'w-24 h-24', 'w-28 h-28', 'w-32 h-32', 'w-36 h-36'];
-    // 各動画ごとに図形ごとに色・サイズをランダムで決定
-    return (videoList ?? []).map((_, videoIdx) =>
-      Array.from({ length: SHAPE_COUNT }, (_, shapeIdx) => {
-        // 疑似乱数: 動画indexと図形indexで決定的に
-        const colorIdx = (videoIdx * 31 + shapeIdx * 17) % colors.length;
-        const sizeIdx = (videoIdx * 13 + shapeIdx * 7) % sizes.length;
-        return {
-          color: colors[colorIdx],
-          size: sizes[sizeIdx],
-        };
-      })
-    );
-  }, [videoList]);
+  // 色とサイズの配列を定数として定義
+  const colors = [
+    'bg-gradient-to-bl from-indigo-500 from-0% via-lime-100 via-50% to-fuchsia-500 to-100%',
+    'bg-gradient-to-t from-emerald-100 from-0% via-red-500 via-50% to-cyan-600 to-100%',
+    'bg-gradient-to-b from-pink-100 from-0% via-teal-300 via-50% to-green-500 to-100%',
+    'bg-gradient-to-t from-cyan-300 from-0% via-purple-400 via-50% to-zinc-100 to-100%',
+    'bg-gradient-to-b from-gray-600 from-0% via-rose-400 via-50% to-orange-500 to-100%',
+    'bg-gradient-to-t from-orange-300 from-0% to-sky-500 to-100%',
+    'bg-gradient-to-tl from-stone-500 from-0% via-rose-200 via-50% to-green-300 to-100%',
+    'bg-gradient-to-tr from-yellow-700 from-0% to-blue-600 to-100%',
+    'bg-gradient-to-r from-blue-200 from-0% via-emerald-50 via-50% to-slate-300 to-100%',
+    'bg-gradient-to-br from-green-300 from-0% to-red-300 to-100%'
+  ];
+  const sizes = ['w-16 h-16', 'w-20 h-20', 'w-24 h-24', 'w-28 h-28', 'w-32 h-32', 'w-36 h-36'];
 
-  // 固定化された色・サイズを取得する関数
+  // 色・サイズを取得する関数（直接計算）
   const getFixedColor = (videoIdx: number, shapeIdx: number) => {
-    return fixedColorsAndSizes[videoIdx]?.[shapeIdx]?.color || fixedColorsAndSizes[0][0].color;
+    const colorIdx = (videoIdx * 31 + shapeIdx * 17) % colors.length;
+    return colors[colorIdx];
   };
   const getFixedSize = (videoIdx: number, shapeIdx: number) => {
-    return fixedColorsAndSizes[videoIdx]?.[shapeIdx]?.size || fixedColorsAndSizes[0][0].size;
+    const sizeIdx = (videoIdx * 13 + shapeIdx * 7) % sizes.length;
+    return sizes[sizeIdx];
   };
 
   // 年月の表示（propsから直接使用）
@@ -99,17 +87,9 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
   }, [videoList]);
 
   // 表示する動画を決定（PC・タブレットでは全件、スマホではページネーション）
-  const displayVideos = useMemo(() => {
-    if (isMultiColumn) { // md: 768px以上
-      // PC・タブレットでは全件表示
-      return shuffledVideos;
-    } else {
-      // スマホでは８個区切りで表示
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      return shuffledVideos.slice(startIndex, endIndex);
-    }
-  }, [isMultiColumn, shuffledVideos, currentPage, itemsPerPage]);
+  const displayVideos = isMultiColumn 
+    ? shuffledVideos 
+    : shuffledVideos.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // 総ページ数を計算
   const validVideosCount = shuffledVideos.length;
@@ -169,13 +149,13 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
 
   // サムネイル読み込み状態を管理
   const [thumbnailsLoaded, setThumbnailsLoaded] = useState<boolean[]>([]);
-  const handleThumbnailLoad = useCallback((idx: number) => {
+  const handleThumbnailLoad = (idx: number) => {
     setThumbnailsLoaded(prev => {
       const updated = [...prev];
       updated[idx] = true;
       return updated;
     });
-  }, []);
+  };
 
   if (!mounted) {
     return null; // もしくは <div>Loading...</div> など
@@ -186,8 +166,7 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
   }
 
   return (
-    <div className="pt-16 bg-none overflow-hidden relative z-10">
-      <div className="w-full px-4">
+    <div className="pt-16 bg-none overflow-hidden relative z-10 w-full px-4">
         {/* ヘッダー */}
         <div className="text-center mb-12">
           {yearMonth && (
@@ -443,7 +422,6 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
             niconicoでのリンクが取得できなかった場合、youtubeのリンクを表示します
           </p>
         </div>
-      </div>
     </div>
   );
 }
