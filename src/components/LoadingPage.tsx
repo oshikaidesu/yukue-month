@@ -1,36 +1,106 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface LoadingPageProps {
   onComplete?: () => void;
-  duration?: number; // ローディング時間（ミリ秒）
+  onProgressUpdate?: (progress: number) => void;
+  minDuration?: number; // 最小表示時間（ミリ秒）
 }
 
-export default function LoadingPage({ onComplete, duration = 3000 }: LoadingPageProps) {
+export default function LoadingPage({ onComplete, onProgressUpdate, minDuration = 2000 }: LoadingPageProps) {
   const [progress, setProgress] = useState(0);
+  const [isComplete, setIsComplete] = useState(false);
+  const animationRef = useRef<number>();
+  const onCompleteRef = useRef(onComplete);
+  const onProgressUpdateRef = useRef(onProgressUpdate);
 
+  // コールバック関数をrefに保存
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+    onProgressUpdateRef.current = onProgressUpdate;
+  });
+
+  // デバッグ用: 初期状態をログ出力
+  useEffect(() => {
+    console.log('LoadingPage: Component mounted, minDuration:', minDuration);
+  }, [minDuration]);
+
+  // 全画像読み込み完了を監視
+  useEffect(() => {
+    const handleAllImagesLoaded = () => {
+      console.log('LoadingPage: All images loaded, completing loading');
+      setProgress(100);
+      onProgressUpdateRef.current?.(100);
+      
+      setTimeout(() => {
+        setIsComplete(true);
+        onCompleteRef.current?.();
+      }, 200);
+    };
+
+    window.addEventListener('allImagesLoaded', handleAllImagesLoaded);
+    
+    return () => {
+      window.removeEventListener('allImagesLoaded', handleAllImagesLoaded);
+    };
+  }, []); // 依存関係を空に
+
+  // プログレスアニメーション
   useEffect(() => {
     const startTime = Date.now();
+    let isRunning = true;
     
     const updateProgress = () => {
+      if (!isRunning) return; // 停止フラグの場合は停止
+      
       const elapsed = Date.now() - startTime;
-      const newProgress = Math.min((elapsed / duration) * 100, 100);
+      const newProgress = Math.min((elapsed / minDuration) * 80, 80); // 最大80%まで
       
       setProgress(newProgress);
+      onProgressUpdateRef.current?.(newProgress);
       
-      if (newProgress < 100) {
-        requestAnimationFrame(updateProgress);
-      } else {
-        // ローディング完了
-        setTimeout(() => {
-          onComplete?.();
-        }, 200); // 少し遅延させて完了感を演出
+      // デバッグ用: プログレス更新をログ出力
+      if (Math.floor(newProgress) % 10 === 0 && Math.floor(newProgress) !== Math.floor(progress)) {
+        console.log('LoadingPage: Progress updated to', Math.floor(newProgress) + '%');
+      }
+      
+      if (newProgress < 80 && isRunning) {
+        animationRef.current = requestAnimationFrame(updateProgress);
       }
     };
     
-    requestAnimationFrame(updateProgress);
-  }, [duration, onComplete]);
+    animationRef.current = requestAnimationFrame(updateProgress);
+    
+    return () => {
+      isRunning = false;
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [minDuration]); // 依存関係を最小限に
+
+  // isCompleteがtrueになったらアニメーションを停止
+  useEffect(() => {
+    if (isComplete && animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+  }, [isComplete]);
+
+  // フォールバック: 5秒後に強制完了
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      if (!isComplete) {
+        console.log('LoadingPage: Fallback timer triggered');
+        setProgress(100);
+        onProgressUpdateRef.current?.(100);
+        setIsComplete(true);
+        onCompleteRef.current?.();
+      }
+    }, 5000);
+
+    return () => clearTimeout(fallbackTimer);
+  }, []); // 依存関係を空に
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center z-50">

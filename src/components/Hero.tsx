@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState, useMemo } from 'react'
+import imagesLoaded from 'imagesloaded'
 
 // 型定義
 interface Video {
@@ -249,6 +250,28 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
     return () => clearTimeout(t);
   }, []);
 
+  // imagesLoadedを使用して画像読み込み完了を監視
+  useEffect(() => {
+    if (mountBg) {
+      // Heroコンポーネント内の画像を監視
+      const heroElement = document.querySelector('.hero-container');
+      if (heroElement) {
+        const imgLoad = imagesLoaded(heroElement);
+        
+        imgLoad.on('done', () => {
+          console.log('Hero: All images loaded using imagesLoaded');
+          window.dispatchEvent(new CustomEvent('allImagesLoaded'));
+        });
+        
+        imgLoad.on('progress', (instance, image) => {
+          if (image && image.img) {
+            console.log('Hero: Image loaded:', image.img.src);
+          }
+        });
+      }
+    }
+  }, [mountBg]);
+
   // LCP候補の画像をプリロード（即座に実行）
   useEffect(() => {
     if (videoList.length > 0) {
@@ -280,7 +303,7 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
     {/* マージンとサイズを制御する外側のコンテナ */}
     <div className="mx-auto mt-25 mb-8 w-[min(1400px,calc(100vw-2rem))]">
       {/* ヒーローセクションの主要なスタイリング */}
-      <div className="min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px] rounded-tr-none rounded-bl-none border-1 border-[#EEEEEE]">
+      <div className="hero-container min-h-[80vh] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden rounded-[50px] rounded-tr-none rounded-bl-none border-1 border-[#EEEEEE]">
         {/* === グリッド背景（インラインSVG） === */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <svg width="100%" height="100%" className="w-full h-full" style={{ position: 'absolute', inset: 0 }}>
