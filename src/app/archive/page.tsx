@@ -17,7 +17,7 @@ const yearOptions = [
 // 存在する月のリスト（ファイル名から抽出）
 const availableMonthsMap: { [key: string]: string[] } = {
   "2024": ["04", "05", "08", "09", "10", "11", "12"], // 必要に応じて2024年の月を追加
-  "2025": ["01", "02", "03", "voca_winter", "04", "05", "06"]
+  "2025": ["01", "02", "03", "voca_winter", "04", "05", "06", "07"]
 };
 
 type YearType = keyof typeof availableMonthsMap;

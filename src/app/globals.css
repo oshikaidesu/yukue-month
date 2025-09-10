@@ -11,8 +11,7 @@
   --font-montserrat: "Montserrat", sans-serif;
 }
 
-@plugin "daisyui/theme"
- {
+@plugin "daisyui/theme" {
   name: "light";
   default: false;
   prefersdark: false;
@@ -360,4 +359,3 @@ body {
   transform: skew(-25deg) scale(1, 1) !important;
   transform-origin: left top !important;
 }
-

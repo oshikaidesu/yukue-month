@@ -3,11 +3,11 @@ import Hero from '@/components/Hero'
 import VideoCards from '@/components/VideoCards'
 import Footer from '@/components/Footer'
 import PickupBackground from '@/components/PickupBackground'
-import videos_2025_07 from "@/data/2025/videos_07.json";
+import videos_2025_08 from "@/data/2025/videos_08.json";
 
 export default function Home() {
-  const videoList = videos_2025_07;
-  const yearMonth = "2025.07";
+  const videoList = videos_2025_08;
+  const yearMonth = "2025.08";
   
   return (
     <div className="min-h-screen bg-[#EEEEEE]" data-theme="light">

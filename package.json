@@ -10,19 +10,26 @@
     "deploy": "./deploy.sh"
   },
   "dependencies": {
+    "@sls-next/lambda-at-edge": "^3.7.0",
+    "@tailwindcss/postcss": "^4.1.13",
+    "autoprefixer": "^10.4.21",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.11.17",
     "next": "15.3.4",
     "react": "^18",
     "react-dom": "^18",
-    "framer-motion": "^11.11.17"
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
+    "cheerio": "^1.1.2",
+    "daisyui": "^5.1.10",
     "eslint": "^8",
-    "eslint-config-next": "15.3.4"
+    "eslint-config-next": "15.3.4",
+    "open-graph-scraper": "^6.10.0",
+    "postcss": "^8",
+    "typescript": "^5"
   }
 }
