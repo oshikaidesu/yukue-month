@@ -31,6 +31,10 @@ const nextConfig: NextConfig = {
       "i.ytimg.com", // YouTube サムネイル用（別ドメイン）
       // 必要に応じて他のドメインも追加
     ],
+    // 画像の読み込み最適化
+    minimumCacheTTL: 60 * 60 * 24 * 7, // 1週間キャッシュ
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: 'https',

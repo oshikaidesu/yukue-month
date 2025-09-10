@@ -28,12 +28,14 @@ const VideoCardMini = ({
   video, 
   onLoad, 
   onPrivateVideo,
-  overlayOpacity = 0
+  overlayOpacity = 0,
+  isPriority = false
 }: { 
   video: { id?: string, url?: string, thumbnail?: string, ogpThumbnailUrl?: string | null }, 
   onLoad?: () => void,
   onPrivateVideo?: (videoId: string) => void,
-  overlayOpacity?: number
+  overlayOpacity?: number,
+  isPriority?: boolean
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
@@ -58,7 +60,7 @@ const VideoCardMini = ({
             ogpThumbnailUrl={video.ogpThumbnailUrl ?? undefined}
             width={160}
             height={90}
-            className={`w-full h-full object-cover rounded transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            className={`w-full h-full object-cover rounded transition-opacity duration-200 ${isLoaded ? 'opacity-100' : (isPriority ? 'opacity-50' : 'opacity-0')}`}
             onLoad={() => {
               setIsLoaded(true);
               if (onLoad) onLoad();
@@ -70,9 +72,10 @@ const VideoCardMini = ({
               setIsPrivate(true);
               onPrivateVideo?.(videoId);
             }}
-            loading="lazy"
-            quality={50}
+            loading={isPriority ? "eager" : "lazy"}
+            quality={isPriority ? 75 : 50}
             sizes="(max-width: 768px) 80px, 160px"
+            priority={isPriority}
           />
         ) : (
           // エラー時はロゴアイコンのみ表示
@@ -216,7 +219,7 @@ function VideoCardScatter({ videoList }: { videoList: Video[] }) {
               stiffness: 60,
               damping: 18,
               mass: 0.7,
-              delay: i * 0.01,
+              delay: i < 3 ? 0 : i * 0.005, // 最初の3個は遅延なし、その他は短縮
             }}
             style={{
               zIndex: positions[i].zIndex,
@@ -227,6 +230,7 @@ function VideoCardScatter({ videoList }: { videoList: Video[] }) {
               video={video} 
               onPrivateVideo={handlePrivateVideo}
               overlayOpacity={overlayOpacity}
+              isPriority={i < 3} // 最初の3個の動画を優先読み込み
             />
           </motion.div>
         );
@@ -236,13 +240,40 @@ function VideoCardScatter({ videoList }: { videoList: Video[] }) {
 }
 
 export default function Hero({ videoList }: { videoList: Video[] }) {
-  const [mountBg, setMountBg] = useState(false);
+  const [mountBg, setMountBg] = useState(true); // 即座にマウント
 
-  // 初回描画をブロックしないよう背景を遅延マウント
+  // プリロード完了後に背景を表示
   useEffect(() => {
-    const t = setTimeout(() => setMountBg(true), 0);
+    // プリロードが完了するまで少し待つ
+    const t = setTimeout(() => setMountBg(true), 100);
     return () => clearTimeout(t);
   }, []);
+
+  // LCP候補の画像をプリロード（即座に実行）
+  useEffect(() => {
+    if (videoList.length > 0) {
+      // 最初の数個の動画のサムネイルをプリロード
+      const priorityVideos = videoList.slice(0, 5); // 5個に増加
+      priorityVideos.forEach((video, index) => {
+        // 優先度に応じて遅延を設定
+        setTimeout(() => {
+          if (video.ogpThumbnailUrl) {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = video.ogpThumbnailUrl;
+            document.head.appendChild(link);
+          } else if (video.thumbnail) {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = video.thumbnail;
+            document.head.appendChild(link);
+          }
+        }, index * 50); // 50ms間隔でプリロード
+      });
+    }
+  }, [videoList]);
 
   return (
     <>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from 'next/image';
 
 // サムネイル画像表示専用
-function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading, quality, sizes }: {
+function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading, quality, sizes, priority }: {
   src: string,
   alt: string,
   width: number,
@@ -12,7 +12,8 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
   onLoad?: () => void,
   loading?: "lazy" | "eager",
   quality?: number,
-  sizes?: string
+  sizes?: string,
+  priority?: boolean
 }) {
       return (
     <Image
@@ -26,7 +27,7 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
       loading={loading}
       quality={quality}
       sizes={sizes}
-      priority={loading === "eager"}
+      priority={priority || loading === "eager"}
       placeholder="blur"
       blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
     />
@@ -49,6 +50,7 @@ type Props = {
   ogpThumbnailUrl?: string | null; // OGPサムネイルURL
   quality?: number; // 画質設定（1-100）
   sizes?: string; // レスポンシブサイズ設定
+  priority?: boolean; // 優先読み込みフラグ
 };
 
 // プラットフォームを判定する関数
@@ -84,7 +86,8 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     thumbnail, 
     ogpThumbnailUrl,
     quality = 75,
-    sizes
+    sizes,
+    priority = false
   } = props;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -120,8 +123,9 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
       return;
     }
 
-    // ニコニコ動画の場合
+    // ニコニコ動画の場合 - 複数のフォールバックURLを用意
     if (platform === 'nicovideo') {
+      // 1. 高速なSmileVideoのサムネイルを優先
       const nicoThumbnailUrl = `https://tn.smilevideo.jp/smile?i=${videoId}`;
       setThumbnailUrl(nicoThumbnailUrl);
       setIsLoading(false);
@@ -146,14 +150,33 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     fetchThumbnail();
   }, [fetchThumbnail]);
 
-  // 画像読み込みエラー時の処理
-  const handleImageError = () => {
+  // 画像読み込みエラー時の処理（フォールバック戦略）
+  const handleImageError = useCallback(() => {
+    // ニコニコ動画の場合、複数のフォールバックURLを試行
+    if (platform === 'nicovideo' && !error) {
+      const fallbackUrls = [
+        `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`,
+        `https://tn.smilevideo.jp/smile?i=${videoId}`,
+        `https://img.cdn.nimg.jp/s/nicovideo/thumbnails/${videoId}/${videoId}.39478694.1`
+      ];
+      
+      const currentUrl = thumbnailUrl;
+      const currentIndex = fallbackUrls.findIndex(url => url === currentUrl);
+      
+      if (currentIndex < fallbackUrls.length - 1) {
+        // 次のフォールバックURLを試行
+        setThumbnailUrl(fallbackUrls[currentIndex + 1]);
+        return;
+      }
+    }
+    
+    // すべてのフォールバックが失敗した場合
     setError(true);
     onError?.({ type: 'error', videoId });
-  };
+  }, [platform, videoId, thumbnailUrl, error, onError]);
 
-  // ローディング状態
-  if (isLoading) {
+  // ローディング状態（優先度の高い画像は短時間で表示）
+  if (isLoading && !priority) {
     return (
       <div 
         className={`flex items-center justify-center bg-[#EEEEEE] rounded-lg ${className}`}
@@ -184,6 +207,7 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
         loading={props.loading}
         quality={quality}
         sizes={sizes}
+        priority={priority}
       />
     );
   }
