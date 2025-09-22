@@ -253,22 +253,33 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
   // imagesLoadedを使用して画像読み込み完了を監視
   useEffect(() => {
     if (mountBg) {
-      // Heroコンポーネント内の画像を監視
-      const heroElement = document.querySelector('.hero-container');
-      if (heroElement) {
-        const imgLoad = imagesLoaded(heroElement);
-        
-        imgLoad.on('done', () => {
-          console.log('Hero: All images loaded using imagesLoaded');
-          window.dispatchEvent(new CustomEvent('allImagesLoaded'));
-        });
-        
-        imgLoad.on('progress', (instance, image) => {
-          if (image && image.img) {
-            console.log('Hero: Image loaded:', image.img.src);
-          }
-        });
-      }
+      // 少し遅延してから画像監視を開始（DOM要素が確実に存在するように）
+      const timer = setTimeout(() => {
+        const heroElement = document.querySelector('.hero-container');
+        if (heroElement) {
+          console.log('Hero: Starting imagesLoaded monitoring');
+          const imgLoad = imagesLoaded(heroElement);
+          
+          imgLoad.on('done', () => {
+            console.log('Hero: All images loaded using imagesLoaded');
+            window.dispatchEvent(new CustomEvent('allImagesLoaded'));
+          });
+          
+          imgLoad.on('progress', (instance, image) => {
+            if (image && image.img) {
+              console.log('Hero: Image loaded:', image.img.src);
+            }
+          });
+        } else {
+          console.log('Hero: .hero-container not found, using fallback timer');
+          // フォールバック: 3秒後に完了イベントを発火
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('allImagesLoaded'));
+          }, 3000);
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
     }
   }, [mountBg]);
 

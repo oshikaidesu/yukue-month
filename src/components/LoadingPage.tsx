@@ -50,6 +50,7 @@ export default function LoadingPage({ onComplete, onProgressUpdate, minDuration 
   useEffect(() => {
     const startTime = Date.now();
     let isRunning = true;
+    let lastLoggedProgress = 0;
     
     const updateProgress = () => {
       if (!isRunning) return; // 停止フラグの場合は停止
@@ -61,16 +62,21 @@ export default function LoadingPage({ onComplete, onProgressUpdate, minDuration 
       onProgressUpdateRef.current?.(newProgress);
       
       // デバッグ用: プログレス更新をログ出力
-      if (Math.floor(newProgress) % 10 === 0 && Math.floor(newProgress) !== Math.floor(progress)) {
+      if (Math.floor(newProgress) % 10 === 0 && Math.floor(newProgress) !== lastLoggedProgress) {
         console.log('LoadingPage: Progress updated to', Math.floor(newProgress) + '%');
+        lastLoggedProgress = Math.floor(newProgress);
       }
       
       if (newProgress < 80 && isRunning) {
         animationRef.current = requestAnimationFrame(updateProgress);
+      } else if (newProgress >= 80 && isRunning) {
+        // 80%に達したら、画像読み込み完了を待つ
+        console.log('LoadingPage: Progress reached 80%, waiting for images...');
       }
     };
     
-    animationRef.current = requestAnimationFrame(updateProgress);
+    // 即座に開始
+    updateProgress();
     
     return () => {
       isRunning = false;
