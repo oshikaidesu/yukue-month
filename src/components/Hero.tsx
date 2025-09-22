@@ -250,77 +250,113 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
     return () => clearTimeout(t);
   }, []);
 
-  // imagesLoadedを使用して画像読み込み進捗を監視
+  // 確実な画像読み込み進捗監視
   useEffect(() => {
     if (mountBg) {
-      // 少し遅延してから画像監視を開始（DOM要素が確実に存在するように）
+      console.log('Hero: Starting image loading monitoring');
+      
+      // 初期進捗通知
+      window.dispatchEvent(new CustomEvent('imageProgress', {
+        detail: { loaded: 0, total: 15, stage: '画像を検出中...' }
+      }));
+      
+      // DOM監視とフォールバック併用
       const timer = setTimeout(() => {
         const heroElement = document.querySelector('.hero-container');
-        if (heroElement) {
-          console.log('Hero: Starting imagesLoaded monitoring');
-          const imgLoad = imagesLoaded(heroElement);
-          
-          // 画像総数を取得
-          const totalImages = imgLoad.images.length;
-          const expectedCards = 15; // ヒーローコンポーネントで表示するカード数
-          console.log('Hero: Total images to load:', totalImages);
-          
-          // 初期進捗通知
-          window.dispatchEvent(new CustomEvent('imageProgress', {
-            detail: { loaded: 0, total: expectedCards, stage: '画像を検出中...' }
-          }));
-          
-          imgLoad.on('done', () => {
-            console.log('Hero: All images loaded using imagesLoaded');
-            window.dispatchEvent(new CustomEvent('allImagesLoaded'));
-          });
-          
+        const images = heroElement ? heroElement.querySelectorAll('img') : [];
+        const totalImages = Math.max(images.length, 15);
+        
+        console.log('Hero: Found images:', images.length, 'Expected total:', totalImages);
+        
+        // 画像検出完了を通知
+        window.dispatchEvent(new CustomEvent('imageProgress', {
+          detail: { loaded: 0, total: 15, stage: '画像を読み込み中...' }
+        }));
+        
+        if (images.length > 0) {
+          // 実際の画像要素を監視
           let loadedCount = 0;
-          const progressPerCard = 100 / expectedCards; // 約6.67%ずつ
+          const progressPerCard = 100 / 15; // 15分割固定
           
-          imgLoad.on('progress', (instance, image) => {
-            if (image && image.img) {
+          const checkImageLoaded = (img: HTMLImageElement, index: number) => {
+            const updateProgress = () => {
               loadedCount++;
               const progressPercent = Math.min(loadedCount * progressPerCard, 100);
-              console.log(`Hero: Image loaded (${loadedCount}/${expectedCards}):`, image.img.src);
+              console.log(`Hero: Image ${loadedCount}/15 loaded:`, img.src);
               
-              // 進捗通知（15分割で段階的に）
               window.dispatchEvent(new CustomEvent('imageProgress', {
                 detail: { 
                   loaded: loadedCount, 
-                  total: expectedCards, 
+                  total: 15, 
                   stage: 'サムネイルを読み込み中...',
                   progress: progressPercent
                 }
               }));
+              
+              if (loadedCount >= 15) {
+                console.log('Hero: All images loaded');
+                window.dispatchEvent(new CustomEvent('allImagesLoaded'));
+              }
+            };
+            
+            if (img.complete && img.naturalHeight > 0) {
+              updateProgress();
+            } else {
+              img.onload = updateProgress;
+              img.onerror = updateProgress; // エラーも進捗に含める
+              
+              // タイムアウト処理（2秒後に強制的に完了扱い）
+              setTimeout(() => {
+                if (!img.complete) {
+                  console.log('Hero: Image timeout, marking as loaded:', img.src);
+                  updateProgress();
+                }
+              }, 2000);
             }
+          };
+          
+          // 最初の15個の画像を監視
+          Array.from(images).slice(0, 15).forEach((img, index) => {
+            checkImageLoaded(img as HTMLImageElement, index);
           });
           
-          imgLoad.on('fail', (instance, image) => {
-            loadedCount++;
-            const progressPercent = Math.min(loadedCount * progressPerCard, 100);
-            console.log(`Hero: Image failed to load (${loadedCount}/${expectedCards}):`, image?.img?.src);
+        } else {
+          // 画像が見つからない場合のフォールバック
+          console.log('Hero: No images found, using fallback progress');
+          let fallbackProgress = 0;
+          const fallbackInterval = setInterval(() => {
+            fallbackProgress++;
+            const progressPercent = (fallbackProgress / 15) * 100;
             
-            // 失敗した画像も進捗に含める
             window.dispatchEvent(new CustomEvent('imageProgress', {
               detail: { 
-                loaded: loadedCount, 
-                total: expectedCards, 
-                stage: 'サムネイルを読み込み中...',
+                loaded: fallbackProgress, 
+                total: 15, 
+                stage: '画像を読み込み中...',
                 progress: progressPercent
               }
             }));
-          });
-        } else {
-          console.log('Hero: .hero-container not found, using fallback timer');
-          // フォールバック: 3秒後に完了イベントを発火
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('allImagesLoaded'));
-          }, 3000);
+            
+            if (fallbackProgress >= 15) {
+              clearInterval(fallbackInterval);
+              setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('allImagesLoaded'));
+              }, 200);
+            }
+          }, 100); // 100ms間隔で進捗更新
         }
       }, 500);
       
-      return () => clearTimeout(timer);
+      // 最大5秒後に強制完了
+      const maxTimer = setTimeout(() => {
+        console.log('Hero: Maximum timeout reached, forcing completion');
+        window.dispatchEvent(new CustomEvent('allImagesLoaded'));
+      }, 5000);
+      
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(maxTimer);
+      };
     }
   }, [mountBg]);
 

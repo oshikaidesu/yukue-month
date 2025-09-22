@@ -29,70 +29,91 @@ export default function LoadingPage({ onComplete, onProgressUpdate, minDuration 
     console.log('LoadingPage: Component mounted, minDuration:', minDuration);
   }, [minDuration]);
 
-  // 画像読み込み進捗を監視
+  // 画像読み込み進捗を監視（無効化 - 自動進捗のみ使用）
   useEffect(() => {
-    const handleImageProgress = (event: CustomEvent) => {
-      const { loaded, total, stage, progress } = event.detail;
-      console.log('LoadingPage: Image progress update:', { loaded, total, stage, progress });
-      
-      setLoadedImages(loaded);
-      setTotalImages(total);
-      setLoadingStage(stage);
-      
-      // 進捗計算: 画像読み込みが80%、その他の処理が20%
-      const imageProgress = progress ? progress * 0.8 : (total > 0 ? (loaded / total) * 80 : 0);
-      const baseProgress = 20; // 基本処理分
-      const newProgress = Math.min(baseProgress + imageProgress, 100);
-      
-      setProgress(newProgress);
-      onProgressUpdateRef.current?.(newProgress);
-    };
-
-    const handleAllImagesLoaded = () => {
-      console.log('LoadingPage: All images loaded, completing loading');
-      setLoadingStage('完了！');
-      setProgress(100);
-      onProgressUpdateRef.current?.(100);
-      
-      setTimeout(() => {
-        setIsComplete(true);
-        onCompleteRef.current?.();
-      }, 200);
-    };
-
-    window.addEventListener('imageProgress', handleImageProgress as EventListener);
-    window.addEventListener('allImagesLoaded', handleAllImagesLoaded);
-    
-    return () => {
-      window.removeEventListener('imageProgress', handleImageProgress as EventListener);
-      window.removeEventListener('allImagesLoaded', handleAllImagesLoaded);
-    };
+    // 画像進捗イベントは無視して、自動進捗のみを使用
+    console.log('LoadingPage: Using auto progress only, ignoring image events');
   }, []); // 依存関係を空に
 
-  // 初期化プログレス（推定時間ベースの部分を最小限に）
+  // サイト全体の読み込み完了を監視
   useEffect(() => {
-    const startTime = Date.now();
     let isRunning = true;
+    let currentProgress = 0;
+    const startTime = Date.now();
     
-    const updateInitialProgress = () => {
+    // サイト全体の読み込み完了を検出
+    const checkSiteLoaded = () => {
+      // DOMContentLoaded + 画像読み込み完了 + リソース読み込み完了
+      if (document.readyState === 'complete') {
+        return true;
+      }
+      
+      // 追加のチェック: 重要な要素が表示されているか
+      const heroElement = document.querySelector('.hero-container');
+      const mainContent = document.querySelector('main');
+      
+      return heroElement && mainContent && document.readyState === 'interactive';
+    };
+    
+    const smoothProgress = () => {
       if (!isRunning) return;
       
       const elapsed = Date.now() - startTime;
-      const initialProgress = Math.min((elapsed / 500) * 20, 20); // 最初の20%のみ推定時間ベース
       
-      if (initialProgress < 20) {
-        setProgress(initialProgress);
-        onProgressUpdateRef.current?.(initialProgress);
-        animationRef.current = requestAnimationFrame(updateInitialProgress);
+      // サイト読み込み完了をチェック
+      if (checkSiteLoaded() && elapsed > 1000) { // 最低1秒は表示
+        // サイト読み込み完了時は即座に100%に
+        currentProgress = 100;
+        setProgress(100);
+        onProgressUpdateRef.current?.(100);
+        setLoadingStage('完了！');
+        
+        setTimeout(() => {
+          setIsComplete(true);
+          onCompleteRef.current?.();
+        }, 200);
+        return;
+      }
+      
+      // サイトがまだ読み込み中の場合は段階的に進捗
+      let targetProgress;
+      if (elapsed < 1000) {
+        // 最初の1秒で30%まで
+        targetProgress = (elapsed / 1000) * 30;
+      } else if (elapsed < 3000) {
+        // 1-3秒で30-80%まで
+        targetProgress = 30 + ((elapsed - 1000) / 2000) * 50;
       } else {
-        // 初期化完了
-        setLoadingStage('画像を読み込み中...');
-        console.log('LoadingPage: Initial progress completed, waiting for image progress...');
+        // 3秒以降は80-95%まで（完全読み込み待ち）
+        targetProgress = 80 + Math.min(((elapsed - 3000) / 2000) * 15, 15);
+      }
+      
+      if (currentProgress < targetProgress) {
+        currentProgress = Math.min(currentProgress + 0.3, targetProgress);
+        setProgress(Math.round(currentProgress));
+        onProgressUpdateRef.current?.(Math.round(currentProgress));
+        
+        // 段階的なメッセージ更新
+        if (currentProgress < 20) {
+          setLoadingStage('初期化中...');
+        } else if (currentProgress < 50) {
+          setLoadingStage('コンテンツを読み込み中...');
+        } else if (currentProgress < 80) {
+          setLoadingStage('画像を読み込み中...');
+        } else {
+          setLoadingStage('最終調整中...');
+        }
+        
+        animationRef.current = requestAnimationFrame(smoothProgress);
+      } else {
+        animationRef.current = requestAnimationFrame(smoothProgress);
       }
     };
     
-    // 即座に開始
-    updateInitialProgress();
+    // 少し遅延して開始（DOMの準備を待つ）
+    setTimeout(() => {
+      smoothProgress();
+    }, 100);
     
     return () => {
       isRunning = false;
