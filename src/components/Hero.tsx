@@ -250,7 +250,7 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
     return () => clearTimeout(t);
   }, []);
 
-  // imagesLoadedを使用して画像読み込み完了を監視
+  // imagesLoadedを使用して画像読み込み進捗を監視
   useEffect(() => {
     if (mountBg) {
       // 少し遅延してから画像監視を開始（DOM要素が確実に存在するように）
@@ -260,15 +260,56 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
           console.log('Hero: Starting imagesLoaded monitoring');
           const imgLoad = imagesLoaded(heroElement);
           
+          // 画像総数を取得
+          const totalImages = imgLoad.images.length;
+          const expectedCards = 15; // ヒーローコンポーネントで表示するカード数
+          console.log('Hero: Total images to load:', totalImages);
+          
+          // 初期進捗通知
+          window.dispatchEvent(new CustomEvent('imageProgress', {
+            detail: { loaded: 0, total: expectedCards, stage: '画像を検出中...' }
+          }));
+          
           imgLoad.on('done', () => {
             console.log('Hero: All images loaded using imagesLoaded');
             window.dispatchEvent(new CustomEvent('allImagesLoaded'));
           });
           
+          let loadedCount = 0;
+          const progressPerCard = 100 / expectedCards; // 約6.67%ずつ
+          
           imgLoad.on('progress', (instance, image) => {
             if (image && image.img) {
-              console.log('Hero: Image loaded:', image.img.src);
+              loadedCount++;
+              const progressPercent = Math.min(loadedCount * progressPerCard, 100);
+              console.log(`Hero: Image loaded (${loadedCount}/${expectedCards}):`, image.img.src);
+              
+              // 進捗通知（15分割で段階的に）
+              window.dispatchEvent(new CustomEvent('imageProgress', {
+                detail: { 
+                  loaded: loadedCount, 
+                  total: expectedCards, 
+                  stage: 'サムネイルを読み込み中...',
+                  progress: progressPercent
+                }
+              }));
             }
+          });
+          
+          imgLoad.on('fail', (instance, image) => {
+            loadedCount++;
+            const progressPercent = Math.min(loadedCount * progressPerCard, 100);
+            console.log(`Hero: Image failed to load (${loadedCount}/${expectedCards}):`, image?.img?.src);
+            
+            // 失敗した画像も進捗に含める
+            window.dispatchEvent(new CustomEvent('imageProgress', {
+              detail: { 
+                loaded: loadedCount, 
+                total: expectedCards, 
+                stage: 'サムネイルを読み込み中...',
+                progress: progressPercent
+              }
+            }));
           });
         } else {
           console.log('Hero: .hero-container not found, using fallback timer');

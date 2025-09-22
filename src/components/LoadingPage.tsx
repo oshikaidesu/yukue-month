@@ -11,6 +11,9 @@ interface LoadingPageProps {
 export default function LoadingPage({ onComplete, onProgressUpdate, minDuration = 2000 }: LoadingPageProps) {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [loadingStage, setLoadingStage] = useState('初期化中...');
+  const [loadedImages, setLoadedImages] = useState(0);
+  const [totalImages, setTotalImages] = useState(0);
   const animationRef = useRef<number>();
   const onCompleteRef = useRef(onComplete);
   const onProgressUpdateRef = useRef(onProgressUpdate);
@@ -26,10 +29,28 @@ export default function LoadingPage({ onComplete, onProgressUpdate, minDuration 
     console.log('LoadingPage: Component mounted, minDuration:', minDuration);
   }, [minDuration]);
 
-  // 全画像読み込み完了を監視
+  // 画像読み込み進捗を監視
   useEffect(() => {
+    const handleImageProgress = (event: CustomEvent) => {
+      const { loaded, total, stage, progress } = event.detail;
+      console.log('LoadingPage: Image progress update:', { loaded, total, stage, progress });
+      
+      setLoadedImages(loaded);
+      setTotalImages(total);
+      setLoadingStage(stage);
+      
+      // 進捗計算: 画像読み込みが80%、その他の処理が20%
+      const imageProgress = progress ? progress * 0.8 : (total > 0 ? (loaded / total) * 80 : 0);
+      const baseProgress = 20; // 基本処理分
+      const newProgress = Math.min(baseProgress + imageProgress, 100);
+      
+      setProgress(newProgress);
+      onProgressUpdateRef.current?.(newProgress);
+    };
+
     const handleAllImagesLoaded = () => {
       console.log('LoadingPage: All images loaded, completing loading');
+      setLoadingStage('完了！');
       setProgress(100);
       onProgressUpdateRef.current?.(100);
       
@@ -39,44 +60,39 @@ export default function LoadingPage({ onComplete, onProgressUpdate, minDuration 
       }, 200);
     };
 
+    window.addEventListener('imageProgress', handleImageProgress as EventListener);
     window.addEventListener('allImagesLoaded', handleAllImagesLoaded);
     
     return () => {
+      window.removeEventListener('imageProgress', handleImageProgress as EventListener);
       window.removeEventListener('allImagesLoaded', handleAllImagesLoaded);
     };
   }, []); // 依存関係を空に
 
-  // プログレスアニメーション
+  // 初期化プログレス（推定時間ベースの部分を最小限に）
   useEffect(() => {
     const startTime = Date.now();
     let isRunning = true;
-    let lastLoggedProgress = 0;
     
-    const updateProgress = () => {
-      if (!isRunning) return; // 停止フラグの場合は停止
+    const updateInitialProgress = () => {
+      if (!isRunning) return;
       
       const elapsed = Date.now() - startTime;
-      const newProgress = Math.min((elapsed / minDuration) * 80, 80); // 最大80%まで
+      const initialProgress = Math.min((elapsed / 500) * 20, 20); // 最初の20%のみ推定時間ベース
       
-      setProgress(newProgress);
-      onProgressUpdateRef.current?.(newProgress);
-      
-      // デバッグ用: プログレス更新をログ出力
-      if (Math.floor(newProgress) % 10 === 0 && Math.floor(newProgress) !== lastLoggedProgress) {
-        console.log('LoadingPage: Progress updated to', Math.floor(newProgress) + '%');
-        lastLoggedProgress = Math.floor(newProgress);
-      }
-      
-      if (newProgress < 80 && isRunning) {
-        animationRef.current = requestAnimationFrame(updateProgress);
-      } else if (newProgress >= 80 && isRunning) {
-        // 80%に達したら、画像読み込み完了を待つ
-        console.log('LoadingPage: Progress reached 80%, waiting for images...');
+      if (initialProgress < 20) {
+        setProgress(initialProgress);
+        onProgressUpdateRef.current?.(initialProgress);
+        animationRef.current = requestAnimationFrame(updateInitialProgress);
+      } else {
+        // 初期化完了
+        setLoadingStage('画像を読み込み中...');
+        console.log('LoadingPage: Initial progress completed, waiting for image progress...');
       }
     };
     
     // 即座に開始
-    updateProgress();
+    updateInitialProgress();
     
     return () => {
       isRunning = false;
@@ -84,7 +100,7 @@ export default function LoadingPage({ onComplete, onProgressUpdate, minDuration 
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [minDuration]); // 依存関係を最小限に
+  }, []); // 依存関係を空に
 
   // isCompleteがtrueになったらアニメーションを停止
   useEffect(() => {
@@ -141,10 +157,12 @@ export default function LoadingPage({ onComplete, onProgressUpdate, minDuration 
         
         {/* ローディングメッセージ */}
         <div className="mt-6 text-sm text-gray-500">
-          {progress < 30 && "プレイリストを読み込み中..."}
-          {progress >= 30 && progress < 60 && "サムネイルを準備中..."}
-          {progress >= 60 && progress < 90 && "アニメーションを設定中..."}
-          {progress >= 90 && "ほぼ完了です..."}
+          <div className="mb-2">{loadingStage}</div>
+          {totalImages > 0 && (
+            <div className="text-xs text-gray-400">
+              {Math.round((loadedImages / totalImages) * 100)}% 完了
+            </div>
+          )}
         </div>
       </div>
     </div>
