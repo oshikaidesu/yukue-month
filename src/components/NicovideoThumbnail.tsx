@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from 'next/image';
 
-// サムネイル画像表示専用
-function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading, quality, sizes, priority }: {
+// サムネイル画像表示専用（最適化版）
+function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading, quality, sizes, priority, srcSet }: {
   src: string,
   alt: string,
   width: number,
@@ -13,9 +13,10 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
   loading?: "lazy" | "eager",
   quality?: number,
   sizes?: string,
-  priority?: boolean
+  priority?: boolean,
+  srcSet?: string
 }) {
-      return (
+  return (
     <Image
       src={src}
       alt={alt}
@@ -30,6 +31,8 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
       priority={priority || loading === "eager"}
       placeholder="blur"
       blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+      // 最適化画像の場合はsrcSetを適用
+      {...(srcSet && { srcSet })}
     />
   );
 }
@@ -96,54 +99,74 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
   // プラットフォームを判定
   const platform = useMemo(() => detectPlatform(videoId, videoUrl), [videoId, videoUrl]);
 
-  // サムネイル取得のメイン処理
+  // サムネイル取得のメイン処理（最適化版）
   const fetchThumbnail = useCallback(() => {
     setError(false);
     setIsLoading(true);
     setThumbnailUrl(null);
 
-    // OGPサムネイルURLが利用可能な場合は最優先使用（空文字列は除く）
-    if (ogpThumbnailUrl && ogpThumbnailUrl.trim() !== '') {
-      setThumbnailUrl(ogpThumbnailUrl);
-      setIsLoading(false);
-      return;
-    }
+    // 最適化されたローカル画像を優先使用（高画質版）
+    const optimizedThumbnail = `/thumbnails/${videoId}_lg.webp`;
+    
+    // ローカル最適化画像が存在するかチェック
+    const checkLocalImage = async () => {
+      try {
+        const response = await fetch(optimizedThumbnail, { method: 'HEAD' });
+        if (response.ok) {
+          setThumbnailUrl(optimizedThumbnail);
+          setIsLoading(false);
+          return true;
+        }
+      } catch (error) {
+        console.log(`Local optimized image not found for ${videoId}`);
+      }
+      return false;
+    };
 
-    // YouTube動画でogpThumbnailUrlがnullの場合は、ローカルサムネイルを優先使用
-    if (platform === 'youtube' && thumbnail) {
-      setThumbnailUrl(thumbnail);
-      setIsLoading(false);
-      return;
-    }
+    // ローカル画像をチェック
+    checkLocalImage().then((found) => {
+      if (found) return;
 
-    // その他のローカルサムネイルが利用可能な場合は次に優先使用
-    if (thumbnail) {
-      setThumbnailUrl(thumbnail);
-      setIsLoading(false);
-      return;
-    }
+      // フォールバック: 元のCDN画像を使用
+      if (ogpThumbnailUrl && ogpThumbnailUrl.trim() !== '') {
+        setThumbnailUrl(ogpThumbnailUrl);
+        setIsLoading(false);
+        return;
+      }
 
-    // ニコニコ動画の場合 - 複数のフォールバックURLを用意
-    if (platform === 'nicovideo') {
-      // 1. 高速なSmileVideoのサムネイルを優先
-      const nicoThumbnailUrl = `https://tn.smilevideo.jp/smile?i=${videoId}`;
-      setThumbnailUrl(nicoThumbnailUrl);
-      setIsLoading(false);
-      return;
-    }
+      if (platform === 'youtube' && thumbnail) {
+        setThumbnailUrl(thumbnail);
+        setIsLoading(false);
+        return;
+      }
 
-    // YouTubeの場合
-    if (platform === 'youtube') {
-      const youtubeUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-      setThumbnailUrl(youtubeUrl);
-      setIsLoading(false);
-      return;
-    }
+      if (thumbnail) {
+        setThumbnailUrl(thumbnail);
+        setIsLoading(false);
+        return;
+      }
 
-    // その他の場合
-    const defaultUrl = `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`;
-    setThumbnailUrl(defaultUrl);
-    setIsLoading(false);
+      // ニコニコ動画の場合
+      if (platform === 'nicovideo') {
+        const nicoThumbnailUrl = `https://tn.smilevideo.jp/smile?i=${videoId}`;
+        setThumbnailUrl(nicoThumbnailUrl);
+        setIsLoading(false);
+        return;
+      }
+
+      // YouTubeの場合
+      if (platform === 'youtube') {
+        const youtubeUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        setThumbnailUrl(youtubeUrl);
+        setIsLoading(false);
+        return;
+      }
+
+      // その他の場合
+      const defaultUrl = `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`;
+      setThumbnailUrl(defaultUrl);
+      setIsLoading(false);
+    });
   }, [videoId, platform, thumbnail, ogpThumbnailUrl]);
 
   useEffect(() => {
@@ -193,8 +216,11 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     );
   }
 
-  // サムネイルを取得できた場合（高解像度サムネイル）
+  // サムネイルを取得できた場合（最適化されたサムネイル）
   if (thumbnailUrl && !error) {
+    // ローカル最適化画像の場合はsrcSetを設定
+    const isOptimized = thumbnailUrl.includes('/thumbnails/') && thumbnailUrl.endsWith('.webp');
+    
     return (
       <NicovideoImage
         src={thumbnailUrl}
@@ -206,8 +232,15 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
         onLoad={props.onLoad}
         loading={props.loading}
         quality={quality}
-        sizes={sizes}
+        sizes={sizes || "(max-width: 768px) 320px, 640px"}
         priority={priority}
+        // 最適化画像の場合はsrcSetを追加
+        {...(isOptimized && {
+          srcSet: `
+            /thumbnails/${videoId}_md.webp 320w,
+            /thumbnails/${videoId}_lg.webp 640w
+          `
+        })}
       />
     );
   }

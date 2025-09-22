@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run optimize-thumbnails && next build",
+    "build:no-optimize": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "./deploy.sh"
+    "deploy": "./deploy.sh",
+    "optimize-thumbnails": "node scripts/optimize-thumbnails.js"
   },
   "dependencies": {
     "@sls-next/lambda-at-edge": "^3.7.0",
@@ -20,6 +22,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-window": "^2.1.0",
+    "sharp": "^0.34.4",
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
