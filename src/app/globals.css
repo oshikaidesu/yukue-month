@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Old+Mincho&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Zen+Old+Mincho&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
 
 @import "tailwindcss";
@@ -7,7 +7,6 @@
 /* Custom font families for Tailwind v4 */
 @theme {
   --font-zen-old-mincho: "Zen Old Mincho", serif;
-  --font-dotgothic16: "DotGothic16", monospace;
   --font-montserrat: "Montserrat", sans-serif;
 }
 

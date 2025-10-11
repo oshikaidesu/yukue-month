@@ -7,13 +7,13 @@ import VideoCards from '@/components/VideoCards'
 import Footer from '@/components/Footer'
 import PickupBackground from '@/components/PickupBackground'
 import LoadingPage from '@/components/LoadingPage'
-import videos_2025_08 from "@/data/2025/videos_08.json";
+import videos_2025_09 from "@/data/2025/videos_09.json";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const videoList = videos_2025_08;
-  const yearMonth = "2025.08";
+  const videoList = videos_2025_09;
+  const yearMonth = "2025.09";
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
