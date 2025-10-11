@@ -9,7 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "deploy": "./deploy.sh",
-    "optimize-thumbnails": "node scripts/optimize-thumbnails.js"
+    "optimize-thumbnails": "node scripts/optimize-thumbnails.js",
+    "lighthouse": "node scripts/lighthouse-test.js",
+    "lighthouse:ci": "lhci autorun",
+    "lighthouse:report": "node scripts/lighthouse-report.js"
   },
   "dependencies": {
     "@sls-next/lambda-at-edge": "^3.7.0",
@@ -26,6 +29,7 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.15.1",
     "@types/imagesloaded": "^4.1.7",
     "@types/node": "^20",
     "@types/react": "^18",
@@ -36,6 +40,7 @@
     "eslint-config-next": "15.3.4",
     "open-graph-scraper": "^6.10.0",
     "postcss": "^8",
+    "serve": "^14.2.1",
     "typescript": "^5"
   }
 }

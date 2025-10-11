@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from 'next/image';
 
-// サムネイル画像表示専用（最適化版）
+// サムネイル画像表示専用（最適化版・レスポンシブ対応）
 function NicovideoImage({ src, alt, width, height, className, onError, onLoad, loading, quality, sizes, priority, srcSet }: {
   src: string,
   alt: string,
@@ -16,6 +16,12 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
   priority?: boolean,
   srcSet?: string
 }) {
+  // レスポンシブなsizesを自動生成（指定されていない場合）
+  const responsiveSizes = sizes || `(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw`;
+  
+  // デバイス別の品質設定
+  const responsiveQuality = quality || 75;
+  
   return (
     <Image
       src={src}
@@ -26,8 +32,8 @@ function NicovideoImage({ src, alt, width, height, className, onError, onLoad, l
       onError={onError}
       onLoad={onLoad}
       loading={loading}
-      quality={quality}
-      sizes={sizes}
+      quality={responsiveQuality}
+      sizes={responsiveSizes}
       priority={priority || loading === "eager"}
       placeholder="blur"
       blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
@@ -173,45 +179,21 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     fetchThumbnail();
   }, [fetchThumbnail]);
 
-  // 画像読み込みエラー時の処理（フォールバック戦略）
+  // 画像読み込みエラー時の処理（簡素化）
   const handleImageError = useCallback(() => {
-    // ニコニコ動画の場合、複数のフォールバックURLを試行
-    if (platform === 'nicovideo' && !error) {
-      const fallbackUrls = [
-        `https://nicovideo.cdn.nimg.jp/thumbnails/${videoId}/320x180`,
-        `https://tn.smilevideo.jp/smile?i=${videoId}`,
-        `https://img.cdn.nimg.jp/s/nicovideo/thumbnails/${videoId}/${videoId}.39478694.1`
-      ];
-      
-      const currentUrl = thumbnailUrl;
-      const currentIndex = fallbackUrls.findIndex(url => url === currentUrl);
-      
-      if (currentIndex < fallbackUrls.length - 1) {
-        // 次のフォールバックURLを試行
-        setThumbnailUrl(fallbackUrls[currentIndex + 1]);
-        return;
-      }
-    }
-    
-    // すべてのフォールバックが失敗した場合
+    // エラー時は即座にプレースホルダー表示
     setError(true);
     onError?.({ type: 'error', videoId });
-  }, [platform, videoId, thumbnailUrl, error, onError]);
+  }, [videoId, onError]);
 
-  // ローディング状態（優先度の高い画像は短時間で表示）
+  // ローディング状態（シンプルなプレースホルダー）
   if (isLoading && !priority) {
     return (
       <div 
         className={`flex items-center justify-center bg-[#EEEEEE] rounded-lg ${className}`}
         style={{ width, height }}
       >
-         <Image
-           src="/Logo_Mark.svg"
-           alt="ローディング中"
-           width={Math.min(width, 64)}
-           height={Math.min(height, 64)}
-           className="yukue-spin"
-         />
+        <div className="w-8 h-8 bg-gray-300 rounded animate-pulse" />
       </div>
     );
   }

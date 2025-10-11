@@ -39,7 +39,16 @@ export default function Header() {
           {/* ブランドロゴ */}
           <div className="flex-1 px-2 mx-2">
             <Link href="/" className="btn btn-ghost text-xl">
-              <Image src="/Logo_Horizontal.svg" alt="Yukue Logo" width={120} height={28} className="h-7" unoptimized />
+              <Image 
+                src="/Logo_Horizontal.svg" 
+                alt="Yukue Logo" 
+                width={120} 
+                height={28} 
+                className="h-6 sm:h-7" 
+                sizes="(max-width: 640px) 100px, 120px"
+                priority
+                unoptimized 
+              />
             </Link>
           </div>
           

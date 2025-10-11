@@ -247,9 +247,10 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
                   height={225}
                   className="w-full h-full object-cover object-center"
                   onLoad={() => handleThumbnailLoad(index)}
-                  loading="lazy"
-                  quality={75} // 画質を75%に設定
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // レスポンシブな画像サイズ
+                  loading={index < 6 ? "eager" : "lazy"} // 最初の6枚は優先読み込み
+                  quality={index < 6 ? 85 : 75} // 優先画像は高画質
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" // レスポンシブな画像サイズ
+                  priority={index < 3} // 最初の3枚は最高優先度
                 />
                   </motion.figure>
               
