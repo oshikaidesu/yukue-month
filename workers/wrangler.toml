@@ -1,6 +1,7 @@
 name = "nicovideo-ogp"
 main = "nicovideo-ogp.js"
 compatibility_date = "2025-07-09"
+account_id = "09ea9996e2032911d59d2a89b10e0778"
 
 [dev]
 port = 8787

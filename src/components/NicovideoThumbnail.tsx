@@ -60,6 +60,9 @@ type Props = {
   quality?: number; // 画質設定（1-100）
   sizes?: string; // レスポンシブサイズ設定
   priority?: boolean; // 優先読み込みフラグ
+  yearMonth?: string; // 年/月情報（例: "2025.09"）または年と月
+  year?: number; // 年
+  month?: number | string; // 月
 };
 
 // プラットフォームを判定する関数
@@ -96,7 +99,10 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
     ogpThumbnailUrl,
     quality = 75,
     sizes,
-    priority = false
+    priority = false,
+    yearMonth,
+    year,
+    month
   } = props;
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -105,14 +111,42 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
   // プラットフォームを判定
   const platform = useMemo(() => detectPlatform(videoId, videoUrl), [videoId, videoUrl]);
 
+  // 年/月ディレクトリパスを生成
+  const getThumbnailDir = useCallback(() => {
+    let y: string | undefined;
+    let m: string | undefined;
+    
+    if (yearMonth) {
+      // yearMonth形式（例: "2025.09"）を年/月に分割
+      const parts = yearMonth.split('.');
+      if (parts.length >= 2) {
+        y = parts[0];
+        m = parts[1].padStart(2, '0');
+      }
+    } else if (year && month) {
+      // yearとmonthが個別に指定されている場合
+      y = String(year);
+      m = typeof month === 'number' ? String(month).padStart(2, '0') : String(month).padStart(2, '0');
+    }
+    
+    if (y && m) {
+      return `${y}/${m}`;
+    }
+    return '';
+  }, [yearMonth, year, month]);
+
   // サムネイル取得のメイン処理（最適化版）
   const fetchThumbnail = useCallback(() => {
     setError(false);
     setIsLoading(true);
     setThumbnailUrl(null);
 
+    // 年/月ディレクトリパスを取得
+    const dirPath = getThumbnailDir();
+    const dirPrefix = dirPath ? `${dirPath}/` : '';
+    
     // 最適化されたローカル画像を優先使用（高画質版）
-    const optimizedThumbnail = `/thumbnails/${videoId}_lg.webp`;
+    const optimizedThumbnail = `/thumbnails/${dirPrefix}${videoId}_lg.webp`;
     
     // ローカル最適化画像が存在するかチェック
     const checkLocalImage = async () => {
@@ -173,7 +207,7 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
       setThumbnailUrl(defaultUrl);
       setIsLoading(false);
     });
-  }, [videoId, platform, thumbnail, ogpThumbnailUrl]);
+  }, [videoId, platform, thumbnail, ogpThumbnailUrl, getThumbnailDir]);
 
   useEffect(() => {
     fetchThumbnail();
@@ -218,10 +252,14 @@ const NicovideoThumbnail = React.memo(function NicovideoThumbnail(props: Props) 
         priority={priority}
         // 最適化画像の場合はsrcSetを追加
         {...(isOptimized && {
-          srcSet: `
-            /thumbnails/${videoId}_md.webp 320w,
-            /thumbnails/${videoId}_lg.webp 640w
-          `
+          srcSet: (() => {
+            const dirPath = getThumbnailDir();
+            const dirPrefix = dirPath ? `${dirPath}/` : '';
+            return `
+              /thumbnails/${dirPrefix}${videoId}_md.webp 320w,
+              /thumbnails/${dirPrefix}${videoId}_lg.webp 640w
+            `;
+          })()
         })}
       />
     );

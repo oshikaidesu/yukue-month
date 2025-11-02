@@ -2,7 +2,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const sharp = require('sharp');
 
-// 動画データを読み込む関数
+// 動画データを読み込む関数（年/月情報を含む）
 async function loadVideoData() {
   const dataDir = path.join(__dirname, '../src/data');
   const years = ['2024', '2025'];
@@ -18,7 +18,20 @@ async function loadVideoData() {
         const filePath = path.join(yearDir, file);
         const content = await fs.readFile(filePath, 'utf8');
         const data = JSON.parse(content);
-        videos.push(...data);
+        
+        // ファイル名から年/月を抽出（例: videos_09.json -> 2025, 09）
+        const monthMatch = file.match(/videos_(\d+)\.json$/);
+        const month = monthMatch ? monthMatch[1] : null;
+        
+        // 各動画に年/月情報を追加
+        const videosWithYearMonth = data.map(video => ({
+          ...video,
+          year: parseInt(year, 10),
+          month: month,
+          yearMonth: `${year}.${month || '01'}`,
+        }));
+        
+        videos.push(...videosWithYearMonth);
       }
     } catch (error) {
       console.log(`Warning: Could not read ${year} directory:`, error.message);
@@ -29,8 +42,8 @@ async function loadVideoData() {
 }
 
 // 画像をダウンロードして最適化する関数
-async function downloadAndOptimizeThumbnail(video, outputDir) {
-  const { id, ogpThumbnailUrl, thumbnail } = video;
+async function downloadAndOptimizeThumbnail(video, outputBaseDir) {
+  const { id, ogpThumbnailUrl, thumbnail, year, month, yearMonth } = video;
   
   // 優先順位: ogpThumbnailUrl > thumbnail
   const sourceUrl = ogpThumbnailUrl || thumbnail;
@@ -41,7 +54,29 @@ async function downloadAndOptimizeThumbnail(video, outputDir) {
   }
   
   try {
-    console.log(`Downloading thumbnail for ${id}...`);
+    // 年/月ディレクトリを決定
+    let yearMonthDir;
+    if (year && month) {
+      // 年/月形式（例: 2025/09）
+      yearMonthDir = path.join(outputBaseDir, String(year), String(month).padStart(2, '0'));
+    } else if (yearMonth) {
+      // yearMonth形式（例: 2025.09）の場合は年/月に分割
+      const [y, m] = yearMonth.split('.');
+      if (y && m) {
+        yearMonthDir = path.join(outputBaseDir, y, m.padStart(2, '0'));
+      } else {
+        // フォールバック: ルートディレクトリ
+        yearMonthDir = outputBaseDir;
+      }
+    } else {
+      // フォールバック: ルートディレクトリ
+      yearMonthDir = outputBaseDir;
+    }
+    
+    // ディレクトリを作成
+    await fs.mkdir(yearMonthDir, { recursive: true });
+    
+    console.log(`Downloading thumbnail for ${id} (${yearMonth || 'unknown'})...`);
     
     // 画像をダウンロード
     const response = await fetch(sourceUrl);
@@ -59,7 +94,7 @@ async function downloadAndOptimizeThumbnail(video, outputDir) {
     ];
     
     for (const size of sizes) {
-      const outputPath = path.join(outputDir, `${id}${size.suffix}.webp`);
+      const outputPath = path.join(yearMonthDir, `${id}${size.suffix}.webp`);
       
       await sharp(Buffer.from(buffer))
         .resize(size.width, size.height, {
@@ -72,7 +107,7 @@ async function downloadAndOptimizeThumbnail(video, outputDir) {
         })
         .toFile(outputPath);
       
-      console.log(`  Generated: ${id}${size.suffix}.webp (${size.width}x${size.height})`);
+      console.log(`  Generated: ${yearMonthDir.replace(outputBaseDir, '')}/${id}${size.suffix}.webp (${size.width}x${size.height})`);
     }
     
     return true;
