@@ -243,6 +243,7 @@ export default function VideoCards({ videoList, yearMonth }: VideoCardsProps) {
                   videoUrl={video.url}
                   thumbnail={video.thumbnail}
                   ogpThumbnailUrl={video.ogpThumbnailUrl}
+                  yearMonth={yearMonth}
                   width={400}
                   height={225}
                   className="w-full h-full object-cover object-center"
