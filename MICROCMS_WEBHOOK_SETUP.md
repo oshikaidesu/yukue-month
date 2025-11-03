@@ -45,48 +45,55 @@ microCMSでコンテンツが更新されると、自動的にCloudflare Pages�
 
 ### ビルドが開始されない場合
 
-1. **microCMSのWebhook送信ログを確認**
-   - microCMS管理画面 → **「API設定」** → **「Webhook」** → 送信履歴を確認
-2. **Cloudflare PagesのデプロイフックURLが正しいか確認**
+1. **Webhook URLの確認**
+   - microCMSのWebhook設定でURLが正しく設定されているか確認
    - デプロイフックのURLを再確認
    - URLに誤字がないか確認
-3. **ネットワークエラーの確認**
+2. **ネットワークエラーの確認**
    - microCMSのWebhook送信ログにエラーが表示されていないか確認
 
 ### ビルドが失敗する場合
 
 **Node.jsのバージョンエラー**
 - エラー: `You are using Node.js 18.17.0. For Next.js, Node.js version "^18.18.0 || ^19.8.0 || >= 20.0.0" is required.`
-- **原因**: Cloudflare Pagesのビルド環境（特にWebhook経由）でNode.js 18.17.0が使われている
-- **解決策（重要）**: 
+- **原因**: Cloudflare Pagesのビルド環境でNode.jsのバージョンが正しく指定されていない
 
-#### 1. Cloudflare Pagesダッシュボードでビルドコマンドを変更（必須）
+**解決策**: `.tool-versions`ファイルを使用してNode.jsバージョンを指定
 
-**設定** → **ビルドとデプロイ** → **ビルドコマンド**を以下に変更：
+Cloudflare Pagesは`.tool-versions`ファイルを使ってNode.jsのバージョンを指定します。
+プロジェクトルートに`.tool-versions`ファイルを作成し、以下のいずれかを指定してください：
 
 ```
-NODE_VERSION=20 npm run build
+nodejs 18.17.1
 ```
 
 または
 
 ```
-npx -p node@20 npm run build
+nodejs 20.19.0
 ```
 
-⚠️ **環境変数だけでは不十分です。ビルドコマンドで直接指定してください。**
+または
 
-#### 2. 補助的な設定（既に実施済み）
-  - プロジェクトルートに `.nvmrc` ファイルを作成し、`20` を記述
-  - `package.json` の `engines` フィールドでNode.js 20以上を指定
-  - Cloudflare Pagesのダッシュボードで環境変数 `NODE_VERSION=20` を設定
+```
+nodejs 22.16.0
+```
+
+⚠️ **重要**: Cloudflare Pagesで利用可能なバージョンは以下のとおりです：
+- 14.21.3
+- 16.20.2
+- 18.17.1
+- 20.19.0
+- 22.16.0
+
+最新バージョン（例: 23.6.0）は対応していない可能性があるため、上記のいずれかを指定してください。
+
+参考: [Cloudflare Pages で node.js のバージョンエラーでビルドできなくなった話](https://zenn.dev/abebe123000/articles/713d1f724f0e68)
 
 ### セキュリティを強化したい場合
 
 認証トークンを使った安全なWebhook連携が必要な場合は、以下のオプションを検討してください：
-
 - Cloudflare WorkersでWebhookを受け取る中間エンドポイントを作成
 - 認証トークンを検証してからCloudflare Pages APIを呼び出す
 
 詳細は `MICROCMS_WEBHOOK_WORKER.md` を参照してください。
-
