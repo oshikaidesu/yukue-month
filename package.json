@@ -8,10 +8,9 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "npm run optimize-thumbnails && next build",
+    "build": "node -e \"if(process.version < 'v20.0.0') { console.error('❌ Node.js 20以上が必要です。現在: ' + process.version); process.exit(1); }\" && npm run optimize-thumbnails && next build",
     "build:cloudflare": "node --version && npm run optimize-thumbnails && next build",
     "build:no-optimize": "next build",
-    "prebuild": "node -e \"if(process.version < 'v20.0.0') { console.error('Node.js 20以上が必要です。現在: ' + process.version); process.exit(1); }\"",
     "start": "next start",
     "lint": "next lint",
     "deploy": "./deploy.sh",

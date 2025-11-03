@@ -57,11 +57,29 @@ microCMSでコンテンツが更新されると、自動的にCloudflare Pages�
 
 **Node.jsのバージョンエラー**
 - エラー: `You are using Node.js 18.17.0. For Next.js, Node.js version "^18.18.0 || ^19.8.0 || >= 20.0.0" is required.`
-- **原因**: Cloudflare Pagesのビルド環境でNode.jsのバージョンが古い
-- **解決策**: 
-  - プロジェクトルートに `.nvmrc` ファイルを作成し、`20` を記述（既に作成済み）
-  - `package.json` の `engines` フィールドでNode.js 20以上を指定（既に設定済み）
-  - Cloudflare Pagesのダッシュボードで環境変数 `NODE_VERSION=20` を設定（推奨）
+- **原因**: Cloudflare Pagesのビルド環境（特にWebhook経由）でNode.js 18.17.0が使われている
+- **解決策（重要）**: 
+
+#### 1. Cloudflare Pagesダッシュボードでビルドコマンドを変更（必須）
+
+**設定** → **ビルドとデプロイ** → **ビルドコマンド**を以下に変更：
+
+```
+NODE_VERSION=20 npm run build
+```
+
+または
+
+```
+npx -p node@20 npm run build
+```
+
+⚠️ **環境変数だけでは不十分です。ビルドコマンドで直接指定してください。**
+
+#### 2. 補助的な設定（既に実施済み）
+  - プロジェクトルートに `.nvmrc` ファイルを作成し、`20` を記述
+  - `package.json` の `engines` フィールドでNode.js 20以上を指定
+  - Cloudflare Pagesのダッシュボードで環境変数 `NODE_VERSION=20` を設定
 
 ### セキュリティを強化したい場合
 
