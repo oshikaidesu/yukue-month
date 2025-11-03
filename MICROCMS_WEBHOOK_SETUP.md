@@ -6,6 +6,8 @@ microCMSでコンテンツが更新されると、自動的にCloudflare Pages�
 
 ### 1. Cloudflare Pagesでデプロイフックを作成
 
+**デプロイフック**とは、HTTP POSTリクエストを送信して新しいビルドをトリガーする一意のURLです。
+
 1. [Cloudflareダッシュボード](https://dash.cloudflare.com)にログイン
 2. **Workers & Pages** → **yukue-month** プロジェクトを選択
 3. **設定** → **ビルドとデプロイ** を開く
@@ -14,7 +16,9 @@ microCMSでコンテンツが更新されると、自動的にCloudflare Pages�
    - **名前**: `microcms-webhook` (任意)
    - **ビルドするブランチ**: `main`
 6. **保存** をクリック
-7. 作成されたデプロイフックのURLをコピー（例: `https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/...`）
+7. 作成されたデプロイフックのURLをコピー
+   - 例: `https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/...`
+   - ⚠️ **このURLは一度しか表示されないため、必ずコピーしてください**
 
 ### 2. microCMSでWebhookを設定
 
