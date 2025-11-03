@@ -53,6 +53,16 @@ microCMSでコンテンツが更新されると、自動的にCloudflare Pages�
 3. **ネットワークエラーの確認**
    - microCMSのWebhook送信ログにエラーが表示されていないか確認
 
+### ビルドが失敗する場合
+
+**Node.jsのバージョンエラー**
+- エラー: `You are using Node.js 18.17.0. For Next.js, Node.js version "^18.18.0 || ^19.8.0 || >= 20.0.0" is required.`
+- **原因**: Cloudflare Pagesのビルド環境でNode.jsのバージョンが古い
+- **解決策**: 
+  - プロジェクトルートに `.nvmrc` ファイルを作成し、`20` を記述（既に作成済み）
+  - `package.json` の `engines` フィールドでNode.js 20以上を指定（既に設定済み）
+  - Cloudflare Pagesのダッシュボードで環境変数 `NODE_VERSION=20` を設定（推奨）
+
 ### セキュリティを強化したい場合
 
 認証トークンを使った安全なWebhook連携が必要な場合は、以下のオプションを検討してください：
