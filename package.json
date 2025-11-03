@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
   "scripts": {
     "dev": "next dev",
-    "build": "node -e \"if(process.version < 'v20.0.0') { console.error('❌ Node.js 20以上が必要です。現在: ' + process.version); process.exit(1); }\" && npm run optimize-thumbnails && next build",
+    "build": "npm run optimize-thumbnails && next build",
     "build:cloudflare": "node --version && npm run optimize-thumbnails && next build",
     "build:no-optimize": "next build",
     "start": "next start",
@@ -27,7 +27,7 @@
     "framer-motion": "^11.11.17",
     "imagesloaded": "^5.0.0",
     "microcms-js-sdk": "^3.2.0",
-    "next": "15.3.4",
+    "next": "14.2.18",
     "react": "^18",
     "react-dom": "^18",
     "react-window": "^2.1.0",
@@ -43,7 +43,7 @@
     "cheerio": "^1.1.2",
     "daisyui": "^5.1.10",
     "eslint": "^8",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "14.2.18",
     "open-graph-scraper": "^6.10.0",
     "postcss": "^8",
     "serve": "^14.2.1",
