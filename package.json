@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm run optimize-thumbnails && next build",
+    "build:cloudflare": "npm run optimize-thumbnails && next build",
     "build:no-optimize": "next build",
     "start": "next start",
     "lint": "next lint",
