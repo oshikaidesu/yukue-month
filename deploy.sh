@@ -29,7 +29,7 @@ WHOAMI_OUTPUT=$(npx wrangler whoami 2>&1 || true)
 ACCOUNT_ID=$(echo "$WHOAMI_OUTPUT" | grep -Eo '[a-f0-9]{32}' | tail -n 1)
 if [ -n "$ACCOUNT_ID" ]; then
   echo "🔑 使用するAccount ID: $ACCOUNT_ID"
-  DEPLOY_OUTPUT=$(CF_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true)
+  DEPLOY_OUTPUT=$(CF_ACCOUNT_ID="$ACCOUNT_ID" CLOUDFLARE_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true)
 else
   echo "⚠️  Account IDの自動取得に失敗。既定設定でデプロイを試みます。"
   DEPLOY_OUTPUT=$(npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true)
