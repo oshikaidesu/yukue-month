@@ -23,7 +23,17 @@ fi
 
 # 4. Cloudflare Pagesにデプロイ
 echo "☁️ Cloudflare Pagesにデプロイ中..."
-DEPLOY_OUTPUT=$(npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true)
+# wranglerの現在ログイン中アカウントIDを検出して使用
+WHOAMI_OUTPUT=$(npx wrangler whoami 2>&1 || true)
+# 32桁の16進を候補として抽出し、最後の1つを採用
+ACCOUNT_ID=$(echo "$WHOAMI_OUTPUT" | grep -Eo '[a-f0-9]{32}' | tail -n 1)
+if [ -n "$ACCOUNT_ID" ]; then
+  echo "🔑 使用するAccount ID: $ACCOUNT_ID"
+  DEPLOY_OUTPUT=$(CF_ACCOUNT_ID="$ACCOUNT_ID" npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true)
+else
+  echo "⚠️  Account IDの自動取得に失敗。既定設定でデプロイを試みます。"
+  DEPLOY_OUTPUT=$(npx wrangler pages deploy out --project-name=yukue-month --commit-dirty=true)
+fi
 
 echo "✅ デプロイ完了！"
 
