@@ -10,6 +10,113 @@ app.use('/*', cors({
   allowHeaders: ['Content-Type'],
 }));
 
+// ========== microCMS プロキシ ==========
+async function fetchFromMicroCMS(env, path, query) {
+  const serviceDomain = env.MICROCMS_SERVICE_DOMAIN;
+  const apiKey = env.MICROCMS_API_KEY;
+  if (!serviceDomain || !apiKey) {
+    throw new Error('MICROCMS credentials are not configured on Worker');
+  }
+  const url = new URL(`https://${serviceDomain}.microcms.io/api/v1/${path}`);
+  if (query) {
+    Object.entries(query).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, String(v));
+    });
+  }
+  const res = await fetch(url.toString(), {
+    headers: {
+      'X-MICROCMS-API-KEY': apiKey,
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`microCMS fetch failed: ${res.status} ${res.statusText} ${text}`);
+  }
+  return res.json();
+}
+
+function parseVideos(content) {
+  if (typeof content?.video === 'string') {
+    try {
+      return JSON.parse(content.video);
+    } catch {
+      return [];
+    }
+  }
+  if (Array.isArray(content?.video)) return content.video;
+  if (Array.isArray(content?.videos)) return content.videos;
+  return [];
+}
+
+function toPlaylist(content) {
+  const year = typeof content?.year === 'number'
+    ? content.year
+    : (typeof content?.year === 'string' ? parseInt(content.year, 10) : 0);
+  const month = content?.month;
+  const ym = content?.visual || content?.yearMonth || (() => {
+    const y = typeof content?.year === 'string' ? content.year : String(content?.year || '');
+    const m = typeof month === 'number' ? String(month).padStart(2, '0') : String(month || '');
+    return `${y}.${m}`;
+  })();
+  return {
+    id: content?.id,
+    year,
+    month,
+    yearMonth: ym,
+    videos: parseVideos(content),
+    publishedAt: content?.publishedAt,
+    createdAt: content?.createdAt,
+    updatedAt: content?.updatedAt,
+    isMain: !!content?.isMain,
+  };
+}
+
+app.get('/cms', async (c) => {
+  const type = c.req.query('type') || 'main';
+  try {
+    const env = c.env || {};
+    if (type === 'main') {
+      const data = await fetchFromMicroCMS(env, 'yukuemonth', {
+        limit: 1,
+        orders: '-publishedAt',
+        filters: 'isMain[equals]true',
+      });
+      const content = (data?.contents || [])[0];
+      if (!content) return c.json({ success: true, playlist: null });
+      return c.json({ success: true, playlist: toPlaylist(content) });
+    }
+    if (type === 'latest') {
+      const data = await fetchFromMicroCMS(env, 'yukuemonth', {
+        limit: 1,
+        orders: '-updatedAt',
+      });
+      const content = (data?.contents || [])[0];
+      if (!content) return c.json({ success: true, playlist: null });
+      return c.json({ success: true, playlist: toPlaylist(content) });
+    }
+    if (type === 'byYearMonth') {
+      const year = c.req.query('year');
+      const month = c.req.query('month');
+      if (!year || !month) {
+        return c.json({ success: false, error: 'year and month are required' }, 400);
+      }
+      const monthStr = /^\d+$/.test(month) ? String(month).padStart(2, '0') : month;
+      const visual = `${year}.${monthStr}`;
+      const data = await fetchFromMicroCMS(env, 'yukuemonth', {
+        limit: 1,
+        orders: '-updatedAt',
+        filters: `visual[equals]${visual}`,
+      });
+      const content = (data?.contents || [])[0];
+      if (!content) return c.json({ success: true, playlist: null });
+      return c.json({ success: true, playlist: toPlaylist(content) });
+    }
+    return c.json({ success: false, error: 'unknown type' }, 400);
+  } catch (e) {
+    return c.json({ success: false, error: e.message || 'microCMS proxy error' }, 500);
+  }
+});
+
 // ヘルパー関数: マイリストIDを抽出
 function parseMylistIdFromUrl(targetUrl) {
   const newFormatMatch = targetUrl.match(/\/user\/\d+\/mylist\/(\d+)/);

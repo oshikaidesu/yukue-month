@@ -10,13 +10,15 @@ import LoadingPage from '@/components/LoadingPage'
 import { VideoItem } from '@/types/video';
 
 interface HomeClientProps {
-  videoList: VideoItem[];
-  yearMonth: string;
+  videoList?: VideoItem[];
+  yearMonth?: string;
 }
 
 export default function HomeClient({ videoList, yearMonth }: HomeClientProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [clientVideos, setClientVideos] = useState<VideoItem[] | null>(videoList ?? null);
+  const [clientYearMonth, setClientYearMonth] = useState<string | null>(yearMonth ?? null);
 
   const handleLoadingComplete = () => {
     setIsLoading(false);
@@ -33,6 +35,36 @@ export default function HomeClient({ videoList, yearMonth }: HomeClientProps) {
 
   // キャッシュ状況をチェックしてローディングの必要性を判定
   useEffect(() => {
+    // ランタイム取得（サーバから未提供の場合のみ）
+    const fetchIfNeeded = async () => {
+      if (clientVideos && clientYearMonth) return;
+      try {
+        const base = (process.env as any).NEXT_PUBLIC_WORKER_URL;
+        if (!base) {
+          console.warn('NEXT_PUBLIC_WORKER_URL is not set; cannot fetch playlist at runtime');
+          return;
+        }
+        const url = `${base.replace(/\/+$/,'')}/cms?type=main`;
+        const res = await fetch(url);
+        const json = await res.json();
+        if (json?.success && json?.playlist) {
+          setClientVideos(json.playlist.videos || []);
+          setClientYearMonth(json.playlist.yearMonth || '');
+        } else {
+          // フォールバック: latest
+          const urlLatest = `${base.replace(/\/+$/,'')}/cms?type=latest`;
+          const resLatest = await fetch(urlLatest);
+          const jsonLatest = await resLatest.json();
+          if (jsonLatest?.success && jsonLatest?.playlist) {
+            setClientVideos(jsonLatest.playlist.videos || []);
+            setClientYearMonth(jsonLatest.playlist.yearMonth || '');
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch playlist via Worker', e);
+      }
+    };
+
     const checkCacheStatus = async () => {
       const hasLoadedBefore = localStorage.getItem('yukue-has-loaded');
       const lastLoadTime = localStorage.getItem('yukue-load-time');
@@ -71,10 +103,12 @@ export default function HomeClient({ videoList, yearMonth }: HomeClientProps) {
         console.log('LoadingPage: Fast cached visit, skipping loading');
         console.log('Tip: Use clearYukueCache() in console to reset cache');
       }
+      // 非同期でデータ取得
+      fetchIfNeeded();
     };
     
     checkCacheStatus();
-  }, []);
+  }, [clientVideos, clientYearMonth]);
   
   if (isLoading) {
     // ネットワーク接続速度に応じてローディング時間を調整
@@ -89,10 +123,10 @@ export default function HomeClient({ videoList, yearMonth }: HomeClientProps) {
     <div className="min-h-screen bg-[#EEEEEE]" data-theme="light">
       <Header />
       <main>
-        <Hero videoList={videoList} />
+        <Hero videoList={clientVideos || videoList || []} />
         <PickupBackground />
 
-        <VideoCards videoList={videoList} yearMonth={yearMonth} />
+        <VideoCards videoList={clientVideos || videoList || []} yearMonth={clientYearMonth || yearMonth || ''} />
       </main>
       <Footer />
     </div>
