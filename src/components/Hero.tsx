@@ -185,8 +185,7 @@ function VideoCardScatter({ videoList }: { videoList: Video[] }) {
     });
 
     setPositions(positionsWithDepth);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // ← 依存配列を空に
+  }, [scatteredVideos]); // 動的にvideoListが変わる場合にも再計算する
 
   if (positions.length === 0) return null;
 

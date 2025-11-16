@@ -36,15 +36,23 @@ async function fetchFromMicroCMS(env, path, query) {
 }
 
 function parseVideos(content) {
-  if (typeof content?.video === 'string') {
-    try {
-      return JSON.parse(content.video);
-    } catch {
-      return [];
+  // 候補フィールドを順に評価: 'video', 'videos', 'bootlen'
+  const candidates = ['video', 'videos', 'bootlen'];
+  for (const key of candidates) {
+    const value = content?.[key];
+    if (!value) continue;
+    // JSON文字列
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {
+        // ignore and continue
+      }
     }
+    // 配列
+    if (Array.isArray(value)) return value;
   }
-  if (Array.isArray(content?.video)) return content.video;
-  if (Array.isArray(content?.videos)) return content.videos;
   return [];
 }
 
@@ -58,12 +66,21 @@ function toPlaylist(content) {
     const m = typeof month === 'number' ? String(month).padStart(2, '0') : String(month || '');
     return `${y}.${m}`;
   })();
+  const rawVideos = parseVideos(content);
+  const videos = Array.isArray(rawVideos) ? rawVideos.map((v) => {
+    const id = v?.id || '';
+    const url = v?.url || (id ? `https://www.nicovideo.jp/watch/${id}` : '');
+    const ogpThumbnailUrl = v?.ogpThumbnailUrl || null;
+    // 既定のサムネ: public/thumbnails/ 配下の静的パス（最終的には最適化済みwebpに置換可）
+    const thumbnail = v?.thumbnail || (id ? `/thumbnails/${id}.jpg` : '');
+    return { id, url, ogpThumbnailUrl, thumbnail };
+  }) : [];
   return {
     id: content?.id,
     year,
     month,
     yearMonth: ym,
-    videos: parseVideos(content),
+    videos,
     publishedAt: content?.publishedAt,
     createdAt: content?.createdAt,
     updatedAt: content?.updatedAt,
@@ -83,7 +100,18 @@ app.get('/cms', async (c) => {
       });
       const content = (data?.contents || [])[0];
       if (!content) return c.json({ success: true, playlist: null });
-      return c.json({ success: true, playlist: toPlaylist(content) });
+      const pl = toPlaylist(content);
+      // videos が空なら latest にフォールバック
+      if (!Array.isArray(pl.videos) || pl.videos.length === 0) {
+        const latest = await fetchFromMicroCMS(env, 'yukuemonth', {
+          limit: 1,
+          orders: '-updatedAt',
+        });
+        const latestContent = (latest?.contents || [])[0];
+        if (!latestContent) return c.json({ success: true, playlist: pl });
+        return c.json({ success: true, playlist: toPlaylist(latestContent) });
+      }
+      return c.json({ success: true, playlist: pl });
     }
     if (type === 'latest') {
       const data = await fetchFromMicroCMS(env, 'yukuemonth', {
