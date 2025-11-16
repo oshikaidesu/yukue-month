@@ -71,9 +71,11 @@ function toPlaylist(content) {
     const id = v?.id || '';
     const url = v?.url || (id ? `https://www.nicovideo.jp/watch/${id}` : '');
     const ogpThumbnailUrl = v?.ogpThumbnailUrl || null;
+    const title = v?.title || '';
+    const artist = v?.artist || '';
     // 既定のサムネ: public/thumbnails/ 配下の静的パス（最終的には最適化済みwebpに置換可）
     const thumbnail = v?.thumbnail || (id ? `/thumbnails/${id}.jpg` : '');
-    return { id, url, ogpThumbnailUrl, thumbnail };
+    return { id, url, ogpThumbnailUrl, thumbnail, title, artist };
   }) : [];
   return {
     id: content?.id,

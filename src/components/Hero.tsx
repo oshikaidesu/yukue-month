@@ -447,7 +447,7 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
     {/* ボタン群（ヒーロー要素の下） */}
     <div className="w-[min(1400px,calc(100vw-2rem))] mx-auto mt-4 flex items-center gap-4 justify-center">
       <motion.button 
-        className="btn btn-primary group relative overflow-hidden flex flex-col items-center justify-center w-[180px] py-4"
+        className="btn btn-primary text-dark border-[#222222] border-1 shadow-md rounded-sm px-6 group relative overflow-hidden flex flex-col items-center justify-center w-[180px] py-4"
         whileHover={{
           scale: 1.03,
           boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
@@ -463,17 +463,17 @@ export default function Hero({ videoList }: { videoList: Video[] }) {
           transition={{ duration: 0.6, ease: "easeInOut" }}
         />
         {/* ニコニコアイコン niconico icon */}
-        <div className="flex items-center justify-center relative z-10">
-          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'translateX(-5px)' }}>
+        <div className="flex items-center justify-center relative z-10 text-[#222222]">
+          <svg className="w-3 h-3 text-[#222222]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ transform: 'translateX(-5px)' }}>
             <path d="M.4787 7.534v12.1279A2.0213 2.0213 0 0 0 2.5 21.6832h2.3888l1.323 2.0948a.4778.4778 0 0 0 .4043.2205.4778.4778 0 0 0 .441-.2205l1.323-2.0948h6.9828l1.323 2.0948a.4778.4778 0 0 0 .441.2205c.1838 0 .3308-.0735.4043-.2205l1.323-2.0948h2.6462a2.0213 2.0213 0 0 0 2.0213-2.0213V7.5339a2.0213 2.0213 0 0 0-2.0213-1.9845h-7.681l4.4468-4.4469L17.1637 0l-5.1452 5.1452L6.8 0 5.6973 1.1025l4.4102 4.4102H2.5367a2.0213 2.0213 0 0 0-2.058 2.058z"/>
           </svg>
-          <span className="ml-1">マイリスト</span>
+          <span className="ml-1 text-[#222222]">マイリスト</span>
         </div>
       </motion.button>
       
       <Link href="/archive">
         <motion.button 
-          className="btn btn-outline text-dark bg-white/90 flex flex-col items-center justify-center w-[180px] py-4"
+          className="btn btn-outline text-dark bg-white/90 rounded-sm px-6 flex flex-col items-center justify-center w-[180px] py-4"
           whileHover={{
             scale: 1.03,
             boxShadow: "0 8px 25px rgba(0, 0, 0, 0.15)",
