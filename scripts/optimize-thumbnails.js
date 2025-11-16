@@ -2,8 +2,108 @@ const fs = require('fs').promises;
 const path = require('path');
 const sharp = require('sharp');
 
+// microCMSからプレイリストを取得して動画配列に展開
+async function loadVideoDataFromCMS() {
+  const serviceDomain = process.env.MICROCMS_SERVICE_DOMAIN;
+  const apiKey = process.env.MICROCMS_API_KEY;
+  if (!serviceDomain || !apiKey) {
+    return null;
+  }
+  const endpointBase = `https://${serviceDomain}.microcms.io/api/v1/yukuemonth`;
+  const allVideos = [];
+  let offset = 0;
+  const limit = 100;
+  // 可能な限り少ないフィールドだけ取得（video は文字列/配列混在想定）
+  const fields = [
+    'id',
+    'year',
+    'month',
+    'visual',
+    'video',
+    'videos',
+    'publishedAt',
+    'updatedAt',
+  ].join(',');
+  while (true) {
+    const url = `${endpointBase}?limit=${limit}&offset=${offset}&orders=-updatedAt&fields=${encodeURIComponent(fields)}`;
+    const res = await fetch(url, {
+      headers: { 'X-MICROCMS-API-KEY': apiKey },
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`microCMS fetch failed: ${res.status} ${res.statusText} ${text}`);
+    }
+    const data = await res.json();
+    const contents = Array.isArray(data.contents) ? data.contents : [];
+    if (contents.length === 0) break;
+    for (const content of contents) {
+      // year, month, yearMonth を決定
+      const year =
+        typeof content.year === 'number'
+          ? content.year
+          : typeof content.year === 'string'
+          ? parseInt(content.year, 10)
+          : undefined;
+      const monthRaw = content.month;
+      const month =
+        typeof monthRaw === 'number'
+          ? String(monthRaw).padStart(2, '0')
+          : typeof monthRaw === 'string'
+          ? monthRaw
+          : undefined;
+      const yearMonth =
+        typeof content.visual === 'string' && content.visual.includes('.')
+          ? content.visual
+          : year && month
+          ? `${year}.${String(month).padStart(2, '0')}`
+          : undefined;
+      // videos 配列を抽出（文字列JSON / 配列 / videos配列）
+      let videosField = content.video;
+      if (typeof videosField === 'string') {
+        try {
+          videosField = JSON.parse(videosField);
+        } catch {
+          videosField = [];
+        }
+      }
+      if (!Array.isArray(videosField) && Array.isArray(content.videos)) {
+        videosField = content.videos;
+      }
+      const videos = Array.isArray(videosField) ? videosField : [];
+      for (const v of videos) {
+        if (!v || typeof v !== 'object') continue;
+        const id = v.id || v.videoId || v.contentId;
+        const ogpThumbnailUrl = v.ogpThumbnailUrl || v.thumbnailUrl || v.thumbnail;
+        const thumbnail = v.thumbnail || v.thumbnailUrl;
+        if (!id) continue;
+        allVideos.push({
+          ...v,
+          id,
+          ogpThumbnailUrl,
+          thumbnail,
+          year,
+          month,
+          yearMonth,
+        });
+      }
+    }
+    offset += contents.length;
+    if (contents.length < limit) break;
+  }
+  return allVideos;
+}
+
 // 動画データを読み込む関数（年/月情報を含む）
 async function loadVideoData() {
+  // 1) まずmicroCMSからの取得を試みる
+  try {
+    const fromCMS = await loadVideoDataFromCMS();
+    if (Array.isArray(fromCMS) && fromCMS.length > 0) {
+      return fromCMS;
+    }
+  } catch (e) {
+    console.log('Warning: Failed to load from microCMS, fallback to local JSON:', e.message);
+  }
   const dataDir = path.join(__dirname, '../src/data');
   const years = ['2024', '2025'];
   const videos = [];
@@ -150,9 +250,22 @@ async function main() {
   
   // 統計情報を出力
   try {
-    const files = await fs.readdir(outputDir);
-    const webpFiles = files.filter(file => file.endsWith('.webp'));
-    console.log(`📁 Generated ${webpFiles.length} optimized images`);
+    // 再帰的にwebp数をカウント
+    const walk = async (dir) => {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      let count = 0;
+      for (const entry of entries) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          count += await walk(full);
+        } else if (entry.isFile() && entry.name.endsWith('.webp')) {
+          count += 1;
+        }
+      }
+      return count;
+    };
+    const webpCount = await walk(outputDir);
+    console.log(`📁 Generated ${webpCount} optimized images`);
   } catch (error) {
     console.log('Could not count generated files:', error.message);
   }

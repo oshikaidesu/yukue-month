@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  // Cloudflare Pages用の設定
-  output: 'export', // 静的エクスポートを有効化
+  // Cloudflare Pages用の設定（ローカルでサーバ実行確認したい場合は環境変数で無効化）
+  output: process.env.LOCAL_SERVER_BUILD ? undefined : 'export',
   trailingSlash: false,
   
   // Next.js 15での最適化設定
